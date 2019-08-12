@@ -19,15 +19,17 @@
 (global-prettify-symbols-mode 1)
 
 (set-face-attribute 'default nil
-                    :family "Source Code Pro"
+                    :family "FiraCode"
                     :height 130
-                    :weight 'normal
+                    :weight 'regular
                     :width 'normal)
 
 (require 'evil)
 (evil-mode 1)
 
-(setq evil-want-C-u-scroll t)
+(require 'evil)
+(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+(define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 
 (require 'ivy)
 (ivy-mode 1)
@@ -47,32 +49,52 @@
 
 (yas-global-mode 1)
 
+(require 'winum)
+(winum-mode)
+
+(require 'eyebrowse)
+(eyebrowse-mode)
+
+(require 'magit)
+
 (require 'elpy)
 (elpy-enable)
 
-(setq python-shell-interpreter "ipython"
-      python-shell-interpreter-args "-i --simple-prompt")
+(defun pipenvenv ()
+  (interactive)
+  (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
+    )
+(defun poetryenv ()
+  (interactive)
+  (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
+  )
+;; default env
+(poetryenv)
 
 (require 'elpy)
- (eval-after-load 'python 
-                  '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
-
-(require 'elpy)
- (eval-after-load 'python 
-                  '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-definition))
-
-(require 'elpy)
- (eval-after-load 'python 
-                  '(define-key evil-normal-state-map (kbd "<SPC> m R") 'elpy-shell-switch-to-shell))
- (eval-after-load 'python 
-                  '(define-key evil-normal-state-map (kbd "<SPC> m b") 'elpy-shell-send-region-or-buffer))
- (eval-after-load 'python 
-                  '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
+(eval-after-load 'python 
+                 '(elpy-set-test-runner 'elpy-test-pytest-runner))
+(eval-after-load 'python 
+                 '(define-key evil-normal-state-map (kbd "<SPC> t") 'elpy-test))
 
 (require 'evil)
 (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
 (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
 (define-key evil-normal-state-map (kbd "<SPC> s") 'swiper)
+(define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
+(define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
+(define-key evil-normal-state-map (kbd "<SPC> 3") 'winum-select-window-3)
+(define-key evil-normal-state-map (kbd "<SPC> 4") 'winum-select-window-4)
+(define-key evil-normal-state-map (kbd "<SPC> 5") 'winum-select-window-5)
+(define-key evil-normal-state-map (kbd "<SPC> 6") 'winum-select-window-6)
+(define-key evil-normal-state-map (kbd "<SPC> l 0") 'eyebrowse-switch-to-window-config-0)
+(define-key evil-normal-state-map (kbd "<SPC> l 1") 'eyebrowse-switch-to-window-config-1)
+(define-key evil-normal-state-map (kbd "<SPC> l 2") 'eyebrowse-switch-to-window-config-2)
+(define-key evil-normal-state-map (kbd "<SPC> l 3") 'eyebrowse-switch-to-window-config-3)
+(define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
+(define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
+(define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
+(define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
 
 (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
 ; (define-key swiper-map (kbd "<escape>") 'minibuffer-keyboard-quit)

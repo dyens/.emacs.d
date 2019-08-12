@@ -132,11 +132,6 @@ TODO: No output
 #+BEGIN_SRC emacs-lisp
  (require 'magit)
 #+END_SRC
-* Magit
-#+BEGIN_SRC emacs-lisp
- (require 'evil-magit)
-#+END_SRC
-
 * Python
 ** Elpy
 *** Setup
@@ -144,46 +139,77 @@ TODO: No output
   (require 'elpy)
   (elpy-enable)
 #+END_SRC
-**** Interpreter
+*** Interpreter
+#BEGIN_SRC emacs-lisp
+ (setq python-shell-interpreter "ipython"
+       python-shell-interpreter-args "-i --simple-prompt")
+#END_SRC
+
+#RESULTS:
+:-i --simple-prompt
+
+*** Rgrep
+#BEGIN_SRC emacs-lisp
+ (require 'elpy)
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
+
+#END_SRC
+
+*** Go to definition
+#BEGIN_SRC emacs-lisp
+ (require 'elpy)
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-definition))
+
+#END_SRC
+
+*** Repl
+#BEGIN_SRC emacs-lisp
+ (require 'elpy)
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> m R") 'elpy-shell-switch-to-shell))
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> m b") 'elpy-shell-send-region-or-buffer))
+  (eval-after-load 'python 
+                   '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
+
+#END_SRC
+*** Virtualenv
 #+BEGIN_SRC emacs-lisp
-  (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "-i --simple-prompt")
+  (defun pipenvenv ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
+      )
+  (defun poetryenv ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
+    )
+  ;; default env
+  (poetryenv)
 #+END_SRC
 
 #+RESULTS:
-: -i --simple-prompt
+: /home/dyens/.cache/pypoetry/virtualenvs/
 
-**** Rgrep
+*** Tests
+Set pytest as default runner and keybinding tests on <SPC> t
 #+BEGIN_SRC emacs-lisp
   (require 'elpy)
-   (eval-after-load 'python 
-                    '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
-
+  (eval-after-load 'python 
+                   '(elpy-set-test-runner 'elpy-test-pytest-runner))
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> t") 'elpy-test))
 #+END_SRC
-
-**** Go to definition
+For coloring in compilation
 #+BEGIN_SRC emacs-lisp
-  (require 'elpy)
-   (eval-after-load 'python 
-                    '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-definition))
-
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
-
-**** Repl
-#+BEGIN_SRC emacs-lisp
-  (require 'elpy)
-   (eval-after-load 'python 
-                    '(define-key evil-normal-state-map (kbd "<SPC> m R") 'elpy-shell-switch-to-shell))
-   (eval-after-load 'python 
-                    '(define-key evil-normal-state-map (kbd "<SPC> m b") 'elpy-shell-send-region-or-buffer))
-   (eval-after-load 'python 
-                    '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
-
-#+END_SRC
-
-#+RESULTS:
-: elpy-shell-send-region-or-buffer
-
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (require 'evil)
@@ -203,11 +229,8 @@ TODO: No output
   (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
   (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
   (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
-  (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status))
+  (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
 #+END_SRC
-
-#+RESULTS:
-: magit-status
 
 ** Quit minibuffer by press 1 escape 
 #+BEGIN_SRC emacs-lisp
@@ -216,13 +239,12 @@ TODO: No output
 #+END_SRC
 
 
-
-
 * DONE Ace: Not interesting.
 * DONE check spacemacs:  get winum
 * DONE eye browse
 * DONE mv between windows: winump
-* TODO magit
+* DONE magit
+* TODO projectile
 * TODO my functions
 * TODO no result in org
 * TODO ve python
