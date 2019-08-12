@@ -1,4 +1,3 @@
-
 #+TITLE: My GNU Emacs configuration
 #+STARTUP: indent
 #+OPTIONS: H:5 num:nil tags:nil toc:nil timestamps:t
@@ -9,50 +8,51 @@
 
 * Introduction
 Set credentials
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (setq user-full-name "Alexander Kapustin")
   (setq user-mail-address "dyens@mail.ru")
 #+END_SRC
 
+
 Be sure to just ask for y/n instead of yes/no.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 Disable startup secreen.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (setq inhibit-startup-screen t)
 #+END_SRC
 
-#+RESULTS:
-: t
-
 * Installing use-package
 ** Setup
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
   (package-initialize)
 #+END_SRC
 For refresh packages run (M-x package-refresh-contents)
+
 * GUI
 ** Disable bars
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
 #+END_SRC
+
 ** Theme
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
 (load-theme 'gruber-darker t)
 #+END_SRC
 
 ** Pretty symbols
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (global-prettify-symbols-mode 1)
 #+END_SRC
+
 ** Font
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
                     :family "Source Code Pro"
                     :height 130
@@ -63,33 +63,28 @@ For refresh packages run (M-x package-refresh-contents)
 * Evil mode
 Vim users mode
 ** Setup
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'evil)
   (evil-mode 1)
 #+END_SRC
+
 For normal control - U
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'evil)
   (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
   (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-#+END_SRC
-
-#+RESULTS:
-: evil-scroll-up
+#+END_SRC :results output silent
 
 * Ivy
 ** Setup
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'ivy)
   (ivy-mode 1)
 #+END_SRC
 
-#+RESULTS:
-: t
-
 ** Settings
 TODO: No output
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (global-set-key (kbd "M-x") 'smex)
   (global-set-key (kbd "M-X") 'smex-major-mode-commands)
   ;; This is your old M-x.
@@ -99,17 +94,13 @@ TODO: No output
 * Counsel
 ** Settings
 TODO: No output
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (global-set-key (kbd "M-x") 'counsel-M-x)
 #+END_SRC
 
-#+RESULTS:
-: counsel-M-x
-
 * Yas
 ** Settings
-TODO: No output
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'yasnippet)
   (setq yas-snippet-dirs
     '(
@@ -118,38 +109,40 @@ TODO: No output
 
   (yas-global-mode 1)
 #+END_SRC
+
 * Winum
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
  (require 'winum)
  (winum-mode)
 #+END_SRC
+
 * Eyebrowse
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
  (require 'eyebrowse)
  (eyebrowse-mode)
 #+END_SRC
+
 * Magit
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
  (require 'magit)
 #+END_SRC
+
 * Python
 ** Elpy
 *** Setup
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'elpy)
   (elpy-enable)
 #+END_SRC
+
 *** Interpreter
-#BEGIN_SRC emacs-lisp
+#BEGIN_SRC emacs-lisp :results output silent
  (setq python-shell-interpreter "ipython"
        python-shell-interpreter-args "-i --simple-prompt")
 #END_SRC
 
-#RESULTS:
-:-i --simple-prompt
-
 *** Rgrep
-#BEGIN_SRC emacs-lisp
+#BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
   (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
@@ -157,7 +150,7 @@ TODO: No output
 #END_SRC
 
 *** Go to definition
-#BEGIN_SRC emacs-lisp
+#BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
   (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-definition))
@@ -165,7 +158,7 @@ TODO: No output
 #END_SRC
 
 *** Repl
-#BEGIN_SRC emacs-lisp
+#BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
   (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "<SPC> m R") 'elpy-shell-switch-to-shell))
@@ -173,10 +166,10 @@ TODO: No output
                    '(define-key evil-normal-state-map (kbd "<SPC> m b") 'elpy-shell-send-region-or-buffer))
   (eval-after-load 'python 
                    '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
-
 #END_SRC
+
 *** Virtualenv
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (defun pipenvenv ()
     (interactive)
     (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
@@ -189,20 +182,18 @@ TODO: No output
   (poetryenv)
 #+END_SRC
 
-#+RESULTS:
-: /home/dyens/.cache/pypoetry/virtualenvs/
-
 *** Tests
 Set pytest as default runner and keybinding tests on <SPC> t
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'elpy)
   (eval-after-load 'python 
                    '(elpy-set-test-runner 'elpy-test-pytest-runner))
   (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "<SPC> t") 'elpy-test))
 #+END_SRC
+
 For coloring in compilation
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
   (toggle-read-only)
@@ -210,8 +201,15 @@ For coloring in compilation
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
+
+* Restclient
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'restclient)
+  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
+#+END_SRC
+
 * Keybindings
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'evil)
   (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
   (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
@@ -229,11 +227,10 @@ For coloring in compilation
   (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
   (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
   (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
-  (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
 #+END_SRC
 
 ** Quit minibuffer by press 1 escape 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results output silent
   (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   ; (define-key swiper-map (kbd "<escape>") 'minibuffer-keyboard-quit)
 #+END_SRC

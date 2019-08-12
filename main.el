@@ -19,17 +19,13 @@
 (global-prettify-symbols-mode 1)
 
 (set-face-attribute 'default nil
-                    :family "FiraCode"
+                    :family "Source Code Pro"
                     :height 130
-                    :weight 'regular
+                    :weight 'normal
                     :width 'normal)
 
 (require 'evil)
 (evil-mode 1)
-
-(require 'evil)
-(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-(define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 
 (require 'ivy)
 (ivy-mode 1)
@@ -77,6 +73,16 @@
 (eval-after-load 'python 
                  '(define-key evil-normal-state-map (kbd "<SPC> t") 'elpy-test))
 
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+(require 'restclient)
+(add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
+
 (require 'evil)
 (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
 (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
@@ -94,7 +100,6 @@
 (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
 (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
 (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
-(define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
 
 (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
 ; (define-key swiper-map (kbd "<escape>") 'minibuffer-keyboard-quit)
