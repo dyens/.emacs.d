@@ -145,34 +145,34 @@ For evil bindigs
 #+END_SRC
 
 *** Interpreter
-#BEGIN_SRC emacs-lisp :results output silent
+#+BEGIN_SRC emacs-lisp :results output silent
  (setq python-shell-interpreter "ipython"
        python-shell-interpreter-args "-i --simple-prompt")
-#END_SRC
+#+END_SRC
 
 *** Rgrep
-#BEGIN_SRC emacs-lisp :results output silent
+#+BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
  (eval-after-load 'python 
                   '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
 
-#END_SRC
+#+END_SRC
 
 *** jedi
-#BEGIN_SRC emacs-lisp :results output silent
+#+BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
  (setq elpy-rpc-backend "jedi")
-#END_SRC
+#+END_SRC
 
 *** Go to definition
-#BEGIN_SRC emacs-lisp :results output silent
+#+BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
   (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-assignment))
-#END_SRC
+#+END_SRC
 
 *** Repl
-#BEGIN_SRC emacs-lisp :results output silent
+#+BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
   (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "<SPC> m R") 'elpy-shell-switch-to-shell))
@@ -180,7 +180,7 @@ For evil bindigs
                    '(define-key evil-normal-state-map (kbd "<SPC> m b") 'elpy-shell-send-region-or-buffer))
   (eval-after-load 'python 
                    '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
-#END_SRC
+#+END_SRC
 
 *** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
