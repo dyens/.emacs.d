@@ -55,7 +55,7 @@ For refresh packages run (M-x package-refresh-contents)
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
                     :family "Source Code Pro"
-                    :height 130
+                    :height 100
                     :weight 'normal
                     :width 'normal)
 #+END_SRC
@@ -67,13 +67,6 @@ Vim users mode
   (require 'evil)
   (evil-mode 1)
 #+END_SRC
-
-For normal control - U
-#+BEGIN_SRC emacs-lisp :results output silent
-  (require 'evil)
-  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-  (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-#+END_SRC :results output silent
 
 * Ivy
 ** Setup
@@ -127,6 +120,22 @@ TODO: No output
  (require 'magit)
 #+END_SRC
 
+For evil bindigs
+#+BEGIN_SRC emacs-lisp :results output silent
+ (require 'evil-magit)
+#+END_SRC
+* Yapf
+#+BEGIN_SRC emacs-lisp :results output silent
+ (require 'yapfify)
+ (eval-after-load 'python 
+                  '(define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-buffer))
+#+END_SRC
+* Py-isort
+#+BEGIN_SRC emacs-lisp :results output silent
+ (require 'py-isort)
+ (eval-after-load 'python 
+                  '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
+#+END_SRC
 * Python
 ** Elpy
 *** Setup
@@ -144,17 +153,22 @@ TODO: No output
 *** Rgrep
 #BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
+ (eval-after-load 'python 
+                  '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
 
+#END_SRC
+
+*** jedi
+#BEGIN_SRC emacs-lisp :results output silent
+ (require 'elpy)
+ (setq elpy-rpc-backend "jedi")
 #END_SRC
 
 *** Go to definition
 #BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
   (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-definition))
-
+                   '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-assignment))
 #END_SRC
 
 *** Repl
@@ -208,6 +222,14 @@ For coloring in compilation
   (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 #+END_SRC
 
+* Projectile
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'projectile)
+  (projectile-mode +1)
+  (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
+  (setq projectile-completion-system 'ivy)
+#+END_SRC
+
 * Keybindings
 #+BEGIN_SRC emacs-lisp :results output silent
   (require 'evil)
@@ -227,13 +249,22 @@ For coloring in compilation
   (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
   (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
   (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
+  (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
 #+END_SRC
 
 ** Quit minibuffer by press 1 escape 
 #+BEGIN_SRC emacs-lisp :results output silent
   (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
-  ; (define-key swiper-map (kbd "<escape>") 'minibuffer-keyboard-quit)
+  ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
 #+END_SRC
+
+* Post settings
+For normal control - U
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'evil)
+  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+  (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+#+END_SRC :results output silent
 
 
 * DONE Ace: Not interesting.
@@ -241,8 +272,17 @@ For coloring in compilation
 * DONE eye browse
 * DONE mv between windows: winump
 * DONE magit
-* TODO projectile
-* TODO my functions
-* TODO no result in org
-* TODO ve python
+* DONE projectile
+* DONE no result in org
+* DONE environment python
+* DONE projectile
+* TODO elpy debugging in tets
+* TODO flake per files ingore
+* TODO global <spc> %d keys
 * TODO lisp mode
+* TODO comment python block
+* TODO fix this file (not loadede c-u keybinding)
+* TODO snippet for a = a,
+* TODO eshell
+* TODO org
+* TODO rust

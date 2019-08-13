@@ -53,6 +53,16 @@
 
 (require 'magit)
 
+(require 'evil-magit)
+
+(require 'yapfify)
+(eval-after-load 'python 
+                 '(define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-buffer))
+
+(require 'py-isort)
+(eval-after-load 'python 
+                 '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
+
 (require 'elpy)
 (elpy-enable)
 
@@ -83,6 +93,11 @@
 (require 'restclient)
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 
+(require 'projectile)
+(projectile-mode +1)
+(define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
+(setq projectile-completion-system 'ivy)
+
 (require 'evil)
 (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
 (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
@@ -100,6 +115,7 @@
 (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
 (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
 (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
+(define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
 
 (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
-; (define-key swiper-map (kbd "<escape>") 'minibuffer-keyboard-quit)
+;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
