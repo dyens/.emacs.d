@@ -1,1 +1,4 @@
 *.pyc
+backups/
+auto-save-list/
+savehist

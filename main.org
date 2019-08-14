@@ -33,12 +33,41 @@ Disable startup secreen.
 #+END_SRC
 For refresh packages run (M-x package-refresh-contents)
 
+* Backup
+This is one of the things people usually want to change right away. By default, Emacs saves backup files in the current directory. These are the files ending in ~ that are cluttering up your directory lists. The following code stashes them all in ~/.emacs.d/backups, where I can find them with C-x C-f (find-file) if I really need to. 
+#+BEGIN_SRC emacs-lisp :results output silent
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+#+END_SRC
+
+Disk space is cheap. Save lots. 
+#+BEGIN_SRC emacs-lisp :results output silent
+  (setq delete-old-versions -1)
+  (setq version-control t)
+  (setq vc-make-backup-files t)
+  (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+#+END_SRC
+
+* History
+This is one of the things people usually want to change right away. By default, Emacs saves backup files in the current directory. These are the files ending in ~ that are cluttering up your directory lists. The following code stashes them all in ~/.emacs.d/backups, where I can find them with C-x C-f (find-file) if I really need to. 
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq savehist-file "~/.emacs.d/savehist")
+(savehist-mode 1)
+(setq history-length t)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring
+        search-ring
+        regexp-search-ring))
+#+END_SRC
+
 * GUI
 ** Disable bars
 #+BEGIN_SRC emacs-lisp :results output silent
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
+  (display-time-mode 1)
 #+END_SRC
 
 ** Theme
@@ -196,14 +225,17 @@ For evil bindigs
   (poetryenv)
 #+END_SRC
 
-*** Tests
-Set pytest as default runner and keybinding tests on <SPC> t
+** Pytest
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'elpy)
+  (require 'pytest)
   (eval-after-load 'python 
-                   '(elpy-set-test-runner 'elpy-test-pytest-runner))
+                   '(define-key evil-normal-state-map (kbd "<SPC> t t") 'pytest-one))
+
   (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> t") 'elpy-test))
+                   '(define-key evil-normal-state-map (kbd "<SPC> t a") 'pytest-all))
+
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> t b") 'pytest-pdb-one))
 #+END_SRC
 
 For coloring in compilation
@@ -215,6 +247,7 @@ For coloring in compilation
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
+
 
 * Restclient
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -236,12 +269,21 @@ For coloring in compilation
   (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
   (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
   (define-key evil-normal-state-map (kbd "<SPC> s") 'swiper)
+
   (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
   (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
   (define-key evil-normal-state-map (kbd "<SPC> 3") 'winum-select-window-3)
   (define-key evil-normal-state-map (kbd "<SPC> 4") 'winum-select-window-4)
   (define-key evil-normal-state-map (kbd "<SPC> 5") 'winum-select-window-5)
   (define-key evil-normal-state-map (kbd "<SPC> 6") 'winum-select-window-6)
+
+  (define-key compilation-mode-map (kbd "<SPC> 1") 'winum-select-window-1)
+  (define-key compilation-mode-map (kbd "<SPC> 2") 'winum-select-window-2)
+  (define-key compilation-mode-map (kbd "<SPC> 3") 'winum-select-window-3)
+  (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
+  (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
+  (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
+
   (define-key evil-normal-state-map (kbd "<SPC> l 0") 'eyebrowse-switch-to-window-config-0)
   (define-key evil-normal-state-map (kbd "<SPC> l 1") 'eyebrowse-switch-to-window-config-1)
   (define-key evil-normal-state-map (kbd "<SPC> l 2") 'eyebrowse-switch-to-window-config-2)
@@ -250,6 +292,12 @@ For coloring in compilation
   (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
   (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
   (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
+
+  (define-key evil-normal-state-map (kbd "<SPC> c") 'comment-line)
+  (define-key evil-visual-state-map (kbd "<SPC> c") 'comment-line)
+
+  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+  (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 #+END_SRC
 
 ** Quit minibuffer by press 1 escape 
@@ -257,15 +305,6 @@ For coloring in compilation
   (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
 #+END_SRC
-
-* Post settings
-For normal control - U
-#+BEGIN_SRC emacs-lisp :results output silent
-  (require 'evil)
-  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-  (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-#+END_SRC :results output silent
-
 
 * DONE Ace: Not interesting.
 * DONE check spacemacs:  get winum
@@ -276,9 +315,13 @@ For normal control - U
 * DONE no result in org
 * DONE environment python
 * DONE projectile
-* TODO elpy debugging in tets
+* DONE history
+* DONE backup
+* DONE global <spc> %d keys
+
+* DONE elpy debugging in tets
+
 * TODO flake per files ingore
-* TODO global <spc> %d keys
 * TODO lisp mode
 * TODO comment python block
 * TODO fix this file (not loadede c-u keybinding)
