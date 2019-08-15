@@ -159,13 +159,13 @@ For evil bindigs
  (eval-after-load 'python 
                   '(define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-buffer))
 #+END_SRC
-* Py-isort
+* Python
+** Py-isort
 #+BEGIN_SRC emacs-lisp :results output silent
  (require 'py-isort)
  (eval-after-load 'python 
                   '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
 #+END_SRC
-* Python
 ** Elpy
 *** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -229,13 +229,16 @@ For evil bindigs
 #+BEGIN_SRC emacs-lisp :results output silent
   (require 'pytest)
   (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> t t") 'pytest-one))
+                   '(define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one))
 
   (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> t a") 'pytest-all))
+                   '(define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all))
 
   (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> t b") 'pytest-pdb-one))
+                   '(define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module))
+
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one))
 #+END_SRC
 
 For coloring in compilation
@@ -247,7 +250,6 @@ For coloring in compilation
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
-
 
 * Restclient
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -261,6 +263,16 @@ For coloring in compilation
   (projectile-mode +1)
   (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
   (setq projectile-completion-system 'ivy)
+#+END_SRC
+
+* Docker
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'dockerfile-mode)
+  (add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-mode))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'docker-compose-mode)
 #+END_SRC
 
 * Keybindings
@@ -305,6 +317,7 @@ For coloring in compilation
   (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
 #+END_SRC
+
 
 * DONE Ace: Not interesting.
 * DONE check spacemacs:  get winum

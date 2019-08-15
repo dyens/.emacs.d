@@ -119,13 +119,16 @@
 
 (require 'pytest)
 (eval-after-load 'python 
-                 '(define-key evil-normal-state-map (kbd "<SPC> t t") 'pytest-one))
+                 '(define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one))
 
 (eval-after-load 'python 
-                 '(define-key evil-normal-state-map (kbd "<SPC> t a") 'pytest-all))
+                 '(define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all))
 
 (eval-after-load 'python 
-                 '(define-key evil-normal-state-map (kbd "<SPC> t b") 'pytest-pdb-one))
+                 '(define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module))
+
+(eval-after-load 'python 
+                 '(define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one))
 
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
@@ -141,6 +144,11 @@
 (projectile-mode +1)
 (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
 (setq projectile-completion-system 'ivy)
+
+(require 'dockerfile-mode)
+(add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-mode))
+
+(require 'docker-compose-mode)
 
 (require 'evil)
 (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
@@ -169,6 +177,10 @@
 (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
 (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
 (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
+
+(define-key evil-normal-state-map (kbd "<SPC> c") 'comment-line)
+(define-key evil-visual-state-map (kbd "<SPC> c") 'comment-line)
+
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 
