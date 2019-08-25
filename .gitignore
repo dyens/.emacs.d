@@ -5,7 +5,8 @@ savehist
 main.el
 smex-items
 elpa/
-projectile-bookmarks.eld/
+eshell/
+projectile-bookmarks.eld
 transient/
 main.el
 
