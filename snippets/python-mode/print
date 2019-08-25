@@ -2,4 +2,5 @@
 # name: print
 # key: p
 # --
+
 print($0)
