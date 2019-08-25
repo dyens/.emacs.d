@@ -213,6 +213,11 @@ For evil bindigs
 
 *** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
+  (defun pipenvenv-old ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.virtualenvs")
+      )
+
   (defun pipenvenv ()
     (interactive)
     (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
