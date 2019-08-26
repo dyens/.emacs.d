@@ -275,6 +275,19 @@ For coloring in compilation
   (require 'docker-compose-mode)
 #+END_SRC
 
+* Org
+#+BEGIN_SRC emacs-lisp :results output silent
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (python . t)
+     (sh . t)
+     (emacs-lisp . t)
+     ))
+  (setq shell-file-name "bash")
+  (setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
 * Keybindings
 #+BEGIN_SRC emacs-lisp :results output silent
   (require 'evil)
