@@ -1,4 +1,4 @@
-#+TITLE: My GNU Emacs configuration
+:#+TITLE: Emacs configuration
 #+STARTUP: indent
 #+OPTIONS: H:5 num:nil tags:nil toc:nil timestamps:t
 #+LAYOUT: post
@@ -117,19 +117,8 @@ TODO: No output
 ** Settings
 TODO: No output
 #+BEGIN_SRC emacs-lisp :results output silent
+  (require 'counsel)
   (global-set-key (kbd "M-x") 'counsel-M-x)
-#+END_SRC
-
-* Yas
-** Settings
-#+BEGIN_SRC emacs-lisp :results output silent
-  (require 'yasnippet)
-  (setq yas-snippet-dirs
-    '(
-       "~/.emacs.d/snippets"                 ;; personal snippets
-   ))
-
-  (yas-global-mode 1)
 #+END_SRC
 
 * Winum
@@ -166,6 +155,205 @@ For evil bindigs
  (eval-after-load 'python 
                   '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
 #+END_SRC
+** Dy-python
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'python)
+
+  ; for using string-trim
+  (require 'subr-x)
+
+  (defun dy-python-arg-params(arg-string)
+    "Get python argument params from argument string (name, type, default)."
+    (let* (
+           (arg-value (split-string arg-string "[[:blank:]]*=[[:blank:]]*" t))
+           (name-type-string (car arg-value))
+           (name-type (split-string name-type-string "[[:blank:]]*:[[:blank:]]*" t))
+           (name (car name-type))
+           (type (nth 1 name-type))
+           (default-value (nth 1 arg-value))
+           )
+      (list name type default-value)))
+
+  (defun dy-python-split-args (arg-string)
+    "Split a python argument string into ((name, type, default)..) tuples"
+    (let* (
+           (args (split-string arg-string "[[:blank:]]*,[[:blank:]]*" t))
+           (args (mapcar 'string-trim args))
+           (arg-values (mapcar 'dy-python-arg-params args))
+           )
+      arg-values))
+
+
+  (defun dy-python-args-to-docstring (args-string identation)
+    "return docstring format for the python arguments in yas-text"
+    (let* (
+           (args (dy-python-split-args args-string))
+           (args (if (string= (nth 0 (car args)) "self")
+                     (cdr args)
+                   args))
+           (ident (make-string identation ?\s))
+           (format-arg (lambda (arg)
+                         (concat
+                          ident
+                          ":param "
+                          (nth 0 arg)
+                          ": " (nth 0 arg)
+                          (if (nth 2 arg) (concat ", default=" (nth 2 arg)))
+                          (if (nth 1 arg) (concat
+                                       "\n"
+                                       ident
+                                       ":type "
+                                       (nth 0 arg)
+                                       ": "
+                                       (nth 1 arg)
+                                       ))
+                          )
+                         )
+                       )
+           (formatted-params (mapconcat format-arg args "\n")))
+      (unless (string= formatted-params "")
+        (mapconcat 'identity
+                   (list  formatted-params)
+                   "\n"))))
+
+
+
+  (defun dy-python-return-to-docstring (return-string identation)
+    "return docstring format for the python return type"
+    (let* (
+           (return-type (car (split-string return-string "[[:blank:]]*->[[:blank:]]*" t)))
+           (ident (make-string identation ?\s))
+           (formated-return (format "%s:rtype: %s" ident return-type)))
+      (unless (string= return-type "nil") formated-return)))
+
+
+  (add-hook 'dy-python-mode-hook
+            '(lambda () (set (make-local-variable 'yas-indent-line) 'fixed)))
+
+
+  (defun dy-python-create-docstring ()
+    "return docstring format for the python return type"
+    (interactive)
+    (save-excursion
+      (let (
+            $point-declaration-line-start
+            $point-declaration-start
+            $point-function-start
+            $point-function-end
+            $point-args-start
+            $point-args-end
+
+            $identation
+            $fname-string
+            $args-string
+            $return-string
+            $args-docstring
+            $return-docstring
+            $docstring
+            $ident
+            )
+          (python-nav-beginning-of-defun 1)
+          (setq $point-declaration-line-start (point))
+          (re-search-forward "def")
+          (setq $point-declaration-start (- (point) 3))
+          (re-search-forward "[a-z]")
+          (setq $point-function-start (point))
+
+          (re-search-forward "(")
+          (setq $point-args-start (point))
+          (re-search-forward ")")
+          (setq $point-args-end (point))
+          (re-search-forward ":")
+          (setq $point-function-end (point))
+
+          (setq $identation (+ 4 (- $point-declaration-start $point-declaration-line-start)))
+          (setq $args-string (buffer-substring $point-args-start (- $point-args-end 1)))
+          (setq $return-string (buffer-substring $point-args-end (- $point-function-end 1)))
+          (setq $fname-string (buffer-substring (- $point-function-start 1) (- $point-args-start 1)))
+
+          (setq $args-docstring (dy-python-args-to-docstring $args-string $identation))
+          (setq $return-docstring (dy-python-return-to-docstring $return-string $identation))
+
+          (setq $ident (make-string $identation ?\s))
+
+          (setq $docstring
+                (concat
+                  "\n"
+                  $ident 
+                  "\"\"\""
+                  $fname-string
+                  ".\n"
+                (if (not (string= $args-docstring "nil"))
+                    (concat "\n"
+                          $args-docstring
+                          "\n")
+                  "")
+                (if $return-docstring
+                    (concat "\n"
+                          $return-docstring
+                          "\n")
+                  "")
+                $ident 
+                "\"\"\""))
+
+          (goto-char $point-function-end)
+          (insert $docstring)
+      )
+     )
+    )
+
+
+  (defun dy-python-vars-to-dict ($start $end)
+    "Mv variables to dict."
+    (interactive "r")
+    (let (
+          $region-string
+          $variables
+          $var-to-kwarg
+          $kwargs
+          )
+     (setq $region-string (buffer-substring $start $end))
+     (setq $variables (split-string $region-string "[[:blank:]]*,[[:blank:]]*" t))
+     (setq $variables (mapcar 'string-trim $variables))
+     (setq $var-to-kwarg (lambda (var)
+                          (concat
+                           "'" var "': " var
+                           )))
+     (setq $kwargs (mapconcat $var-to-kwarg $variables ", "))
+
+     (delete-region $start $end)
+     (insert "{")
+     (insert $kwargs)
+     (insert "}")
+     )
+    )
+
+
+
+  (defun dy-python-vars-to-kwargs ($start $end)
+    "Mv variables to kwargs."
+    (interactive "r")
+    (let (
+          $region-string
+          $variables
+          $var-to-kwarg
+          $kwargs
+          )
+     (setq $region-string (buffer-substring $start $end))
+     (setq $variables (split-string $region-string "[[:blank:]]*,[[:blank:]]*" t))
+     (setq $variables (mapcar 'string-trim $variables))
+     (setq $var-to-kwarg (lambda (var)
+                          (concat
+                           var "=" var
+                           )))
+     (setq $kwargs (mapconcat $var-to-kwarg $variables ", "))
+
+     (delete-region $start $end)
+     (insert $kwargs)
+     )
+    )
+#+END_SRC
+
 ** Elpy
 *** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -179,6 +367,32 @@ For evil bindigs
        python-shell-interpreter-args "-i --simple-prompt")
 #+END_SRC
 
+*** jedi
+#+BEGIN_SRC emacs-lisp :results output silent
+ (require 'elpy)
+ (setq elpy-rpc-backend "jedi")
+#+END_SRC
+
+*** Virtualenv
+#+BEGIN_SRC emacs-lisp :results output silent
+  (defun pipenvenv-old ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.virtualenvs")
+      )
+
+  (defun pipenvenv ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
+      )
+  (defun poetryenv ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
+    )
+  ;; default env
+  (poetryenv)
+#+END_SRC
+
+** Keybindigs
 *** Rgrep
 #+BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
@@ -186,13 +400,6 @@ For evil bindigs
                   '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
 
 #+END_SRC
-
-*** jedi
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'elpy)
- (setq elpy-rpc-backend "jedi")
-#+END_SRC
-
 *** Go to definition
 #+BEGIN_SRC emacs-lisp :results output silent
  (require 'elpy)
@@ -211,18 +418,22 @@ For evil bindigs
                    '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
 #+END_SRC
 
-*** Virtualenv
+*** Docfunc
+Create documnetation from function signature
 #+BEGIN_SRC emacs-lisp :results output silent
-  (defun pipenvenv ()
-    (interactive)
-    (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
-      )
-  (defun poetryenv ()
-    (interactive)
-    (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
-    )
-  ;; default env
-  (poetryenv)
+ (require 'python)
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring))
+#+END_SRC
+
+*** Vars transformations
+Create documnetation from function signature
+#+BEGIN_SRC emacs-lisp :results output silent
+ (require 'python)
+  (eval-after-load 'python 
+                   '(define-key evil-visual-state-map (kbd "<SPC> m v d") 'dy-python-vars-to-dict))
+  (eval-after-load 'python 
+                   '(define-key evil-visual-state-map (kbd "<SPC> m v w") 'dy-python-vars-to-kwargs))
 #+END_SRC
 
 ** Pytest
@@ -286,6 +497,48 @@ For coloring in compilation
      ))
   (setq shell-file-name "bash")
   (setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
+* Yas
+** Settings
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'yasnippet)
+  (setq yas-snippet-dirs
+    '(
+       "~/.emacs.d/snippets"                 ;; personal snippets
+   ))
+  (yas-global-mode 1)
+#+END_SRC
+
+* Abbrev
+** Settings
+#+BEGIN_SRC emacs-lisp :results output silent
+  (clear-abbrev-table global-abbrev-table)
+
+  (define-abbrev-table 'global-abbrev-table
+    '(
+
+      ;; net abbrev
+      ("afaik" "as far as i know" )
+      ("r" "return" )
+      ))
+
+  (when (boundp 'python-mode-abbrev-table)
+    (clear-abbrev-table python-mode-abbrev-table))
+
+  (define-abbrev-table 'python-mode-abbrev-table
+    '(
+      ("r" "return")
+      ("ass" "assert")
+      ("fr" "from")
+      ("imp" "import")
+      ("tr" "import pdb; pdb.set_trace()")
+
+      ))
+
+  (set-default 'abbrev-mode t)
+
+  (setq save-abbrevs nil)
 #+END_SRC
 
 * Keybindings

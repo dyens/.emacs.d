@@ -18,7 +18,7 @@
  '(ivy-mode t)
  '(package-selected-packages
    (quote
-    (docker-compose-mode dockerfile-mode pytest bind-key py-isort yapfify projectile restclient evil-magit magit eyebrowse winum counsel ivy evil))))
+    (smex docker-compose-mode dockerfile-mode pytest bind-key py-isort yapfify projectile restclient evil-magit magit eyebrowse winum counsel ivy evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
