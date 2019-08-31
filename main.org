@@ -510,6 +510,37 @@ For coloring in compilation
   (yas-global-mode 1)
 #+END_SRC
 
+* Rust
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'rust-mode)
+  (add-to-list 'auto-mode-alist '("\\rs\\'" . rust-mode))
+  (setq rust-format-on-save t)
+#+END_SRC
+** Racer
+#+BEGIN_SRC emacs-lisp :results output silent
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+(add-hook 'rust-mode-hook #'company-mode)
+#+END_SRC
+
+** Keybinding
+*** Compile
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'rust-mode)
+  (require 'rust-mode)
+
+
+  (eval-after-load 'rust-mode
+                     '(define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-compile))
+
+  (add-hook 'racer-mode-hook #'company-mode)
+
+  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  (setq company-tooltip-align-annotations t)
+#+END_SRC
+
+
+
 * Abbrev
 ** Settings
 #+BEGIN_SRC emacs-lisp :results output silent
