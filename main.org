@@ -527,18 +527,20 @@ For coloring in compilation
 *** Compile
 #+BEGIN_SRC emacs-lisp :results output silent
   (require 'rust-mode)
-  (require 'rust-mode)
-
 
   (eval-after-load 'rust-mode
                      '(define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-compile))
 
-  (add-hook 'racer-mode-hook #'company-mode)
-
   (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
   (setq company-tooltip-align-annotations t)
 #+END_SRC
+*** Run
+#+BEGIN_SRC emacs-lisp :results output silent
+  (require 'rust-mode)
+  (eval-after-load 'rust-mode
+                     '(define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
 
+#+END_SRC
 
 * Abbrev
 ** Settings
