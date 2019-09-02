@@ -622,28 +622,3 @@ For coloring in compilation
   (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
 #+END_SRC
-
-
-* DONE Ace: Not interesting.
-* DONE check spacemacs:  get winum
-* DONE eye browse
-* DONE mv between windows: winump
-* DONE magit
-* DONE projectile
-* DONE no result in org
-* DONE environment python
-* DONE projectile
-* DONE history
-* DONE backup
-* DONE global <spc> %d keys
-
-* DONE elpy debugging in tets
-
-* TODO flake per files ingore
-* TODO lisp mode
-* TODO comment python block
-* TODO fix this file (not loadede c-u keybinding)
-* TODO snippet for a = a,
-* TODO eshell
-* TODO org
-* TODO rust
