@@ -72,7 +72,8 @@ This is one of the things people usually want to change right away. By default, 
 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
-(load-theme 'gruber-darker t)
+; (load-theme 'gruber-darker t)
+(load-theme 'dracula t)
 #+END_SRC
 
 ** Pretty symbols
@@ -540,6 +541,12 @@ For coloring in compilation
   (eval-after-load 'rust-mode
                      '(define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
 
+#+END_SRC
+
+*** Go To def
+#+BEGIN_SRC emacs-lisp :results output silent
+  (eval-after-load 'racer-mode
+                     '(define-key evil-normal-state-map (kbd "g d") 'racer-find-definition))
 #+END_SRC
 
 * Abbrev
