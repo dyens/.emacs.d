@@ -72,8 +72,30 @@ This is one of the things people usually want to change right away. By default, 
 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
-; (load-theme 'gruber-darker t)
-(load-theme 'dracula t)
+  ; (load-theme 'gruber-darker t)
+  ; (load-theme 'dracula t)
+
+  (require 'doom-themes)
+
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+  ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+  ;; may have their own settings.
+  (load-theme 'doom-molokai t)
+
+  ;; Enable flashing mode-line on errors
+  ; (doom-themes-visual-bell-config)
+
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  ; (doom-themes-neotree-config)
+  ;; or for treemacs users
+  ; (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+  ; (doom-themes-treemacs-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config)
 #+END_SRC
 
 ** Pretty symbols
@@ -143,12 +165,14 @@ For evil bindigs
 #+BEGIN_SRC emacs-lisp :results output silent
  (require 'evil-magit)
 #+END_SRC
+
 * Yapf
 #+BEGIN_SRC emacs-lisp :results output silent
  (require 'yapfify)
  (eval-after-load 'python 
                   '(define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-buffer))
 #+END_SRC
+
 * Python
 ** Py-isort
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -156,6 +180,7 @@ For evil bindigs
  (eval-after-load 'python 
                   '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
 #+END_SRC
+
 ** Dy-python
 #+BEGIN_SRC emacs-lisp :results output silent
   (require 'python)
@@ -537,9 +562,9 @@ For coloring in compilation
 #+END_SRC
 *** Run
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'rust-mode)
-  (eval-after-load 'rust-mode
-                     '(define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
+  ;; (require 'rust-mode)
+  ;; (eval-after-load 'rust-mode
+  ;;                    '(define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
 
 #+END_SRC
 
