@@ -113,72 +113,83 @@ This is one of the things people usually want to change right away. By default, 
 #+END_SRC
 
 * Evil mode
-Vim users mode
-** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'evil)
-  (evil-mode 1)
+  (use-package evil
+    :ensure t
+    :config 
+    (evil-mode 1)
+    )
 #+END_SRC
 
 * Ivy
-** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'ivy)
-  (ivy-mode 1)
-#+END_SRC
-
-** Settings
-TODO: No output
-#+BEGIN_SRC emacs-lisp :results output silent
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-  ;; This is your old M-x.
-  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+  (use-package ivy
+    :ensure t
+    :config 
+    (ivy-mode 1)
+    )
 #+END_SRC
 
 * Counsel
-** Settings
-TODO: No output
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'counsel)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (use-package counsel
+    :ensure t
+    :config 
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    )
 #+END_SRC
 
 * Winum
 #+BEGIN_SRC emacs-lisp :results output silent
- (require 'winum)
- (winum-mode)
+  (use-package winum
+    :ensure t
+    :config 
+    (winum-mode)
+    )
 #+END_SRC
 
 * Eyebrowse
 #+BEGIN_SRC emacs-lisp :results output silent
- (require 'eyebrowse)
- (eyebrowse-mode)
+  (use-package eyebrowse
+    :ensure t
+    :config 
+    (eyebrowse-mode)
+    )
 #+END_SRC
 
 * Magit
 #+BEGIN_SRC emacs-lisp :results output silent
- (require 'magit)
+  (use-package magit
+    :ensure t
+    )
 #+END_SRC
 
 For evil bindigs
 #+BEGIN_SRC emacs-lisp :results output silent
- (require 'evil-magit)
-#+END_SRC
-
-* Yapf
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'yapfify)
- (eval-after-load 'python 
-                  '(define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-buffer))
+  (use-package evil-magit
+    :ensure t
+    )
 #+END_SRC
 
 * Python
+** Yapf
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package yapfify
+    :ensure t
+    :config 
+    (eval-after-load 'python 
+                    '(define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-buffer))
+    )
+#+END_SRC
+
 ** Py-isort
 #+BEGIN_SRC emacs-lisp :results output silent
- (require 'py-isort)
- (eval-after-load 'python 
-                  '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
+  (use-package py-isort
+    :ensure t
+    :config 
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
+    )
 #+END_SRC
 
 ** Dy-python
@@ -381,25 +392,35 @@ For evil bindigs
 #+END_SRC
 
 ** Elpy
-*** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'elpy)
-  (elpy-enable)
+  (use-package elpy
+    :ensure t
+    :custom
+    (python-shell-interpreter "ipython" "Default interpreter is ipython")
+    (python-shell-interpreter-args "-i --simple-prompt" "Interpreter args")
+    (elpy-rpc-backend "jedi" "rpc backend is jedi")
+    :config 
+    (elpy-enable)
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-assignment))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> m R") 'elpy-shell-switch-to-shell))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> m b") 'elpy-shell-send-region-or-buffer))
+    (eval-after-load 'python 
+                     '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring))
+    (eval-after-load 'python 
+                     '(define-key evil-visual-state-map (kbd "<SPC> m v d") 'dy-python-vars-to-dict))
+    (eval-after-load 'python 
+                     '(define-key evil-visual-state-map (kbd "<SPC> m v w") 'dy-python-vars-to-kwargs))
+    )
 #+END_SRC
 
-*** Interpreter
-#+BEGIN_SRC emacs-lisp :results output silent
- (setq python-shell-interpreter "ipython"
-       python-shell-interpreter-args "-i --simple-prompt")
-#+END_SRC
-
-*** jedi
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'elpy)
- (setq elpy-rpc-backend "jedi")
-#+END_SRC
-
-*** Virtualenv
+** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
   (defun pipenvenv-old ()
     (interactive)
@@ -418,80 +439,42 @@ For evil bindigs
   (poetryenv)
 #+END_SRC
 
-** Keybindigs
-*** Rgrep
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'elpy)
- (eval-after-load 'python 
-                  '(define-key evil-normal-state-map (kbd "<SPC> r") 'elpy-rgrep-symbol))
-
-#+END_SRC
-*** Go to definition
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'elpy)
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "g d") 'elpy-goto-assignment))
-#+END_SRC
-
-*** Repl
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'elpy)
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> m R") 'elpy-shell-switch-to-shell))
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> m b") 'elpy-shell-send-region-or-buffer))
-  (eval-after-load 'python 
-                   '(define-key evil-visual-state-map (kbd "<SPC> m r") 'elpy-shell-send-region-or-buffer))
-#+END_SRC
-
-*** Docfunc
-Create documnetation from function signature
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'python)
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring))
-#+END_SRC
-
-*** Vars transformations
-Create documnetation from function signature
-#+BEGIN_SRC emacs-lisp :results output silent
- (require 'python)
-  (eval-after-load 'python 
-                   '(define-key evil-visual-state-map (kbd "<SPC> m v d") 'dy-python-vars-to-dict))
-  (eval-after-load 'python 
-                   '(define-key evil-visual-state-map (kbd "<SPC> m v w") 'dy-python-vars-to-kwargs))
-#+END_SRC
-
 ** Pytest
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'pytest)
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one))
+  (use-package pytest
+    :ensure t
+    :config 
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one))
+    )
 
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all))
-
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module))
-
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one))
 #+END_SRC
 
-For coloring in compilation
+* Ansi-color
 #+BEGIN_SRC emacs-lisp :results output silent
-(require 'ansi-color)
-(defun colorize-compilation-buffer ()
-  (toggle-read-only)
-  (ansi-color-apply-on-region compilation-filter-start (point))
-  (toggle-read-only))
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  (use-package ansi-color
+    :ensure t
+    :config 
+    (defun colorize-compilation-buffer ()
+      (toggle-read-only)
+      (ansi-color-apply-on-region compilation-filter-start (point))
+      (toggle-read-only))
+    (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+    )
 #+END_SRC
 
 * Restclient
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'restclient)
-  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
+  (use-package restclient
+    :ensure t
+    :mode ("\\.http\\'" . restclient-mode)
+    )
 #+END_SRC
 
 * Projectile
