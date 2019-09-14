@@ -118,6 +118,32 @@ This is one of the things people usually want to change right away. By default, 
     :ensure t
     :config 
     (evil-mode 1)
+
+    (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
+    (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
+    (define-key evil-normal-state-map (kbd "<SPC> s") 'swiper)
+
+    (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
+    (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
+    (define-key evil-normal-state-map (kbd "<SPC> 3") 'winum-select-window-3)
+    (define-key evil-normal-state-map (kbd "<SPC> 4") 'winum-select-window-4)
+    (define-key evil-normal-state-map (kbd "<SPC> 5") 'winum-select-window-5)
+    (define-key evil-normal-state-map (kbd "<SPC> 6") 'winum-select-window-6)
+
+    (define-key evil-normal-state-map (kbd "<SPC> l 0") 'eyebrowse-switch-to-window-config-0)
+    (define-key evil-normal-state-map (kbd "<SPC> l 1") 'eyebrowse-switch-to-window-config-1)
+    (define-key evil-normal-state-map (kbd "<SPC> l 2") 'eyebrowse-switch-to-window-config-2)
+    (define-key evil-normal-state-map (kbd "<SPC> l 3") 'eyebrowse-switch-to-window-config-3)
+    (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
+    (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
+    (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
+    (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
+
+    (define-key evil-normal-state-map (kbd "<SPC> c") 'comment-line)
+    (define-key evil-visual-state-map (kbd "<SPC> c") 'comment-line)
+
+    (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+    (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
     )
 #+END_SRC
 
@@ -145,6 +171,12 @@ This is one of the things people usually want to change right away. By default, 
     :ensure t
     :config 
     (winum-mode)
+    (define-key compilation-mode-map (kbd "<SPC> 1") 'winum-select-window-1)
+    (define-key compilation-mode-map (kbd "<SPC> 2") 'winum-select-window-2)
+    (define-key compilation-mode-map (kbd "<SPC> 3") 'winum-select-window-3)
+    (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
+    (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
+    (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
     )
 #+END_SRC
 
@@ -479,82 +511,102 @@ For evil bindigs
 
 * Projectile
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'projectile)
-  (projectile-mode +1)
-  (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
-  (setq projectile-completion-system 'ivy)
+  (use-package projectile
+    :ensure t
+    :config 
+    (projectile-mode +1)
+    (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
+    (setq projectile-completion-system 'ivy)
+    )
 #+END_SRC
 
 * Docker
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'dockerfile-mode)
-  (add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-mode))
+  (use-package dockerfile-mode
+    :ensure t
+    :mode ("\\Dockerfile\\'" . dockerfile-mode)
+  )
 #+END_SRC
 
+* Which-key
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'docker-compose-mode)
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode)
+  )
+#+END_SRC
+
+* Docker-compose
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package docker-compose-mode
+    :ensure t
+    :mode ("\\Dockerfile\\'" . dockerfile-mode)
+  )
 #+END_SRC
 
 * Org
 #+BEGIN_SRC emacs-lisp :results output silent
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(
-     (python . t)
-     (sh . t)
-     (emacs-lisp . t)
-     ))
-  (setq shell-file-name "bash")
-  (setq org-confirm-babel-evaluate nil)
+
+  (use-package org
+    :ensure t
+    :custom
+    (shell-file-name "bash" "default shell is bash")
+    (org-confirm-babel-evaluate nil "Eval withour confirm")
+    :config
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '(
+       (python . t)
+       (sh . t)
+       (emacs-lisp . t)
+       ))
+  )
+
 #+END_SRC
 
 * Yas
 ** Settings
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'yasnippet)
-  (setq yas-snippet-dirs
-    '(
-       "~/.emacs.d/snippets"                 ;; personal snippets
-   ))
-  (yas-global-mode 1)
+  (use-package yasnippet
+    :ensure t
+    :custom
+    (yas-snippet-dirs  '(
+                         "~/.emacs.d/snippets"                 ;; personal snippets
+                         )
+                       "Set yasnippet dir")
+    :config
+    (yas-global-mode 1)
+  )
 #+END_SRC
 
 * Rust
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'rust-mode)
-  (add-to-list 'auto-mode-alist '("\\rs\\'" . rust-mode))
-  (setq rust-format-on-save t)
+  (use-package rust-mode
+    :ensure t
+    :custom
+    (rust-format-on-save t "Format rust code on save")
+    (company-tooltip-align-annotations t "Company annotations")
+    :mode ("\\rs\\'" . rust-mode)
+    :config
+    (eval-after-load 'racer-mode
+                      '(define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-compile))
+    (eval-after-load 'racer-mode
+                       '(define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
+    (eval-after-load 'racer-mode
+                       '(define-key evil-normal-state-map (kbd "g d") 'racer-find-definition))
+    (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  )
 #+END_SRC
 ** Racer
 #+BEGIN_SRC emacs-lisp :results output silent
-(add-hook 'rust-mode-hook #'racer-mode)
-(add-hook 'racer-mode-hook #'eldoc-mode)
-(add-hook 'rust-mode-hook #'company-mode)
-#+END_SRC
-
-** Keybinding
-*** Compile
-#+BEGIN_SRC emacs-lisp :results output silent
-  (require 'rust-mode)
-
-  (eval-after-load 'rust-mode
-                     '(define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-compile))
-
-  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-  (setq company-tooltip-align-annotations t)
-#+END_SRC
-*** Run
-#+BEGIN_SRC emacs-lisp :results output silent
-  ;; (require 'rust-mode)
-  ;; (eval-after-load 'rust-mode
-  ;;                    '(define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
-
-#+END_SRC
-
-*** Go To def
-#+BEGIN_SRC emacs-lisp :results output silent
-  (eval-after-load 'racer-mode
-                     '(define-key evil-normal-state-map (kbd "g d") 'racer-find-definition))
+  (use-package racer
+    :ensure t
+    :config
+    (add-hook 'rust-mode-hook #'racer-mode)
+    (add-hook 'racer-mode-hook #'eldoc-mode)
+    (add-hook 'rust-mode-hook #'company-mode)
+  )
 #+END_SRC
 
 * Abbrev
@@ -588,45 +640,18 @@ For evil bindigs
   (setq save-abbrevs nil)
 #+END_SRC
 
-* Keybindings
-#+BEGIN_SRC emacs-lisp :results output silent
-  (require 'evil)
-  (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
-  (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
-  (define-key evil-normal-state-map (kbd "<SPC> s") 'swiper)
-
-  (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
-  (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
-  (define-key evil-normal-state-map (kbd "<SPC> 3") 'winum-select-window-3)
-  (define-key evil-normal-state-map (kbd "<SPC> 4") 'winum-select-window-4)
-  (define-key evil-normal-state-map (kbd "<SPC> 5") 'winum-select-window-5)
-  (define-key evil-normal-state-map (kbd "<SPC> 6") 'winum-select-window-6)
-
-  (define-key compilation-mode-map (kbd "<SPC> 1") 'winum-select-window-1)
-  (define-key compilation-mode-map (kbd "<SPC> 2") 'winum-select-window-2)
-  (define-key compilation-mode-map (kbd "<SPC> 3") 'winum-select-window-3)
-  (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
-  (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
-  (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
-
-  (define-key evil-normal-state-map (kbd "<SPC> l 0") 'eyebrowse-switch-to-window-config-0)
-  (define-key evil-normal-state-map (kbd "<SPC> l 1") 'eyebrowse-switch-to-window-config-1)
-  (define-key evil-normal-state-map (kbd "<SPC> l 2") 'eyebrowse-switch-to-window-config-2)
-  (define-key evil-normal-state-map (kbd "<SPC> l 3") 'eyebrowse-switch-to-window-config-3)
-  (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
-  (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
-  (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
-  (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
-
-  (define-key evil-normal-state-map (kbd "<SPC> c") 'comment-line)
-  (define-key evil-visual-state-map (kbd "<SPC> c") 'comment-line)
-
-  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-  (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-#+END_SRC
-
-** Quit minibuffer by press 1 escape 
+* Post Settings
+** Quit minibuffer by one escape
 #+BEGIN_SRC emacs-lisp :results output silent
   (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
 #+END_SRC
+
+* Wakatime
+#+BEGIN_SRC emacs-lisp :results output silent
+;;  (use-package wakatime-mode
+;;    :custom (wakatime-cli-path "/home/dyens/.local/bin/wakatime")
+;;    :config (global-wakatime-mode))
+;; (custom-set-variables `(wakatime-api-key "XXX"))
+#+END_SRC
+
