@@ -553,6 +553,9 @@ For evil bindigs
     :custom
     (shell-file-name "bash" "default shell is bash")
     (org-confirm-babel-evaluate nil "Eval withour confirm")
+    (org-display-inline-images t)
+    (org-redisplay-inline-images t)
+    (org-startup-with-inline-images "inlineimages")
     :config
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -560,6 +563,7 @@ For evil bindigs
        (python . t)
        (sh . t)
        (emacs-lisp . t)
+       (plantuml . t)
        ))
   )
 
@@ -653,5 +657,24 @@ For evil bindigs
 ;;    :custom (wakatime-cli-path "/home/dyens/.local/bin/wakatime")
 ;;    :config (global-wakatime-mode))
 ;; (custom-set-variables `(wakatime-api-key "XXX"))
+#+END_SRC
+
+* Tramp
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package docker-tramp
+    :ensure t
+    :config 
+    )
+#+END_SRC
+
+* Plantuml
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package plantuml-mode
+    :ensure t
+    :mode ("\\plantuml\\'" . plantuml-mode)
+    :custom
+    (plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
+    (org-plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
+    )
 #+END_SRC
 
