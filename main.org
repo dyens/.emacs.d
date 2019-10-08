@@ -24,6 +24,17 @@ Disable startup secreen.
   (setq inhibit-startup-screen t)
 #+END_SRC
 
+Base settings
+#+BEGIN_SRC emacs-lisp :results output silent
+;; Scrolling
+(setq mouse-wheel-scroll-amount '(1)    ; scroll gentle
+      mouse-wheel-progressive-speed nil ; don't accelerate
+      scroll-conservatively 101         ; don't jump to the middle of screen
+      hscroll-margin 1                  ; don't you scroll that early!
+      hscroll-step 1                    ; but scroll just a bit
+      scroll-preserve-screen-position t) ; try to keep cursor in its position
+#+END_SRC
+
 * Installing use-package
 ** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -705,5 +716,4 @@ For evil bindigs
   :after (all-the-icons)
   :init
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
-
 #+END_SRC

@@ -45,7 +45,7 @@
  '(org-startup-with-inline-images "inlineimages")
  '(package-selected-packages
    (quote
-    (all-the-icons-dired all-the-icons challenger-deep-theme lilypond-mode evil-matchit3 evil-matchit engine-mode yapfify winum which-key wakatime-mode use-package treepy smex restclient racer pytest py-isort projectile plantuml-mode lsp-ui gruber-darker-theme flycheck eyebrowse evil-magit elpy dracula-theme doom-themes dockerfile-mode docker-tramp docker-compose-mode dap-mode counsel company-lsp closql)))
+    (company-box all-the-icons-dired all-the-icons challenger-deep-theme lilypond-mode evil-matchit3 evil-matchit engine-mode yapfify winum which-key wakatime-mode use-package treepy smex restclient racer pytest py-isort projectile plantuml-mode lsp-ui gruber-darker-theme flycheck eyebrowse evil-magit elpy dracula-theme doom-themes dockerfile-mode docker-tramp docker-compose-mode dap-mode counsel company-lsp closql)))
  '(plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar" t)
  '(python-shell-interpreter "ipython")
  '(python-shell-interpreter-args "-i --simple-prompt")
