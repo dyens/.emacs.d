@@ -72,18 +72,18 @@ This is one of the things people usually want to change right away. By default, 
 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
-  ; (load-theme 'gruber-darker t)
+  (load-theme 'gruber-darker t)
   ; (load-theme 'dracula t)
 
-  (require 'doom-themes)
+  ; (require 'doom-themes)
 
   ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  ; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+  ;     doom-themes-enable-italic t) ; if nil, italics is universally disabled
 
   ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
   ;; may have their own settings.
-  (load-theme 'doom-molokai t)
+  ; (load-theme 'whiteboard t)
 
   ;; Enable flashing mode-line on errors
   ; (doom-themes-visual-bell-config)
@@ -95,7 +95,7 @@ This is one of the things people usually want to change right away. By default, 
   ; (doom-themes-treemacs-config)
 
   ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config)
+  ; (doom-themes-org-config)
 #+END_SRC
 
 ** Pretty symbols
@@ -204,20 +204,6 @@ For evil bindigs
 #+END_SRC
 
 * Python
-** Flycheck
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
-#+END_SRC
-** Pyvenv
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package pyvenv
-   :ensure t
-   :init
-   (pyvenv-mode 1)
-   (pyvenv-tracking-mode 1))
-#+END_SRC
 ** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
   (defun pipenvenv-old ()
@@ -348,13 +334,18 @@ For evil bindigs
     :custom
     (shell-file-name "bash" "default shell is bash")
     (org-confirm-babel-evaluate nil "Eval withour confirm")
+    (org-display-inline-images t)
+    (org-redisplay-inline-images t)
+    (org-startup-with-inline-images "inlineimages")
+    (org-agenda-files (list "~/org/agenda.org"))
     :config
     (org-babel-do-load-languages
      'org-babel-load-languages
      '(
        (python . t)
-       (sh . t)
+       (shell . t)
        (emacs-lisp . t)
+       (plantuml . t)
        ))
   )
 
@@ -450,3 +441,35 @@ For evil bindigs
 ;; (custom-set-variables `(wakatime-api-key "XXX"))
 #+END_SRC
 
+* Tramp
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package docker-tramp
+    :ensure t
+    :config 
+    )
+#+END_SRC
+
+* Plantuml
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package plantuml-mode
+    :ensure t
+    :mode ("\\plantuml\\'" . plantuml-mode)
+    :custom
+    (plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
+    (org-plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
+    )
+#+END_SRC
+
+* Enginemode
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package engine-mode
+    :ensure t
+    :config
+    (engine-mode t)
+    (defengine github
+    "https://github.com/search?ref=simplesearch&q=%s"
+    :docstring "Search in github"
+    :keybinding "g"
+    )
+    )
+#+END_SRC
