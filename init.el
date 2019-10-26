@@ -24,3 +24,17 @@
 (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
 
 (org-babel-load-file (expand-file-name "main.org" init-dir))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (gruvbox-theme expand-region pytest yasnippet winum which-key use-package restclient racer pyvenv py-isort projectile plantuml-mode origami org-jira lsp-ui flycheck eyebrowse evil-magit engine-mode dockerfile-mode docker-tramp docker-compose-mode counsel company-lsp))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
