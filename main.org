@@ -83,8 +83,10 @@ This is one of the things people usually want to change right away. By default, 
 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
+  (load-theme 'gruvbox-dark-hard t)
   ; (load-theme 'gruber-darker t)
-  (load-theme 'dracula t)
+
+  ; (load-theme 'dracula t)
 
   ; (require 'doom-themes)
 
@@ -214,71 +216,114 @@ For evil bindigs
     )
 #+END_SRC
 
+* Company-mode
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package company
+    :ensure t
+    :config
+    (add-hook 'after-init-hook 'global-company-mode)
+    )
+#+END_SRC
+
 * Python
 ** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
-  (defun pipenvenv-old ()
-    (interactive)
-    (setenv "WORKON_HOME" "/home/dyens/.virtualenvs")
-      )
+  (use-package pyvenv
+    :ensure t
+    :config
+    (defun pipenvenv-old ()
+      (interactive)
+      (setenv "WORKON_HOME" "/home/dyens/.virtualenvs")
+        )
 
-  (defun pipenvenv ()
-    (interactive)
-    (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
+    (defun pipenvenv ()
+      (interactive)
+      (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
+        )
+    (defun poetryenv ()
+      (interactive)
+      (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
       )
-  (defun poetryenv ()
-    (interactive)
-    (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
+    ;; default env
+    (poetryenv)
     )
-  ;; default env
-  (poetryenv)
+#+END_SRC
+
+** Flycheck
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package flycheck
+    :ensure t
+    )
+#+END_SRC
+
+** Py-isrot
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package py-isort
+  :ensure t
+  :config 
+  (eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
+  )
+#+END_SRC
+
+** Pytest
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package pytest
+    :ensure t
+    :config 
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module))
+    (eval-after-load 'python 
+                     '(define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one))
+    )
 #+END_SRC
 
 ** LSP
 #+BEGIN_SRC emacs-lisp :results output silent
-
-(use-package lsp-mode
-  :ensure t
-  :hook ((python-mode . lsp-deferred))
-  :commands (lsp lsp-deferred)
-  :config
-  (setq lsp-auto-guess-root t)
-
-  (use-package lsp-pyls
+  (use-package lsp-mode
+    :ensure t
+    :hook ((python-mode . lsp))
+    :commands lsp
     :config
-    (setq lsp-pyls-plugins-pylint-enabled nil
-	  lsp-pyls-plugins-pycodestyle-enabled nil
-	  lsp-pyls-plugins-mccabe-enabled nil
-          lsp-pyls-configuration-sources ["flake8"]))
-  )
+    (setq lsp-auto-guess-root t)
+    (setq lsp-prefer-flymake nil)
+    (setq lsp-enable-snippet nil)
+    
+    (setq-default lsp-pyls-configuration-sources ["flake8"])
+    (setq lsp-pyls-plugins-pycodestyle-enabled nil
+          lsp-pyls-plugins-pyflakes-enabled t)
+    )
+    
+
+
+  (use-package lsp-ui :ensure t)
+  (use-package company-lsp :commands company-lsp)
+
 
 
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
+(setq python-shell-interpreter "ipython")
+(setq python-shell-interpreter-args "-i --simple-prompt")
 (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition))
 (eval-after-load 'python 
                    '(define-key evil-normal-state-map (kbd "<SPC> =") 'lsp-format-buffer))
+(eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python))
+(eval-after-load 'python 
+                   '(define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region))
+(eval-after-load 'python 
+                   '(define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
-(setq lsp-document-sync-method 'incremental) ;; none, full, incremental, or nil
-(setq lsp-response-timeout 10)
-(setq lsp-prefer-flymake t)
 #+END_SRC
-
-#+BEGIN_SRC emacs-lisp :results output silent
-  (use-package lsp-ui
-    :ensure t
-    :config
-    (add-hook 'python-mode-hook 'flycheck-mode)
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-    )
-
-#+END_SRC
-
-
 
 * Ansi-color
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -357,6 +402,7 @@ For evil bindigs
        (shell . t)
        (emacs-lisp . t)
        (plantuml . t)
+       (sql . t)
        ))
   )
 
@@ -444,14 +490,6 @@ For evil bindigs
   ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
 #+END_SRC
 
-* Wakatime
-#+BEGIN_SRC emacs-lisp :results output silent
-;;  (use-package wakatime-mode
-;;    :custom (wakatime-cli-path "/home/dyens/.local/bin/wakatime")
-;;    :config (global-wakatime-mode))
-;; (custom-set-variables `(wakatime-api-key "XXX"))
-#+END_SRC
-
 * Tramp
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package docker-tramp
@@ -484,25 +522,7 @@ For evil bindigs
     )
     )
 #+END_SRC
-* All the icons
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package all-the-icons
-  :config
-  ;; org-mode ellipsis
-  (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down") " ")))
 
-(use-package all-the-icons-dired
-  :after (all-the-icons)
-  :init
-  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
-#+END_SRC
-* Origami
-#+BEGIN_SRC emacs-lisp :results output silent
-  (use-package origami
-    :ensure t
-    :config
-    )
-#+END_SRC
 * Org-jira
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package org-jira
@@ -512,3 +532,13 @@ For evil bindigs
     :config
     )
 #+END_SRC
+
+* Expand-region
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package expand-region
+    :ensure t
+    :config
+    (define-key evil-normal-state-map (kbd "<SPC> e") 'er/expand-region)
+    )
+#+END_SRC
+

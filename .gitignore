@@ -10,3 +10,4 @@ projectile-bookmarks.eld
 transient/
 main.el
 tramp
+.lsp-session*
