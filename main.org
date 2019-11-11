@@ -8,11 +8,11 @@
 
 * Introduction
 Set credentials
+
 #+BEGIN_SRC emacs-lisp :results output silent
   (setq user-full-name "Alexander Kapustin")
   (setq user-mail-address "dyens@mail.ru")
 #+END_SRC
-
 
 Be sure to just ask for y/n instead of yes/no.
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -83,7 +83,8 @@ This is one of the things people usually want to change right away. By default, 
 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
-  (load-theme 'gruvbox-dark-hard t)
+  ; (load-theme 'adwaita t)
+  ; (load-theme 'gruvbox-dark-hard t)
   ; (load-theme 'gruber-darker t)
 
   ; (load-theme 'dracula t)
@@ -120,7 +121,7 @@ This is one of the things people usually want to change right away. By default, 
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
                     :family "Source Code Pro"
-                    :height 100
+                    :height 130
                     :weight 'normal
                     :width 'normal)
 #+END_SRC
@@ -539,6 +540,14 @@ For evil bindigs
     :ensure t
     :config
     (define-key evil-normal-state-map (kbd "<SPC> e") 'er/expand-region)
+    )
+#+END_SRC
+* Emojify
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package emojify
+    :ensure t
+    :config
+    (add-hook 'after-init-hook #'global-emojify-mode)
     )
 #+END_SRC
 
