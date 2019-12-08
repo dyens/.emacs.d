@@ -11,3 +11,4 @@ transient/
 main.el
 tramp
 .lsp-session*
+emojis/
