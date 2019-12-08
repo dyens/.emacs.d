@@ -35,6 +35,11 @@ Base settings
       scroll-preserve-screen-position t) ; try to keep cursor in its position
 #+END_SRC
 
+Display line numbers
+#+BEGIN_SRC emacs-lisp :results output silent
+(global-display-line-numbers-mode)
+#+END_SRC
+
 * Installing use-package
 ** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -72,6 +77,14 @@ This is one of the things people usually want to change right away. By default, 
         regexp-search-ring))
 #+END_SRC
 
+* Browser
+#+BEGIN_SRC emacs-lisp :results output silent
+; but i not use  chrome)
+;(setq browse-url-browser-function 'browse-url-generic
+;      browse-url-generic-program "google-chrome-stable"
+;      browse-url-at-point "google-chrome-stable"
+;)
+#+END_SRC
 * GUI
 ** Disable bars
 #+BEGIN_SRC emacs-lisp :results output silent
