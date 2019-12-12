@@ -423,7 +423,9 @@ For evil bindigs
     :config 
     (projectile-mode +1)
     (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
+    (define-key evil-normal-state-map (kbd "<SPC> p g") 'projectile-grep)
     (setq projectile-completion-system 'ivy)
+    (setq projectile-use-git-grep t)
     )
 #+END_SRC
 
