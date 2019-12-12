@@ -622,3 +622,39 @@ For evil bindigs
     )
 #+END_SRC
 
+* Daemon
+#+BEGIN_SRC emacs-lisp :results output silent
+  (server-start)
+#+END_SRC
+
+* Mail
+http://www.macs.hw.ac.uk/~rs46/posts/2014-01-13-mu4e-email-client.html
+Install isync / mbsync
+
+#+BEGIN_SRC emacs-lisp :results output silent
+
+(add-to-list 'load-path "/opt/mu/mu4e")
+
+(require 'mu4e)
+
+    (setq mu4e-maildir (expand-file-name "~/email"))
+    (setq mu4e-sent-folder   "/mail/Sent Items")
+    (setq mu4e-drafts-folder "/mail/Drafts")
+    (setq mu4e-trash-folder  "/mail/Trash")
+    ; get mail
+    (setq mu4e-get-mail-command "mbsync -a"
+          mu4e-html2text-command "w3m -T text/html"
+          mu4e-update-interval 120
+          mu4e-headers-auto-update t
+          mu4e-compose-signature-auto-include nil)
+  
+    (setq mu4e-maildir-shortcuts
+          '( ("/mail/INBOX"               . ?i)
+             ("/mail/Sent Items"   . ?s)
+             ("/mail/Trash"       . ?t)
+             ("/mail/Drafts"    . ?d)))
+
+#+END_SRC
+
+
+#TODO https://github.com/emacs-evil/evil-collection
