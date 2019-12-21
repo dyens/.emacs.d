@@ -333,8 +333,9 @@ For evil bindigs
     :config
     (setq lsp-auto-guess-root t)
     (setq lsp-prefer-flymake nil)
+
     (setq lsp-enable-snippet nil)
-    
+
     ; (setq-default lsp-pyls-configuration-sources ["flake8"])
     (setq lsp-pyls-plugins-pycodestyle-enabled nil
           lsp-pyls-plugins-pyflakes-enabled nil
@@ -342,11 +343,20 @@ For evil bindigs
     )
     )
     
+  (use-package lsp-ui 
+     :ensure t
+     :custom
+     (lsp-ui-doc-enable nil)
+  )
 
-
-  (use-package lsp-ui :ensure t)
   (use-package company-lsp 
+     :ensure t
      :commands company-lsp
+
+     :custom
+     (company-lsp-enable-snippet nil)
+     (company-lsp-cache-candidates nil)
+
      :config
      (add-to-list 'company-backends 'company-lsp)
   )
