@@ -94,6 +94,15 @@ This is one of the things people usually want to change right away. By default, 
   (display-time-mode 1)
 #+END_SRC
 
+** Column number mode
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq column-number-mode t) ;; show columns in addition to rows in mode line
+#+END_SRC
+
+** Paren mode
+#+BEGIN_SRC emacs-lisp :results output silent
+  (show-paren-mode)
+#+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
   (split-window-right)
@@ -164,7 +173,7 @@ This is one of the things people usually want to change right away. By default, 
 
     (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
     (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
-    (define-key evil-normal-state-map (kbd "<SPC> s") 'swiper)
+    (define-key evil-normal-state-map (kbd "<SPC> s") 'projectile-grep)
 
     (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
     (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
@@ -458,9 +467,13 @@ For evil bindigs
     :config 
     (projectile-mode +1)
     (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
-    (define-key evil-normal-state-map (kbd "<SPC> p g") 'projectile-grep)
     (setq projectile-completion-system 'ivy)
     (setq projectile-use-git-grep t)
+    (use-package counsel-projectile
+      :ensure t
+      :config
+      (counsel-projectile-mode t)
+      )
     )
 #+END_SRC
 
