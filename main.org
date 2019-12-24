@@ -156,7 +156,7 @@ This is one of the things people usually want to change right away. By default, 
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
                     :family "Source Code Pro"
-                    :height 130
+                    :height 110
                     :weight 'normal
                     :width 'normal)
 #+END_SRC
