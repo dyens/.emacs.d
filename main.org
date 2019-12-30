@@ -173,7 +173,7 @@ This is one of the things people usually want to change right away. By default, 
 
     (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
     (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
-    (define-key evil-normal-state-map (kbd "<SPC> s") 'projectile-grep)
+    (define-key evil-normal-state-map (kbd "<SPC> s") 'projectile-ripgrep)
 
     (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
     (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
@@ -504,7 +504,6 @@ For evil bindigs
 
 * Org
 #+BEGIN_SRC emacs-lisp :results output silent
-
   (use-package org
     :ensure t
     :custom
@@ -514,6 +513,7 @@ For evil bindigs
     (org-redisplay-inline-images t)
     (org-startup-with-inline-images "inlineimages")
     (org-agenda-files (list "~/org/agenda.org"))
+    (org-log-done 'time)
     :config
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -524,6 +524,13 @@ For evil bindigs
        (plantuml . t)
        (sql . t)
        ))
+    (use-package ob-translate
+    :ensure t
+    :config
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((translate . t))))
+      )
   )
 
 #+END_SRC
