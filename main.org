@@ -530,7 +530,6 @@ For evil bindigs
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((translate . t))))
-      )
   )
 
 #+END_SRC
