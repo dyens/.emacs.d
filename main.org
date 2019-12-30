@@ -105,7 +105,6 @@ This is one of the things people usually want to change right away. By default, 
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
-  (split-window-right)
   (scroll-bar-mode 0)
   (fringe-mode 0)
 
