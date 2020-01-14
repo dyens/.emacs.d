@@ -558,11 +558,11 @@ For evil bindigs
     :mode ("\\rs\\'" . rust-mode)
     :config
     (eval-after-load 'racer-mode
-                      '(define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-compile))
+                      (define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-compile))
     (eval-after-load 'racer-mode
-                       '(define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
+                       (define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
     (eval-after-load 'racer-mode
-                       '(define-key evil-normal-state-map (kbd "g d") 'racer-find-definition))
+                       (define-key evil-normal-state-map (kbd "g d") 'racer-find-definition))
     (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
   )
 #+END_SRC
