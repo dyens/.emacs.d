@@ -558,9 +558,13 @@ For evil bindigs
     :mode ("\\rs\\'" . rust-mode)
     :config
     (eval-after-load 'racer-mode
-                      (define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-compile))
+                      (define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-run-clippy))
+    (eval-after-load 'racer-mode
+                      (define-key evil-normal-state-map (kbd "<SPC> m C") 'rust-compile))
     (eval-after-load 'racer-mode
                        (define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
+    (eval-after-load 'racer-mode
+                       (define-key evil-normal-state-map (kbd "<SPC> T a") 'rust-test))
     (eval-after-load 'racer-mode
                        (define-key evil-normal-state-map (kbd "g d") 'racer-find-definition))
     (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
@@ -575,6 +579,53 @@ For evil bindigs
     (add-hook 'racer-mode-hook #'eldoc-mode)
     (add-hook 'rust-mode-hook #'company-mode)
   )
+#+END_SRC
+
+** Test at point
+#+BEGIN_SRC emacs-lisp :results output silent
+  (defun rust-test-buffer ()
+    "Test buffer using `cargo test`"
+    (interactive)
+    (let* ((project-root (projectile-ensure-project (projectile-project-root)))
+          (relative-file (file-relative-name buffer-file-name project-root))
+          (splitted-path (split-string relative-file "/"))
+          (module-path-with-rs (string-join (cdr splitted-path) "::"))
+          (module-path (substring module-path-with-rs 0 (- (length module-path-with-rs) 3))))
+      (compile (format "%s test %s" rust-cargo-bin module-path))
+    )
+  )
+
+  ;; Yes, i know. Its bullshit. It return first fn (name).
+  ;; But for testing in general cases its ok.
+  (defun rust-fname-at-point ()
+    "Test buffer using `cargo test`"
+    (interactive)
+    (save-excursion
+      (re-search-backward
+       "^[ \t]\\{0,4\\}\\(fn\\)[ \t]+\\([a-zA-Z0-9_]+\\)" nil t)
+      (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
+    )
+
+  (defun rust-test-at-point ()
+    "Test buffer using `cargo test`"
+    (interactive)
+    (let* ((project-root (projectile-ensure-project (projectile-project-root)))
+          (relative-file (file-relative-name buffer-file-name project-root))
+          (splitted-path (split-string relative-file "/"))
+          (module-path-with-rs (string-join (cdr splitted-path) "::"))
+          (module-path (substring module-path-with-rs 0 (- (length module-path-with-rs) 3)))
+          (fname (rust-fname-at-point))
+          (test-module-name "tests"))
+      (compile (format "%s test %s::%s::%s" rust-cargo-bin module-path test-module-name fname))
+    )
+  )
+
+  (eval-after-load 'racer-mode
+    (define-key evil-normal-state-map (kbd "<SPC> T b") 'rust-test-buffer))
+
+  (eval-after-load 'racer-mode
+    (define-key evil-normal-state-map (kbd "<SPC> t") 'rust-test-at-point))
+
 #+END_SRC
 
 * Abbrev
