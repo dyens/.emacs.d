@@ -638,7 +638,6 @@ For evil bindigs
 
       ;; net abbrev
       ("afaik" "as far as i know" )
-      ("r" "return" )
       ))
 
   (when (boundp 'python-mode-abbrev-table)
@@ -646,7 +645,6 @@ For evil bindigs
 
   (define-abbrev-table 'python-mode-abbrev-table
     '(
-      ("r" "return")
       ("ass" "assert")
       ("fr" "from")
       ("imp" "import")
