@@ -154,7 +154,7 @@ This is one of the things people usually want to change right away. By default, 
 ** Font
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
-                    :family "Source Code Pro"
+                    :family "Noto Sans Mono"
                     :height 110
                     :weight 'normal
                     :width 'normal)
