@@ -753,3 +753,23 @@ alias em="emacsclient -c -a emacs"
 #+BEGIN_SRC emacs-lisp :results output silent
   (setq ispell-program-name "aspell")
 #+END_SRC
+
+* Dy surround
+#+BEGIN_SRC emacs-lisp :results output silent
+  (defun dy-quote ()
+    "Insert quotes between selected."
+    (interactive)
+    (let*
+        ((start (region-beginning))
+        (end (region-end)))
+      (save-excursion
+        (goto-char end)
+        (insert "'")
+        (goto-char start)
+        (insert "'")
+        (message "%d -%d" start end)
+        )
+      )
+    )
+  (define-key evil-visual-state-map (kbd "<SPC> q") 'dy-quote)
+#+END_SRC
