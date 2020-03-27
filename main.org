@@ -310,9 +310,6 @@ For evil bindigs
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package py-isort
   :ensure t
-  :config 
-  (eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer))
   )
 #+END_SRC
 
@@ -320,15 +317,6 @@ For evil bindigs
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package pytest
     :ensure t
-    :config 
-    (eval-after-load 'python 
-                     '(define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one))
-    (eval-after-load 'python 
-                     '(define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all))
-    (eval-after-load 'python 
-                     '(define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module))
-    (eval-after-load 'python 
-                     '(define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one))
     )
 #+END_SRC
 
@@ -528,9 +516,6 @@ For evil bindigs
      (insert $kwargs)
      )
     )
-
-    (eval-after-load 'python 
-                     '(define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring))
 #+END_SRC
 
 ** LSP
@@ -577,16 +562,6 @@ For evil bindigs
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq python-shell-interpreter "ipython")
 (setq python-shell-interpreter-args "-i --simple-prompt")
-(eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition))
-(eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> =") 'lsp-format-buffer))
-(eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python))
-(eval-after-load 'python 
-                   '(define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region))
-(eval-after-load 'python 
-                   '(define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -637,6 +612,25 @@ For evil bindigs
   ;           :request "launch"
   ;           :name "BDC"))
   ; )
+#+END_SRC
+
+** Bidnings
+#+BEGIN_SRC emacs-lisp :results output silent
+  (add-hook
+   'python-mode-hook
+   (lambda()
+     (define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one)
+     (define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all)
+     (define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module)
+     (define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one)
+     (define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer)
+     (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
+     (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
+     (define-key evil-normal-state-map (kbd "<SPC> =") 'lsp-format-buffer)
+     (define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python)
+     (define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region)
+     (define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer)
+     ))
 #+END_SRC
 
 * Ansi-color
@@ -758,16 +752,6 @@ For evil bindigs
     (company-tooltip-align-annotations t "Company annotations")
     :mode ("\\rs\\'" . rust-mode)
     :config
-    (eval-after-load 'racer-mode
-                      (define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-run-clippy))
-    (eval-after-load 'racer-mode
-                      (define-key evil-normal-state-map (kbd "<SPC> m C") 'rust-compile))
-    (eval-after-load 'racer-mode
-                       (define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run))
-    (eval-after-load 'racer-mode
-                       (define-key evil-normal-state-map (kbd "<SPC> T a") 'rust-test))
-    (eval-after-load 'racer-mode
-                       (define-key evil-normal-state-map (kbd "g d") 'racer-find-definition))
     (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
   )
 #+END_SRC
@@ -820,13 +804,21 @@ For evil bindigs
       (compile (format "%s test %s::%s::%s" rust-cargo-bin module-path test-module-name fname))
     )
   )
+#+END_SRC
 
-  (eval-after-load 'racer-mode
-    (define-key evil-normal-state-map (kbd "<SPC> T b") 'rust-test-buffer))
-
-  (eval-after-load 'racer-mode
-    (define-key evil-normal-state-map (kbd "<SPC> t") 'rust-test-at-point))
-
+** Bidnings
+#+BEGIN_SRC emacs-lisp :results output silent
+  (add-hook
+   'rust-mode-hook
+   (lambda()
+     (define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-run-clippy)
+     (define-key evil-normal-state-map (kbd "<SPC> m C") 'rust-compile)
+     (define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run)
+     (define-key evil-normal-state-map (kbd "<SPC> T a") 'rust-test)
+     (define-key evil-normal-state-map (kbd "g d") 'racer-find-definition)
+     (define-key evil-normal-state-map (kbd "<SPC> T b") 'rust-test-buffer)
+     (define-key evil-normal-state-map (kbd "<SPC> t") 'rust-test-at-point)
+     ))
 #+END_SRC
 
 * Abbrev
