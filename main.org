@@ -969,20 +969,20 @@ alias em="emacsclient -c -a emacs"
 
 * Google-translate
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package google-translate
-    :ensure t
-    :config
-      (use-package google-translate-default-ui
+    (use-package google-translate
       :ensure t
       :config
-       (define-key evil-normal-state-map (kbd "<SPC> l l") 'google-translate-at-point)
-       (define-key evil-normal-state-map (kbd "<SPC> l L") 'google-translate-at-point-reverse)
+  ;      (use-package google-translate-default-ui
+  ;      :ensure t
+  ;      :config
+      (define-key evil-normal-state-map (kbd "<SPC> l l") 'google-translate-at-point)
+      (define-key evil-normal-state-map (kbd "<SPC> l L") 'google-translate-at-point-reverse)
 
-       (define-key evil-normal-state-map (kbd "<SPC> L l") 'google-translate-query-translate)
-       (define-key evil-normal-state-map (kbd "<SPC> L L") 'google-translate-query-translate-reverse)
+      (define-key evil-normal-state-map (kbd "<SPC> L l") 'google-translate-query-translate)
+      (define-key evil-normal-state-map (kbd "<SPC> L L") 'google-translate-query-translate-reverse)
 
-       (setq google-translate-default-source-language "en")
-       (setq google-translate-default-target-language "ru")
+      (setq google-translate-default-source-language "en")
+      (setq google-translate-default-target-language "ru")
+  ;   )
       )
-    )
 #+END_SRC
