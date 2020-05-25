@@ -105,17 +105,26 @@ This is one of the things people usually want to change right away. By default, 
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
-  (scroll-bar-mode 0)
-  (fringe-mode 0)
 
-  (set-face-attribute 'mode-line nil :box nil)
-  (set-face-attribute 'mode-line-inactive nil :box nil)
+  (use-package modus-operandi-theme
+    :ensure t)
 
-  (set-face-attribute 'mode-line nil :background "#c6edf9")
-  (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+  (use-package modus-vivendi-theme
+    :ensure t)
 
-  (set-face-background 'vertical-border "gray")
-  (set-face-foreground 'vertical-border (face-background 'vertical-border))
+  (load-theme 'modus-vivendi t)           ; Dark theme
+
+  ; (scroll-bar-mode 0)
+  ; (fringe-mode 0)
+  ; 
+  ; (set-face-attribute 'mode-line nil :box nil)
+  ; (set-face-attribute 'mode-line-inactive nil :box nil)
+  ; 
+  ; (set-face-attribute 'mode-line nil :background "#c6edf9")
+  ; (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+  ; 
+  ; (set-face-background 'vertical-border "gray")
+  ; (set-face-foreground 'vertical-border (face-background 'vertical-border))
 
   ; (load-theme 'adwaita t)
   ; (load-theme 'gruvbox-dark-hard t)
