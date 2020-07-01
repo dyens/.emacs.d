@@ -1004,3 +1004,17 @@ alias em="emacsclient -c -a emacs"
   ;   )
       )
 #+END_SRC
+* Smerge
+** Bidnings
+#+BEGIN_SRC emacs-lisp :results output silent
+  (add-hook
+   'smerge-mode-hook
+   (lambda()
+     (define-key evil-normal-state-map (kbd "<SPC> j") 'smerge-next)
+     (define-key evil-normal-state-map (kbd "<SPC> k") 'smerge-prev)
+     (define-key evil-normal-state-map (kbd "<SPC> <SPC>") 'smerge-keep-current)
+     (define-key evil-normal-state-map (kbd "<SPC> h") 'smerge-keep-other)
+     (define-key evil-normal-state-map (kbd "<SPC> l") 'smerge-keep-mine)
+     ))
+#+END_SRC
+
