@@ -118,7 +118,7 @@ This is one of the things people usually want to change right away. By default, 
   (use-package modus-vivendi-theme
     :ensure t)
 
-  (load-theme 'modus-vivendi t)           ; Dark theme
+  (load-theme 'modus-operandi t)           ; Light theme
 
   ; (scroll-bar-mode 0)
   ; (fringe-mode 0)
