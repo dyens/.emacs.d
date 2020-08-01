@@ -45,7 +45,6 @@ Display line numbers
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
 #+END_SRC
 
-
 * Installing use-package
 ** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
