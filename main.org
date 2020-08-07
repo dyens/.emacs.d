@@ -227,6 +227,12 @@ This is one of the things people usually want to change right away. By default, 
     )
 #+END_SRC
 
+* Super-word-mode
+For backward word and forwardword
+#+BEGIN_SRC emacs-lisp :results output silent
+  (superword-mode t)
+#+END_SRC
+
 * Counsel
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package counsel
@@ -489,55 +495,35 @@ For evil bindigs
     )
 
 
-  (defun dy-python-vars-to-dict ($start $end)
-    "Mv variables to dict."
+  (defun dy-python-kwargs-to-dict ($start $end)
+    "Convert kwargs arguments to dict.
+     a=1, b=2 -> 'a': 1, 'b': 2
+    "
     (interactive "r")
-    (let (
-          $region-string
-          $variables
-          $var-to-kwarg
-          $kwargs
-          )
-     (setq $region-string (buffer-substring $start $end))
-     (setq $variables (split-string $region-string "[[:blank:]]*,[[:blank:]]*" t))
-     (setq $variables (mapcar 'string-trim $variables))
-     (setq $var-to-kwarg (lambda (var)
-                          (concat
-                           "'" var "': " var
-                           )))
-     (setq $kwargs (mapconcat $var-to-kwarg $variables ", "))
+    (save-restriction
+         (narrow-to-region $start $end)
+         (goto-char (point-min))
+         (replace-regexp "\\([_0-9a-zA-Z]+\\)\s*=\s*" "'\\1': ")
+         ))
 
-     (delete-region $start $end)
-     (insert "{")
-     (insert $kwargs)
-     (insert "}")
-     )
-    )
-
-
-
-  (defun dy-python-vars-to-kwargs ($start $end)
-    "Mv variables to kwargs."
+  (defun dy-python-dict-to-kwargs ($start $end)
+    "Convert dict arguments to kwargs.
+     'a': 1, 'b': 2 -> a=1, b=2
+    "
     (interactive "r")
-    (let (
-          $region-string
-          $variables
-          $var-to-kwarg
-          $kwargs
-          )
-     (setq $region-string (buffer-substring $start $end))
-     (setq $variables (split-string $region-string "[[:blank:]]*,[[:blank:]]*" t))
-     (setq $variables (mapcar 'string-trim $variables))
-     (setq $var-to-kwarg (lambda (var)
-                          (concat
-                           var "=" var
-                           )))
-     (setq $kwargs (mapconcat $var-to-kwarg $variables ", "))
+    (save-restriction
+         (narrow-to-region $start $end)
+         (goto-char (point-min))
+         (replace-regexp "'\\([_0-9a-zA-Z]+\\)'\s*:\s*" "\\1=")
+         ))
 
-     (delete-region $start $end)
-     (insert $kwargs)
-     )
-    )
+
+  (defun dy-python-dict-kwargs-toogle ($start $end)
+    "Convert toogle dict kwargs args."
+    (interactive "r")
+    (if (seq-contains (buffer-substring $start $end) ?=)
+        (dy-python-kwargs-to-dict $start $end)
+      (dy-python-dict-to-kwargs $start $end)))
 #+END_SRC
 
 ** LSP
@@ -649,6 +635,7 @@ For evil bindigs
      (define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one)
      (define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer)
      (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
+     (define-key evil-visual-state-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
      (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
      (define-key evil-normal-state-map (kbd "<SPC> =") 'lsp-format-buffer)
      (define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python)
