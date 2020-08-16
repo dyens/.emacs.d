@@ -96,12 +96,12 @@ This is one of the things people usually want to change right away. By default, 
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (display-time-mode 1)
+  (display-time-mode -1)
 #+END_SRC
 
 ** Column number mode
 #+BEGIN_SRC emacs-lisp :results output silent
-(setq column-number-mode t) ;; show columns in addition to rows in mode line
+;(setq column-number-mode t) ;; show columns in addition to rows in mode line
 #+END_SRC
 
 ** Paren mode
@@ -111,53 +111,61 @@ This is one of the things people usually want to change right away. By default, 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
 
-  (use-package modus-operandi-theme
-    :ensure t)
+;;  (use-package apropospriate-theme
+;;    :ensure t
+;;    :config 
+;;    (load-theme 'apropospriate-dark t)
+;;    ;; or
+;;    ;; (load-theme 'apropospriate-light t)
+;;  )
 
-  (use-package modus-vivendi-theme
-    :ensure t)
+  ;;  (use-package modus-operandi-theme
+  ;;    :ensure t)
+  ;;
+  ;;  (use-package modus-vivendi-theme
+  ;;    :ensure t)
+  ;;
+  ;;  (load-theme 'modus-operandi t)           ; Light theme
 
-  (load-theme 'modus-operandi t)           ; Light theme
+     (scroll-bar-mode 0)
+     (fringe-mode 0)
+     
+     (set-face-attribute 'mode-line nil :box nil)
+     (set-face-attribute 'mode-line-inactive nil :box nil)
+     
+     (set-face-attribute 'mode-line nil :background "#c6edf9")
+     (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+     
+     (set-face-background 'vertical-border "gray")
+     (set-face-foreground 'vertical-border (face-background 'vertical-border))
 
-  ; (scroll-bar-mode 0)
-  ; (fringe-mode 0)
-  ; 
-  ; (set-face-attribute 'mode-line nil :box nil)
-  ; (set-face-attribute 'mode-line-inactive nil :box nil)
-  ; 
-  ; (set-face-attribute 'mode-line nil :background "#c6edf9")
-  ; (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
-  ; 
-  ; (set-face-background 'vertical-border "gray")
-  ; (set-face-foreground 'vertical-border (face-background 'vertical-border))
+    ; (load-theme 'adwaita t)
+    ; (load-theme 'gruvbox-dark-hard t)
+    ; (load-theme 'gruber-darker t)
 
-  ; (load-theme 'adwaita t)
-  ; (load-theme 'gruvbox-dark-hard t)
-  ; (load-theme 'gruber-darker t)
+    ; (load-theme 'dracula t)
 
-  ; (load-theme 'dracula t)
+    ; (require 'doom-themes)
 
-  ; (require 'doom-themes)
+    ;; Global settings (defaults)
+    ; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+    ;     doom-themes-enable-italic t) ; if nil, italics is universally disabled
 
-  ;; Global settings (defaults)
-  ; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-  ;     doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+    ;; may have their own settings.
+    ; (load-theme 'whiteboard t)
 
-  ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
-  ;; may have their own settings.
-  ; (load-theme 'whiteboard t)
+    ;; Enable flashing mode-line on errors
+    ; (doom-themes-visual-bell-config)
 
-  ;; Enable flashing mode-line on errors
-  ; (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    ; (doom-themes-neotree-config)
+    ;; or for treemacs users
+    ; (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+    ; (doom-themes-treemacs-config)
 
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  ; (doom-themes-neotree-config)
-  ;; or for treemacs users
-  ; (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
-  ; (doom-themes-treemacs-config)
-
-  ;; Corrects (and improves) org-mode's native fontification.
-  ; (doom-themes-org-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    ; (doom-themes-org-config)
 #+END_SRC
 
 ** Pretty symbols
@@ -296,7 +304,7 @@ For evil bindigs
     (company-begin-commands '(self-insert-command))
     (company-idle-delay 0.0)
     (company-minimum-prefix-length 1)
-    (company-show-numbers t)
+    (company-show-numbers nil)
     (company-tooltip-align-annotations 't)
     :config
     (add-hook 'after-init-hook 'global-company-mode)
@@ -729,12 +737,12 @@ For evil bindigs
        (plantuml . t)
        (sql . t)
        ))
-    (use-package ob-translate
-    :ensure t
-    :config
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((translate . t))))
+    ; (use-package ob-translate
+    ; :ensure t
+    ; :config
+    ; (org-babel-do-load-languages
+    ;  'org-babel-load-languages
+    ;  '((translate . t))))
   )
 
 #+END_SRC
@@ -907,11 +915,11 @@ For evil bindigs
 #+END_SRC
 * Emojify
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package emojify
-    :ensure t
-    :config
-    (add-hook 'after-init-hook #'global-emojify-mode)
-    )
+;  (use-package emojify
+;    :ensure t
+;    :config
+;    (add-hook 'after-init-hook #'global-emojify-mode)
+;    )
 #+END_SRC
 
 * Daemon
@@ -990,22 +998,22 @@ alias em="emacsclient -c -a emacs"
 
 * Google-translate
 #+BEGIN_SRC emacs-lisp :results output silent
-    (use-package google-translate
-      :ensure t
-      :config
-  ;      (use-package google-translate-default-ui
-  ;      :ensure t
-  ;      :config
-      (define-key evil-normal-state-map (kbd "<SPC> l l") 'google-translate-at-point)
-      (define-key evil-normal-state-map (kbd "<SPC> l L") 'google-translate-at-point-reverse)
-
-      (define-key evil-normal-state-map (kbd "<SPC> L l") 'google-translate-query-translate)
-      (define-key evil-normal-state-map (kbd "<SPC> L L") 'google-translate-query-translate-reverse)
-
-      (setq google-translate-default-source-language "en")
-      (setq google-translate-default-target-language "ru")
-  ;   )
-      )
+;    (use-package google-translate
+;      :ensure t
+;      :config
+;  ;      (use-package google-translate-default-ui
+;  ;      :ensure t
+;  ;      :config
+;      (define-key evil-normal-state-map (kbd "<SPC> l l") 'google-translate-at-point)
+;      (define-key evil-normal-state-map (kbd "<SPC> l L") 'google-translate-at-point-reverse)
+;
+;      (define-key evil-normal-state-map (kbd "<SPC> L l") 'google-translate-query-translate)
+;      (define-key evil-normal-state-map (kbd "<SPC> L L") 'google-translate-query-translate-reverse)
+;
+;      (setq google-translate-default-source-language "en")
+;      (setq google-translate-default-target-language "ru")
+;  ;   )
+;      )
 #+END_SRC
 * Smerge
 ** Bidnings
