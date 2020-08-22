@@ -1036,3 +1036,17 @@ alias em="emacsclient -c -a emacs"
      ))
 #+END_SRC
 
+* Tramp
+#+BEGIN_SRC emacs-lisp :results output silent
+    (use-package zoom
+      :ensure t
+      :custom
+      (zoom-mode t)
+      :config
+      (defun size-callback ()
+      (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
+              (t                            '(0.5 . 0.5))))
+
+      (custom-set-variables '(zoom-size 'size-callback)))
+#+END_SRC
+
