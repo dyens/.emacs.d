@@ -7,8 +7,15 @@
 #+CATEGORIES: editing
 
 * Introduction
-Set credentials
 
+Deffered compilation
+https://masteringemacs.org/article/speed-up-emacs-libjansson-native-elisp-compilation
+
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq comp-deferred-compilation t)
+#+END_SRC
+
+Set credentials
 #+BEGIN_SRC emacs-lisp :results output silent
   (setq user-full-name "Alexander Kapustin")
   (setq user-mail-address "dyens@mail.ru")
