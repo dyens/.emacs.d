@@ -225,6 +225,9 @@ This is one of the things people usually want to change right away. By default, 
 
     (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
     (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+
+    (define-key evil-normal-state-map (kbd "<SPC> z") 'zoom)
+    (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
     )
 
   (use-package evil-collection
@@ -366,6 +369,23 @@ For evil bindigs
 
 ** DyPython
 #+BEGIN_SRC emacs-lisp :results output silent
+  (require 'flycheck)
+
+  ;; TODO if noqa exist - extend it
+  (defun dy-python-add-noqa()
+    "Add noqa for error string"
+    (interactive)
+    (save-excursion
+      (let* ((errors (flycheck-overlay-errors-at (point)))
+             (error-codes (seq-uniq (seq-map 'flycheck-error-id errors)))
+             (error-string (mapconcat 'identity error-codes ","))
+             (noqa-mes (format "  # NOQA:%s" error-string)))
+        (move-end-of-line nil)
+        (insert noqa-mes)
+        )))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :results output silent
   (require 'python)
   ; for using string-trim
   (require 'subr-x)
@@ -462,8 +482,8 @@ For evil bindigs
             )
           (python-nav-beginning-of-defun 1)
           (setq $point-declaration-line-start (point))
-          (re-search-forward "def")
-          (setq $point-declaration-start (- (point) 3))
+          (re-search-forward "async def\\|def")
+          (setq $point-declaration-start (match-beginning 0))
           (re-search-forward "[a-z]")
           (setq $point-function-start (point))
 
@@ -552,7 +572,7 @@ For evil bindigs
     (setq lsp-auto-guess-root t)
     (setq lsp-prefer-flymake nil)
 
-    (setq lsp-enable-snippet nil)
+    (setq lsp-enable-snippet t)
     (setq lsp-idle-delay 0.500)
 
     ; (setq-default lsp-pyls-configuration-sources ["flake8"])
@@ -572,24 +592,17 @@ For evil bindigs
   ;; if you are ivy user
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 
-  (use-package company-lsp 
-     :ensure t
-     :commands company-lsp
+  ; (use-package company-lsp 
+  ;    :ensure t
+  ;    :commands company-lsp
 
-     :custom
-     (company-lsp-enable-snippet nil)
-     (company-lsp-cache-candidates nil)
+  ;    :custom
+  ;    (company-lsp-enable-snippet t)
+  ;    (company-lsp-cache-candidates nil)
 
-     :config
-     (add-to-list 'company-backends 'company-lsp)
-  )
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp :results output silent
-  (use-package lsp-ivy
-     :ensure t
-  )
+  ;    :config
+  ;    (add-to-list 'company-backends 'company-lsp)
+  ; )
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -659,11 +672,14 @@ For evil bindigs
      (define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer)
      (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
      (define-key evil-visual-state-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
+     (define-key evil-normal-state-map (kbd "<SPC> m i") 'dy-python-add-noqa)
+     (define-key evil-normal-state-map (kbd "<SPC> m f") 'flycheck-list-errors)
      (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
      (define-key evil-normal-state-map (kbd "<SPC> =") 'lsp-format-buffer)
      (define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python)
      (define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region)
      (define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer)
+     (define-key evil-normal-state-map (kbd "<SPC> I") 'lsp-ui-imenu)
      ))
 #+END_SRC
 
@@ -1010,7 +1026,15 @@ alias em="emacsclient -c -a emacs"
 
   (define-key evil-visual-state-map (kbd "<SPC> q") 'dy-insert-pair-completion)
 #+END_SRC
-
+* Dy capitalize first char
+#+BEGIN_SRC emacs-lisp :results output silent
+(defun dy-capitalize-first-char (&optional string)
+  "Capitalize only the first character of the input STRING."
+  (when (and string (> (length string) 0))
+    (let ((first-char (substring string nil 1))
+          (rest-str   (substring string 1)))
+      (concat (capitalize first-char) rest-str))))
+#+END_SRC
 * Google-translate
 #+BEGIN_SRC emacs-lisp :results output silent
 ;    (use-package google-translate

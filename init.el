@@ -15,7 +15,7 @@
                    gc-cons-percentage 0.1)) t)
 
 
-(package-initialize) 
+;(package-initialize) 
 
 (require 'org)
 (require 'ob-tangle)
@@ -30,8 +30,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (gruvbox-theme expand-region pytest yasnippet winum which-key use-package restclient racer pyvenv py-isort projectile plantuml-mode origami org-jira lsp-ui flycheck eyebrowse evil-magit engine-mode dockerfile-mode docker-tramp docker-compose-mode counsel company-lsp))))
+   '(lsp-ivy ivy-lsp zoom apropospriate-theme magit-todos gruvbox-theme expand-region pytest yasnippet winum which-key use-package restclient racer pyvenv py-isort projectile plantuml-mode origami org-jira lsp-ui flycheck eyebrowse evil-magit engine-mode dockerfile-mode docker-tramp docker-compose-mode counsel company-lsp))
+ '(safe-local-variable-values '((magit-todos-exclude-globs "*.html" "*.js")))
+ '(zoom-size 'size-callback))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
