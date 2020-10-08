@@ -406,6 +406,7 @@ For evil bindigs
     "Split a python argument string into ((name, type, default)..) tuples"
     (let* (
            (args (split-string arg-string "[[:blank:]]*,[[:blank:]]*" t))
+           (args (seq-filter '(lambda (x) (not (string-blank-p x))) args))
            (args (mapcar 'string-trim args))
            (arg-values (mapcar 'dy-python-arg-params args))
            )
@@ -459,77 +460,88 @@ For evil bindigs
             '(lambda () (set (make-local-variable 'yas-indent-line) 'fixed)))
 
 
-  (defun dy-python-create-docstring ()
-    "return docstring format for the python return type"
-    (interactive)
-    (save-excursion
-      (let (
-            $point-declaration-line-start
-            $point-declaration-start
-            $point-function-start
-            $point-function-end
-            $point-args-start
-            $point-args-end
+(defun dy--python-add-docstring-to-function ($fname $fargs-string $docstring-shift)
+  "Add docstring to function."
+  (let ($fargs $docstring $docstring-header $docstring-args)
+    (setq $docstring-header
+	  (dy-capitalize-first-char (replace-regexp-in-string (regexp-quote "_") " " $fname)))
 
-            $identation
-            $fname-string
-            $args-string
-            $return-string
-            $args-docstring
-            $return-docstring
-            $docstring
-            $ident
-            )
-          (python-nav-beginning-of-defun 1)
-          (setq $point-declaration-line-start (point))
-          (re-search-forward "async def\\|def")
-          (setq $point-declaration-start (match-beginning 0))
-          (re-search-forward "[a-z]")
-          (setq $point-function-start (point))
-
-          (re-search-forward "(")
-          (setq $point-args-start (point))
-          (re-search-forward ")")
-          (setq $point-args-end (point))
-          (re-search-forward ":")
-          (setq $point-function-end (point))
-
-          (setq $identation (+ 4 (- $point-declaration-start $point-declaration-line-start)))
-          (setq $args-string (buffer-substring $point-args-start (- $point-args-end 1)))
-          (setq $return-string (buffer-substring $point-args-end (- $point-function-end 1)))
-          (setq $fname-string (buffer-substring (- $point-function-start 1) (- $point-args-start 1)))
-
-          (setq $args-docstring (dy-python-args-to-docstring $args-string $identation))
-          (setq $return-docstring (dy-python-return-to-docstring $return-string $identation))
-
-          (setq $ident (make-string $identation ?\s))
-
-          (setq $docstring
-                (concat
-                  "\n"
-                  $ident 
-                  "\"\"\""
-                  $fname-string
-                  ".\n"
-                (if (not (string= $args-docstring "nil"))
-                    (concat "\n"
-                          $args-docstring
-                          "\n")
-                  "")
-                (if $return-docstring
-                    (concat "\n"
-                          $return-docstring
-                          "\n")
-                  "")
-                $ident 
-                "\"\"\""))
-
-          (goto-char $point-function-end)
-          (insert $docstring)
+    (setq $fargs (dy-python-split-args $fargs-string))
+    (search-forward  ":")
+    (insert "\n")
+    (insert $docstring-shift)
+    (setq $docstring-header (format "\"\"\"%s." $docstring-header))
+    (insert $docstring-header)
+    (setq $fargs (seq-filter '(lambda (arg) (not (string= "self" (car arg)))) $fargs))
+    (setq $docstring-args
+      (mapcar '
+       (lambda (arg)
+         (format ":param %s: %s"
+    	     (car arg)
+    	     (replace-regexp-in-string (regexp-quote "_") " " (car arg))))
+       $fargs))
+    (when $docstring-args
+      (insert "\n")
+      (dolist (arg $docstring-args)
+    (insert "\n")
+    (insert $docstring-shift)
+    (insert arg))
+      (insert "\n")
+      (insert $docstring-shift)
       )
-     )
-    )
+    (insert "\"\"\"")
+  ))
 
+
+(defun dy--python-add-docstring-to-class ($classname $docstring-shift)
+  "Add docstring to class."
+  (let ($classdocstring (case-fold-search nil))
+    (message "%s" $classname)
+    (setq $classdocstring (replace-regexp-in-string "\\([A-Z]\\)" " \\1" $classname))
+    (setq $classdocstring (string-trim $classdocstring))
+    (setq $classdocstring (downcase $classdocstring))
+    (setq $classdocstring (dy-capitalize-first-char $classdocstring))
+    (search-forward  ":")
+    (insert "\n")
+    (insert $docstring-shift)
+    (insert "\"\"\"")
+    (insert $classdocstring)
+    (insert ".\"\"\"")
+    ))
+
+(defun dy-python-create-docstring ()
+  "return docstring format for the python return type"
+  (interactive)
+    (python-nav-beginning-of-defun 1)
+    ; jump to first now-whitespace symbol
+    (back-to-indentation)
+    (let* (
+	  ($block-type (thing-at-point 'word))
+	  ($block-start (current-column))
+	  ($docstring-shift (make-string (+ 4 $block-start) 32))
+	  )
+      (cond
+       ((string= $block-type "class")
+	(let ($classname)
+	  (re-search-forward
+	   "[ \t]*class[ \t]*\\([a-zA-Z0-9_]+\\)" nil t)
+	    (setq $classname (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
+	    (dy--python-add-docstring-to-class $classname $docstring-shift)
+	))
+       ((string= $block-type "async")
+	(let ($fname $fargs-string $fargs $docstring $docstring-header $docstring-args)
+	  (re-search-forward
+	   "[ \t]*async[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n]*\\)\)" nil t)
+	    (setq $fname (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
+	    (setq $fargs-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
+	    (dy--python-add-docstring-to-function $fname $fargs-string $docstring-shift)))
+       ((string= $block-type "def")
+	(let ($fname $fargs-string $fargs $docstring $docstring-header $docstring-args)
+	  (re-search-forward
+	   "[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n]*\\)\)" nil t)
+	    (setq $fname (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
+	    (setq $fargs-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
+	    (dy--python-add-docstring-to-function $fname $fargs-string $docstring-shift))))))
 
   (defun dy-python-kwargs-to-dict ($start $end)
     "Convert kwargs arguments to dict.
