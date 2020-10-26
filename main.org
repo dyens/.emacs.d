@@ -364,6 +364,8 @@ For evil bindigs
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package pytest
     :ensure t
+    :config
+    (custom-set-variables '(pytest-project-root-files '(".projectile" "setup.py" ".hg" ".git")))
     )
 #+END_SRC
 
@@ -584,7 +586,7 @@ For evil bindigs
     (setq lsp-auto-guess-root t)
     (setq lsp-prefer-flymake nil)
 
-    (setq lsp-enable-snippet t)
+    (setq lsp-enable-snippet nil)
     (setq lsp-idle-delay 0.500)
 
     ; (setq-default lsp-pyls-configuration-sources ["flake8"])
@@ -786,6 +788,10 @@ For evil bindigs
     ; (org-babel-do-load-languages
     ;  'org-babel-load-languages
     ;  '((translate . t))))
+
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
   )
 
 #+END_SRC
@@ -825,6 +831,7 @@ For evil bindigs
     (add-hook 'rust-mode-hook #'racer-mode)
     (add-hook 'racer-mode-hook #'eldoc-mode)
     (add-hook 'rust-mode-hook #'company-mode)
+    (setq racer-rust-src-path "/home/dyens/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib")
   )
 #+END_SRC
 
