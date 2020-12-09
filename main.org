@@ -118,6 +118,18 @@ This is one of the things people usually want to change right away. By default, 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
 
+
+
+;;(use-package color-theme-sanityinc-tomorrow
+;;  :ensure t
+;;  :config
+;;  (color-theme-sanityinc-tomorrow-night))
+
+(use-package gruvbox-theme
+  :ensure t
+  :config
+  (load-theme 'gruvbox t))
+
 ;;  (use-package apropospriate-theme
 ;;    :ensure t
 ;;    :config 
@@ -134,17 +146,20 @@ This is one of the things people usually want to change right away. By default, 
   ;;
   ;;  (load-theme 'modus-operandi t)           ; Light theme
 
-     (scroll-bar-mode 0)
-     (fringe-mode 0)
-     
-     (set-face-attribute 'mode-line nil :box nil)
-     (set-face-attribute 'mode-line-inactive nil :box nil)
-     
-     (set-face-attribute 'mode-line nil :background "#c6edf9")
-     (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
-     
-     (set-face-background 'vertical-border "gray")
-     (set-face-foreground 'vertical-border (face-background 'vertical-border))
+  ;; My default theme
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;   (scroll-bar-mode 0)
+  ;   (fringe-mode 0)
+  ;   
+  ;   (set-face-attribute 'mode-line nil :box nil)
+  ;   (set-face-attribute 'mode-line-inactive nil :box nil)
+  ;   
+  ;   (set-face-attribute 'mode-line nil :background "#c6edf9")
+  ;   (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+  ;   
+  ;   (set-face-background 'vertical-border "gray")
+  ;   (set-face-foreground 'vertical-border (face-background 'vertical-border))
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; (load-theme 'adwaita t)
     ; (load-theme 'gruvbox-dark-hard t)
@@ -625,53 +640,9 @@ For evil bindigs
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
-  ; (use-package dap-mode
-  ;   :ensure t
-  ;   :config
-  ;   (require 'dap-python)
-  ; 
-  ;   (defun dap-python--populate-start-file-args (conf)
-  ;     "Populate CONF with the required arguments."
-  ;     (let* ((host "localhost")
-  ;            (debug-port (dap--find-available-port host dap-python-default-debug-port))
-  ;            (python-executable (executable-find dap-python-executable))
-  ;            (python-args (or (plist-get conf :args) ""))
-  ;            (program (or (plist-get conf :target-module)
-  ;                         (plist-get conf :program)
-  ;                         (buffer-file-name)))
-  ;            (module (plist-get conf :module)))
-  ; 
-  ;       (dap--put-if-absent conf :program-to-start
-  ;                           (format "%s%s -m ptvsd --wait --host %s --port %s %s %s %s"
-  ;                                   (or dap-python-terminal "")
-  ;                                   (shell-quote-argument python-executable)
-  ;                                   host
-  ;                                   debug-port
-  ;                                   (if module (concat "-m " (shell-quote-argument module)) "")
-  ;                                   (shell-quote-argument program)
-  ;                                   python-args))
-  ;       (plist-put conf :program program)
-  ;       (plist-put conf :debugServer debug-port)
-  ;       (plist-put conf :port debug-port)
-  ;       (plist-put conf :wait-for-port t)
-  ;       (plist-put conf :hostName host)
-  ;       (plist-put conf :host host)
-  ;       conf))
-  ; 
-  ;   (dap-register-debug-template "BDC"
-  ;     (list :type "python"
-  ;           :args "-i"
-  ;           :cwd nil
-  ;           :env '(
-  ;                  ("DEBUG" . "1")
-  ;                  ("PYTHONPATH" . "/home/dyens/.pyenv/versions/3.7.5/lib/python37.zip:/home/dyens/.pyenv/versions/3.7.5/lib/python3.7:/home/dyens/.pyenv/versions/3.7.5/lib/python3.7/lib-dynload:/home/dyens/.cache/pypoetry/virtualenvs/bdc-vrjcpwNE-py3.7/lib/python3.7/site-packages")
-  ;                 )
-  ; 
-  ; 
-  ;           :target-module (expand-file-name "~/dev/bdc/main.py")
-  ;           :request "launch"
-  ;           :name "BDC"))
-  ; )
+  (use-package dap-mode
+    :ensure t
+  )
 #+END_SRC
 
 ** Bidnings
