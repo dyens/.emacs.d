@@ -338,6 +338,15 @@ For evil bindigs
 #+END_SRC
 
 * Python
+** Python mode
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package python-mode
+:custom
+;; indent in in def  args
+(python-indent-def-block-scale 1)
+)
+#+END_SRC
+
 ** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package pyvenv
