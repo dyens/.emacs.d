@@ -198,9 +198,9 @@ This is one of the things people usually want to change right away. By default, 
 ** Font
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
-                    :family "Noto Sans Mono"
-                    :height 110
-                    :weight 'normal
+                    :family "Terminus"
+                    :height 140
+                    :weight 'bold
                     :width 'normal)
 #+END_SRC
 
