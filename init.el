@@ -30,8 +30,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(lsp-ivy ivy-lsp zoom apropospriate-theme magit-todos gruvbox-theme expand-region pytest yasnippet winum which-key use-package restclient racer pyvenv py-isort projectile plantuml-mode origami org-jira lsp-ui flycheck eyebrowse evil-magit engine-mode dockerfile-mode docker-tramp docker-compose-mode counsel company-lsp))
- '(safe-local-variable-values '((magit-todos-exclude-globs "*.html" "*.js")))
+   '(gruvbox-theme zoom zenburn-theme yasnippet winum which-key use-package restclient racer pyvenv pytest py-isort plantuml-mode magit-todos lsp-ui lsp-ivy forge flycheck eyebrowse expand-region evil-magit evil-collection dockerfile-mode docker-tramp docker-compose-mode dap-mode counsel-projectile company-lsp color-theme-sanityinc-tomorrow apropospriate-theme))
+ '(pytest-project-root-files '(".projectile" "setup.py" ".hg" ".git"))
  '(zoom-size 'size-callback))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
