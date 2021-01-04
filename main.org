@@ -615,6 +615,8 @@ For evil bindigs
           lsp-pyls-plugins-pyflakes-enabled nil
           lsp-pyls-plugins-flake8-enabled t
     )
+
+    (setq lsp-rust-server 'rust-analyzer)
     )
     
   (use-package lsp-ui 
@@ -646,9 +648,9 @@ For evil bindigs
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package dap-mode
-    :ensure t
-  )
+;;  (use-package dap-mode
+;;    :ensure t
+;;  )
 #+END_SRC
 
 ** Bidnings
@@ -790,26 +792,27 @@ For evil bindigs
 
 * Rust
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package rust-mode
-    :ensure t
-    :custom
-    (rust-format-on-save t "Format rust code on save")
-    (company-tooltip-align-annotations t "Company annotations")
-    :mode ("\\rs\\'" . rust-mode)
-    :config
-    (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-  )
+ ;; (use-package rust-mode
+ ;;   :ensure t
+ ;;   :custom
+ ;;   (rust-format-on-save t "Format rust code on save")
+ ;;   (company-tooltip-align-annotations t "Company annotations")
+ ;;   :mode ("\\rs\\'" . rust-mode)
+ ;;   :config
+ ;;   (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+ ;; )
 #+END_SRC
+
 ** Racer
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package racer
-    :ensure t
-    :config
-    (add-hook 'rust-mode-hook #'racer-mode)
-    (add-hook 'racer-mode-hook #'eldoc-mode)
-    (add-hook 'rust-mode-hook #'company-mode)
-    (setq racer-rust-src-path "/home/dyens/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib")
-  )
+;;  (use-package racer
+;;    :ensure t
+;;    :config
+;;    (add-hook 'rust-mode-hook #'racer-mode)
+;;    (add-hook 'racer-mode-hook #'eldoc-mode)
+;;    (add-hook 'rust-mode-hook #'company-mode)
+;;    (setq racer-rust-src-path "/home/dyens/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib")
+;;  )
 #+END_SRC
 
 ** Test at point
