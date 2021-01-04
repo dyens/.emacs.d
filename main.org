@@ -1101,3 +1101,12 @@ alias em="emacsclient -c -a emacs"
       (custom-set-variables '(zoom-size 'size-callback)))
 #+END_SRC
 
+* Lilypond
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq load-path (append (list (expand-file-name "lilypond" init-dir)) load-path))
+  (autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
+  (add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
+  (add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
+  (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
+#+END_SRC
+
