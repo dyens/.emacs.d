@@ -198,9 +198,9 @@ This is one of the things people usually want to change right away. By default, 
 ** Font
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
-                    :family "Terminus"
-                    :height 140
-                    :weight 'bold
+                    ;;:family "Terminus"
+                    :height 130
+                    ;;:weight 'bold
                     :width 'normal)
 #+END_SRC
 
@@ -1010,6 +1010,17 @@ alias em="emacsclient -c -a emacs"
   (setq mu4e-update-interval (* 10 60))
   (setq mu4e-get-mail-command "mbsync -a")
   (setq mu4e-maildir "~/mailbox")
+
+  (setq message-send-mail-function 'smtpmail-send-it
+        starttls-use-gnutls t
+        smtpmail-starttls-credentials
+        '(("smtp.gmail.com" 587 nil nil))
+        smtpmail-auth-credentials
+        (expand-file-name "~/.authinfo.gpg")
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        smtpmail-debug-info t)
 
   (setq mu4e-contexts
         (list
