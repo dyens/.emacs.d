@@ -125,10 +125,11 @@ This is one of the things people usually want to change right away. By default, 
 ;;  :config
 ;;  (color-theme-sanityinc-tomorrow-night))
 
-(use-package gruvbox-theme
-  :ensure t
-  :config
-  (load-theme 'gruvbox t))
+;; (use-package gruvbox-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'gruvbox t))
+(load-theme 'wombat t)
 
 ;;  (use-package apropospriate-theme
 ;;    :ensure t
