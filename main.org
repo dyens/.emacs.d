@@ -207,50 +207,52 @@ This is one of the things people usually want to change right away. By default, 
 
 * Evil mode
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package evil
-    :ensure t
-    :init
-    (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
-    (setq evil-want-keybinding nil)
-    :config 
-    (evil-mode 1)
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (setq evil-want-keybinding nil)
+  :config 
+  (evil-mode 1)
+  ;; With new evil changes and new emacs evil use different undo systemes
+  (evil-set-undo-system 'undo-redo)
 
-    (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
-    (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
-    (define-key evil-normal-state-map (kbd "<SPC> s") 'projectile-ripgrep)
+  (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
+  (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
+  (define-key evil-normal-state-map (kbd "<SPC> s") 'projectile-ripgrep)
 
-    (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
-    (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
-    (define-key evil-normal-state-map (kbd "<SPC> 3") 'winum-select-window-3)
-    (define-key evil-normal-state-map (kbd "<SPC> 4") 'winum-select-window-4)
-    (define-key evil-normal-state-map (kbd "<SPC> 5") 'winum-select-window-5)
-    (define-key evil-normal-state-map (kbd "<SPC> 6") 'winum-select-window-6)
+  (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
+  (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
+  (define-key evil-normal-state-map (kbd "<SPC> 3") 'winum-select-window-3)
+  (define-key evil-normal-state-map (kbd "<SPC> 4") 'winum-select-window-4)
+  (define-key evil-normal-state-map (kbd "<SPC> 5") 'winum-select-window-5)
+  (define-key evil-normal-state-map (kbd "<SPC> 6") 'winum-select-window-6)
 
-    (define-key evil-normal-state-map (kbd "<SPC> l 0") 'eyebrowse-switch-to-window-config-0)
-    (define-key evil-normal-state-map (kbd "<SPC> l 1") 'eyebrowse-switch-to-window-config-1)
-    (define-key evil-normal-state-map (kbd "<SPC> l 2") 'eyebrowse-switch-to-window-config-2)
-    (define-key evil-normal-state-map (kbd "<SPC> l 3") 'eyebrowse-switch-to-window-config-3)
-    (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
-    (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
-    (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
-    (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
-    (define-key evil-normal-state-map (kbd "<SPC> a") 'org-agenda)
+  (define-key evil-normal-state-map (kbd "<SPC> l 0") 'eyebrowse-switch-to-window-config-0)
+  (define-key evil-normal-state-map (kbd "<SPC> l 1") 'eyebrowse-switch-to-window-config-1)
+  (define-key evil-normal-state-map (kbd "<SPC> l 2") 'eyebrowse-switch-to-window-config-2)
+  (define-key evil-normal-state-map (kbd "<SPC> l 3") 'eyebrowse-switch-to-window-config-3)
+  (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
+  (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
+  (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
+  (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
+  (define-key evil-normal-state-map (kbd "<SPC> a") 'org-agenda)
 
-    (define-key evil-normal-state-map (kbd "<SPC> c") 'comment-line)
-    (define-key evil-visual-state-map (kbd "<SPC> c") 'comment-line)
+  (define-key evil-normal-state-map (kbd "<SPC> c") 'comment-line)
+  (define-key evil-visual-state-map (kbd "<SPC> c") 'comment-line)
 
-    (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-    (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+  (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 
-    (define-key evil-normal-state-map (kbd "<SPC> z") 'zoom)
-    (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
-    )
+  (define-key evil-normal-state-map (kbd "<SPC> z") 'zoom)
+  (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
+  )
 
-  (use-package evil-collection
-    :after evil
-    :ensure t
-    :config
-    (evil-collection-init))
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 #+END_SRC
 
 * Ivy
