@@ -338,7 +338,6 @@ For evil bindigs
 (require 'python)
 (setq python-indent-def-block-scale 1)
 #+END_SRC
-
 ** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package pyvenv
@@ -736,43 +735,40 @@ For evil bindigs
 
 * Org
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package org
-    :ensure t
-    :custom
-    (shell-file-name "bash" "default shell is bash")
-    (org-confirm-babel-evaluate nil "Eval withour confirm")
-    (org-display-inline-images t)
-    (org-redisplay-inline-images t)
-    (org-startup-with-inline-images "inlineimages")
-    (org-agenda-files (list "~/org/agenda.org"))
-    (org-log-done 'time)
-    ;; Remove tab useless source block identation
-    (org-src-preserve-indentation nil)
-    (org-edit-src-content-indentation 0)
-    :config
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '(
-       (python . t)
-       (shell . t)
-       (emacs-lisp . t)
-       (plantuml . t)
-       (sql . t)
-       ))
-    ; (use-package ob-translate
-    ; :ensure t
-    ; :config
-    ; (org-babel-do-load-languages
-    ;  'org-babel-load-languages
-    ;  '((translate . t))))
-
-    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-    (add-to-list 'org-structure-template-alist '("py" . "src python"))
-
-
-  )
-
+(use-package org
+  :ensure t
+  :custom
+  (shell-file-name "bash" "default shell is bash")
+  (org-confirm-babel-evaluate nil "Eval withour confirm")
+  (org-display-inline-images t)
+  (org-redisplay-inline-images t)
+  (org-startup-with-inline-images "inlineimages")
+  (org-agenda-files (list "~/org/agenda.org"))
+  (org-log-done 'time)
+  ;; Remove tab useless source block identation
+  (org-src-preserve-indentation nil)
+  (org-edit-src-content-indentation 0)
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (python . t)
+     (shell . t)
+     (emacs-lisp . t)
+     (plantuml . t)
+     (sql . t)
+     ))
+  ; (use-package ob-translate
+  ; :ensure t
+  ; :config
+  ; (org-babel-do-load-languages
+  ;  'org-babel-load-languages
+  ;  '((translate . t))))
+)
+ (require 'org-tempo)
+ (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+ (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+ (add-to-list 'org-structure-template-alist '("py" . "src python"))
 #+END_SRC
 
 * Yas
