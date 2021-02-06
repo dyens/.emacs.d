@@ -1139,4 +1139,9 @@ alias em="emacsclient -c -a emacs"
 #+END_SRC
 
 
-привет
+* Restore performance
+#+BEGIN_SRC emacs-lisp :results output silent
+;; Make gc pauses faster by decreasing the threshold.
+(setq gc-cons-threshold (* 2 1000 1000))
+#+END_SRC
+
