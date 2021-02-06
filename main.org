@@ -297,16 +297,10 @@ For backward word and forwardword
 
 * Magit
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package magit
-    :ensure t
-    )
-#+END_SRC
-
-For evil bindigs
-#+BEGIN_SRC emacs-lisp :results output silent
-  (use-package evil-magit
-    :ensure t
-    )
+(use-package magit
+  :ensure t
+  :commands magit-status
+  )
 #+END_SRC
 
 * Forge
@@ -912,13 +906,14 @@ For evil bindigs
 
 * Plantuml
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package plantuml-mode
-    :ensure t
-    :mode ("\\plantuml\\'" . plantuml-mode)
-    :custom
-    (plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
-    (org-plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
-    )
+(use-package plantuml-mode
+  :ensure t
+  :defer t
+  :mode ("\\plantuml\\'" . plantuml-mode)
+  :custom
+  (plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
+  (org-plantuml-jar-path "/home/dyens/.emacs.d/plantuml.jar")
+  )
 #+END_SRC
 
 * Org-jira
@@ -939,15 +934,6 @@ For evil bindigs
     (define-key evil-normal-state-map (kbd "<SPC> e") 'er/expand-region)
     )
 #+END_SRC
-* Emojify
-#+BEGIN_SRC emacs-lisp :results output silent
-;  (use-package emojify
-;    :ensure t
-;    :config
-;    (add-hook 'after-init-hook #'global-emojify-mode)
-;    )
-#+END_SRC
-
 * Daemon
 Need set in .zshrc 
 
@@ -1093,22 +1079,27 @@ alias em="emacsclient -c -a emacs"
 #+END_SRC
 * Google-translate
 #+BEGIN_SRC emacs-lisp :results output silent
-;    (use-package google-translate
+(use-package popup
+    :ensure t
+ )
+(use-package google-translate
+    :ensure t
+    :custom
+    (google-translate-backend-method 'curl)
+    :config
+;      (use-package google-translate-default-ui
 ;      :ensure t
 ;      :config
-;  ;      (use-package google-translate-default-ui
-;  ;      :ensure t
-;  ;      :config
-;      (define-key evil-normal-state-map (kbd "<SPC> l l") 'google-translate-at-point)
-;      (define-key evil-normal-state-map (kbd "<SPC> l L") 'google-translate-at-point-reverse)
-;
-;      (define-key evil-normal-state-map (kbd "<SPC> L l") 'google-translate-query-translate)
-;      (define-key evil-normal-state-map (kbd "<SPC> L L") 'google-translate-query-translate-reverse)
-;
-;      (setq google-translate-default-source-language "en")
-;      (setq google-translate-default-target-language "ru")
-;  ;   )
-;      )
+    ;;https://github.com/atykhonov/google-translate/issues/52#issuecomment-727920888
+    (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
+    (define-key evil-normal-state-map (kbd "<SPC> l l") 'google-translate-at-point)
+    (define-key evil-normal-state-map (kbd "<SPC> l L") 'google-translate-at-point-reverse)
+
+    (define-key evil-normal-state-map (kbd "<SPC> L l") 'google-translate-query-translate)
+    (define-key evil-normal-state-map (kbd "<SPC> L L") 'google-translate-query-translate-reverse)
+
+    (setq google-translate-default-source-language "en")
+    (setq google-translate-default-target-language "ru"))
 #+END_SRC
 * Smerge
 ** Bidnings
@@ -1147,3 +1138,5 @@ alias em="emacsclient -c -a emacs"
   (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 #+END_SRC
 
+
+привет
