@@ -192,7 +192,7 @@ This is one of the things people usually want to change right away. By default, 
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
                     ;;:family "Terminus"
-                    :height 130
+                    :height 110
                     ;;:weight 'bold
                     :width 'normal)
 #+END_SRC
@@ -587,47 +587,48 @@ For backward word and forwardword
 
 ** LSP
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package lsp-mode
-    :ensure t
-    :hook ((python-mode . lsp))
-    :commands lsp
-    :config
-    (setq lsp-auto-guess-root t)
-    (setq lsp-prefer-flymake nil)
+(use-package lsp-mode
+  :ensure t
+  :hook ((python-mode . lsp))
+  :commands lsp
+  :config
+  (setq lsp-auto-guess-root t)
+  (setq lsp-prefer-flymake nil)
 
-    (setq lsp-enable-snippet nil)
-    (setq lsp-idle-delay 0.500)
+  (setq lsp-enable-snippet nil)
+  (setq lsp-idle-delay 0.500)
+  (setq lsp-headerline-breadcrumb-enable nil)
 
-    ; (setq-default lsp-pyls-configuration-sources ["flake8"])
-    (setq lsp-pyls-plugins-pycodestyle-enabled nil
-          lsp-pyls-plugins-pyflakes-enabled nil
-          lsp-pyls-plugins-flake8-enabled t
-    )
-
-    (setq lsp-rust-server 'rust-analyzer)
-    )
-    
-  (use-package lsp-ui 
-     :ensure t
-     :custom
-     (lsp-ui-doc-enable nil)
-     :commands lsp-ui-mode
+  ; (setq-default lsp-pyls-configuration-sources ["flake8"])
+  (setq lsp-pyls-plugins-pycodestyle-enabled nil
+        lsp-pyls-plugins-pyflakes-enabled nil
+        lsp-pyls-plugins-flake8-enabled t
   )
 
-  ;; if you are ivy user
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (setq lsp-rust-server 'rust-analyzer)
+  )
 
-  ; (use-package company-lsp 
-  ;    :ensure t
-  ;    :commands company-lsp
+(use-package lsp-ui 
+   :ensure t
+   :custom
+   (lsp-ui-doc-enable nil)
+   :commands lsp-ui-mode
+)
 
-  ;    :custom
-  ;    (company-lsp-enable-snippet t)
-  ;    (company-lsp-cache-candidates nil)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 
-  ;    :config
-  ;    (add-to-list 'company-backends 'company-lsp)
-  ; )
+; (use-package company-lsp 
+;    :ensure t
+;    :commands company-lsp
+
+;    :custom
+;    (company-lsp-enable-snippet t)
+;    (company-lsp-cache-candidates nil)
+
+;    :config
+;    (add-to-list 'company-backends 'company-lsp)
+; )
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
