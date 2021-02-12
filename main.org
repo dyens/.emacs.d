@@ -192,7 +192,7 @@ This is one of the things people usually want to change right away. By default, 
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
                     ;;:family "Terminus"
-                    :height 130
+                    :height 110
                     ;;:weight 'bold
                     :width 'normal)
 #+END_SRC
@@ -587,47 +587,48 @@ For backward word and forwardword
 
 ** LSP
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package lsp-mode
-    :ensure t
-    :hook ((python-mode . lsp))
-    :commands lsp
-    :config
-    (setq lsp-auto-guess-root t)
-    (setq lsp-prefer-flymake nil)
+(use-package lsp-mode
+  :ensure t
+  :hook ((python-mode . lsp))
+  :commands lsp
+  :config
+  (setq lsp-auto-guess-root t)
+  (setq lsp-prefer-flymake nil)
 
-    (setq lsp-enable-snippet nil)
-    (setq lsp-idle-delay 0.500)
+  (setq lsp-enable-snippet nil)
+  (setq lsp-idle-delay 0.500)
+  (setq lsp-headerline-breadcrumb-enable nil)
 
-    ; (setq-default lsp-pyls-configuration-sources ["flake8"])
-    (setq lsp-pyls-plugins-pycodestyle-enabled nil
-          lsp-pyls-plugins-pyflakes-enabled nil
-          lsp-pyls-plugins-flake8-enabled t
-    )
-
-    (setq lsp-rust-server 'rust-analyzer)
-    )
-    
-  (use-package lsp-ui 
-     :ensure t
-     :custom
-     (lsp-ui-doc-enable nil)
-     :commands lsp-ui-mode
+  ; (setq-default lsp-pyls-configuration-sources ["flake8"])
+  (setq lsp-pyls-plugins-pycodestyle-enabled nil
+        lsp-pyls-plugins-pyflakes-enabled nil
+        lsp-pyls-plugins-flake8-enabled t
   )
 
-  ;; if you are ivy user
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (setq lsp-rust-server 'rust-analyzer)
+  )
 
-  ; (use-package company-lsp 
-  ;    :ensure t
-  ;    :commands company-lsp
+(use-package lsp-ui 
+   :ensure t
+   :custom
+   (lsp-ui-doc-enable nil)
+   :commands lsp-ui-mode
+)
 
-  ;    :custom
-  ;    (company-lsp-enable-snippet t)
-  ;    (company-lsp-cache-candidates nil)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 
-  ;    :config
-  ;    (add-to-list 'company-backends 'company-lsp)
-  ; )
+; (use-package company-lsp 
+;    :ensure t
+;    :commands company-lsp
+
+;    :custom
+;    (company-lsp-enable-snippet t)
+;    (company-lsp-cache-candidates nil)
+
+;    :config
+;    (add-to-list 'company-backends 'company-lsp)
+; )
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1087,17 +1088,12 @@ alias em="emacsclient -c -a emacs"
     :custom
     (google-translate-backend-method 'curl)
     :config
-;      (use-package google-translate-default-ui
-;      :ensure t
-;      :config
-    ;;https://github.com/atykhonov/google-translate/issues/52#issuecomment-727920888
-    (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
+    ;; https://github.com/atykhonov/google-translate/issues/52#issuecomment-727920888
+    (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
     (define-key evil-normal-state-map (kbd "<SPC> l l") 'google-translate-at-point)
     (define-key evil-normal-state-map (kbd "<SPC> l L") 'google-translate-at-point-reverse)
-
     (define-key evil-normal-state-map (kbd "<SPC> L l") 'google-translate-query-translate)
     (define-key evil-normal-state-map (kbd "<SPC> L L") 'google-translate-query-translate-reverse)
-
     (setq google-translate-default-source-language "en")
     (setq google-translate-default-target-language "ru"))
 #+END_SRC
@@ -1117,31 +1113,27 @@ alias em="emacsclient -c -a emacs"
 
 * Tramp
 #+BEGIN_SRC emacs-lisp :results output silent
-    (use-package zoom
-      :ensure t
-      :custom
-      (zoom-mode t)
-      :config
-      (defun size-callback ()
-      (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
-              (t                            '(0.5 . 0.5))))
-
-      (custom-set-variables '(zoom-size 'size-callback)))
+(use-package zoom
+  :ensure t
+  :custom
+  (zoom-mode t)
+  :config
+  (defun dy-size-callback ()
+    (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
+          (t                            '(0.5 . 0.5))))
+  (custom-set-variables '(zoom-size 'size-callback)))
 #+END_SRC
 
 * Lilypond
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq load-path (append (list (expand-file-name "lilypond" init-dir)) load-path))
-  (autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
-  (add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
-  (add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
-  (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
+(autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
+(add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
+(add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
+(add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 #+END_SRC
-
-
 * Restore performance
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
 #+END_SRC
-
