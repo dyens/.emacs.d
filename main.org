@@ -62,7 +62,11 @@ Display line numbers
 For refresh packages run (M-x package-refresh-contents)
 
 * Backup
-This is one of the things people usually want to change right away. By default, Emacs saves backup files in the current directory. These are the files ending in ~ that are cluttering up your directory lists. The following code stashes them all in ~/.emacs.d/backups, where I can find them with C-x C-f (find-file) if I really need to. 
+This is one of the things people usually want to change right away. By
+default, Emacs saves backup files in the current directory. These are
+the files ending in ~ that are cluttering up your directory lists. The
+following code stashes them all in ~/.emacs.d/backups, where I can
+find them with C-x C-f (find-file) if I really need to.
 #+BEGIN_SRC emacs-lisp :results output silent
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 #+END_SRC
@@ -76,7 +80,11 @@ Disk space is cheap. Save lots.
 #+END_SRC
 
 * History
-This is one of the things people usually want to change right away. By default, Emacs saves backup files in the current directory. These are the files ending in ~ that are cluttering up your directory lists. The following code stashes them all in ~/.emacs.d/backups, where I can find them with C-x C-f (find-file) if I really need to. 
+This is one of the things people usually want to change right away. By
+default, Emacs saves backup files in the current directory. These are
+the files ending in ~ that are cluttering up your directory lists. The
+following code stashes them all in ~/.emacs.d/backups, where I can
+find them with C-x C-f (find-file) if I really need to.
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq savehist-file "~/.emacs.d/savehist")
 (savehist-mode 1)
@@ -110,8 +118,6 @@ This is one of the things people usually want to change right away. By default, 
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
 
-
-
 ;;(use-package color-theme-sanityinc-tomorrow
 ;;  :ensure t
 ;;  :config
@@ -122,6 +128,7 @@ This is one of the things people usually want to change right away. By default, 
 ;;   :config
 ;;   (load-theme 'gruvbox t))
 (load-theme 'wombat t)
+;; (load-theme 'deeper-blue t)
 
 ;;  (use-package apropospriate-theme
 ;;    :ensure t
@@ -141,17 +148,17 @@ This is one of the things people usually want to change right away. By default, 
 
   ;; My default theme
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;   (scroll-bar-mode 0)
-  ;   (fringe-mode 0)
-  ;   
-  ;   (set-face-attribute 'mode-line nil :box nil)
-  ;   (set-face-attribute 'mode-line-inactive nil :box nil)
-  ;   
-  ;   (set-face-attribute 'mode-line nil :background "#c6edf9")
-  ;   (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
-  ;   
-  ;   (set-face-background 'vertical-border "gray")
-  ;   (set-face-foreground 'vertical-border (face-background 'vertical-border))
+  ;;   (scroll-bar-mode 0)
+  ;;   (fringe-mode 0)
+  ;;   
+  ;;   (set-face-attribute 'mode-line nil :box nil)
+  ;;   (set-face-attribute 'mode-line-inactive nil :box nil)
+  ;;   
+  ;;   (set-face-attribute 'mode-line nil :background "#c6edf9")
+  ;;   (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+  ;;   
+  ;;   (set-face-background 'vertical-border "gray")
+  ;;   (set-face-foreground 'vertical-border (face-background 'vertical-border))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; (load-theme 'adwaita t)
@@ -191,10 +198,11 @@ This is one of the things people usually want to change right away. By default, 
 ** Font
 #+BEGIN_SRC emacs-lisp :results output silent
 (set-face-attribute 'default nil
-                    ;;:family "Terminus"
+                    :family "Iosevka SS04"
                     :height 110
-                    ;;:weight 'bold
-                    :width 'normal)
+                    :weight 'regular
+                    ;:width 'normal
+)
 #+END_SRC
 
 * Evil mode
