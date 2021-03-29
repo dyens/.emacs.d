@@ -52,6 +52,11 @@ Display line numbers
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
 #+END_SRC
 
+Search for non ascii characters
+https://endlessparentheses.com/new-in-emacs-25-1-easily-search-non-ascii-characters.html
+#+BEGIN_SRC emacs-lisp :results output silent
+  (setq search-default-mode #'char-fold-to-regexp)
+#+END_SRC
 * Installing use-package
 ** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -335,10 +340,57 @@ For backward word and forwardword
 #+END_SRC
 
 * Python
+** Yapfify
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package yapfify
+  :ensure t
+  :after python)
+
+#+END_SRC
 ** Python mode
 #+BEGIN_SRC emacs-lisp :results output silent
-(require 'python)
-(setq python-indent-def-block-scale 1)
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+  :after (flycheck)
+  :config
+
+  (setq python-indent-def-block-scale 1)
+  (add-hook 'python-mode-hook 'dy/python-setup)
+  ; Based on
+  ; https://stackoverflow.com/questions/31443527/how-can-i-make-flycheck-use-virtualenv.
+  ; Depends on modifying Python's sys.path in .pylintrc as in
+  ; https://stackoverflow.com/a/39207275/437583 for this to work.
+  (defun set-flychecker-executables ()
+    "Configure virtualenv for flake8 and lint."
+    (when (executable-find "flake8")
+    (flycheck-set-checker-executable (quote python-flake8)
+                                  (executable-find "flake8")))
+    (when (executable-find "mypy")
+    (flycheck-set-checker-executable (quote python-mypy)
+                                  (executable-find "mypy"))))
+
+  (defun dy/python-setup ()
+    ; Check with flake8, pylint, and mypy. python-mypy already runs
+    ; python-flake8, so there's no need to mention it here. However, we still
+    ; need to mention python-pylint to run after python-flake8. This is a
+    ; so-called "checker chain", as per
+    ; https://www.flycheck.org/en/latest/user/syntax-checkers.html#configuring-checker-chains.
+    (flycheck-add-next-checker 'python-flake8 'python-pylint)
+    (add-hook 'flycheck-before-syntax-check-hook #'set-flychecker-executables
+      'local)
+    ; Start Flycheck.
+    (flycheck-mode)
+    ; Set max line length to 79 characters (from PEP8). (Although Emacs columns
+    ; are 0-indexed, column-enforce-mode counts from 1, so we use 79 here and
+    ; not 78.)
+    (setq column-enforce-column 79)
+    ; We need to tell Emacs to do paragrah-filling at 79 caharacters
+    ; (column-enforce-mode only highlights regions --- it does not change how
+    ; paragraph filling is done).
+    (setq fill-column 79)))
+
+
+
 #+END_SRC
 ** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -595,11 +647,14 @@ For backward word and forwardword
 
 ** LSP
 #+BEGIN_SRC emacs-lisp :results output silent
+
+
 (use-package lsp-mode
   :ensure t
-  :hook ((python-mode . lsp))
   :commands lsp
   :config
+  ;; Disable automatic set flycheck-checker to lsp
+  (setq lsp-diagnostic-package :none)
   (setq lsp-auto-guess-root t)
   (setq lsp-prefer-flymake nil)
 
@@ -615,6 +670,17 @@ For backward word and forwardword
 
   (setq lsp-rust-server 'rust-analyzer)
   )
+
+
+(use-package lsp-python-ms
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-python-ms)
+                          (setq-local ms-python-python-lint-enabled nil)
+                          (lsp)
+        ))
+  )  ; or lsp-deferred
 
 (use-package lsp-ui 
    :ensure t
@@ -665,7 +731,7 @@ For backward word and forwardword
      (define-key evil-normal-state-map (kbd "<SPC> m i") 'dy-python-add-noqa)
      (define-key evil-normal-state-map (kbd "<SPC> m f") 'flycheck-list-errors)
      (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
-     (define-key evil-normal-state-map (kbd "<SPC> =") 'lsp-format-buffer)
+     (define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
      (define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python)
      (define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region)
      (define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer)
