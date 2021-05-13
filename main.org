@@ -362,7 +362,7 @@ For backward word and forwardword
   :config
 
   (setq python-indent-def-block-scale 1)
-  (add-hook 'python-mode-hook 'dy/python-setup)
+  (add-hook 'python-mode-hook 'dy-python-setup)
   ; Based on
   ; https://stackoverflow.com/questions/31443527/how-can-i-make-flycheck-use-virtualenv.
   ; Depends on modifying Python's sys.path in .pylintrc as in
@@ -376,7 +376,7 @@ For backward word and forwardword
     (flycheck-set-checker-executable (quote python-mypy)
                                   (executable-find "mypy"))))
 
-  (defun dy/python-setup ()
+  (defun dy-python-setup ()
     ; Check with flake8, pylint, and mypy. python-mypy already runs
     ; python-flake8, so there's no need to mention it here. However, we still
     ; need to mention python-pylint to run after python-flake8. This is a
@@ -553,7 +553,15 @@ For backward word and forwardword
     (insert $docstring-shift)
     (setq $docstring-header (format "\"\"\"%s." $docstring-header))
     (insert $docstring-header)
-    (setq $fargs (seq-filter '(lambda (arg) (not (string= "self" (car arg)))) $fargs))
+    (setq $fargs
+	  (seq-filter '(lambda (arg)
+			 (let ((var-name (car arg)))
+			       (or
+				(not (string= "self" var-name))
+				(not (string= "*" var-name))
+				)))
+		      $fargs))
+    (message "%s" $fargs)
     (setq $docstring-args
       (mapcar '
        (lambda (arg)
@@ -612,14 +620,14 @@ For backward word and forwardword
        ((string= $block-type "async")
 	(let ($fname $fargs-string $fargs $docstring $docstring-header $docstring-args)
 	  (re-search-forward
-	   "[ \t]*async[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n]*\\)\)" nil t)
+	   "[ \t]*async[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n\*]*\\)\)" nil t)
 	    (setq $fname (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
 	    (setq $fargs-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
 	    (dy--python-add-docstring-to-function $fname $fargs-string $docstring-shift)))
        ((string= $block-type "def")
 	(let ($fname $fargs-string $fargs $docstring $docstring-header $docstring-args)
 	  (re-search-forward
-	   "[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n]*\\)\)" nil t)
+	   "[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n\*]*\\)\)" nil t)
 	    (setq $fname (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
 	    (setq $fargs-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
 	    (dy--python-add-docstring-to-function $fname $fargs-string $docstring-shift))))))
@@ -1263,23 +1271,23 @@ https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package emacs
   :config
-  (defvar dy/window-configuration nil
+  (defvar dy-window-configuration nil
     "Current window configuration.
-Intended for use by `dy/window-monocle'.")
+Intended for use by `dy-window-monocle'.")
 
-  (define-minor-mode dy/window-single-toggle
+  (define-minor-mode dy-window-single-toggle
     "Toggle between multiple windows and single window.
 This is the equivalent of maximising a window.  Tiling window
 managers such as DWM, BSPWM refer to this state as 'monocle'."
     :lighter " [M]"
     :global nil
     (if (one-window-p)
-        (when dy/window-configuration
-          (set-window-configuration dy/window-configuration))
-      (setq dy/window-configuration (current-window-configuration))
+        (when dy-window-configuration
+          (set-window-configuration dy-window-configuration))
+      (setq dy-window-configuration (current-window-configuration))
       (delete-other-windows)))
 
-  (define-key evil-normal-state-map (kbd "<SPC> w s") 'dy/window-single-toggle)
+  (define-key evil-normal-state-map (kbd "<SPC> w s") 'dy-window-single-toggle)
 )
 
 #+END_SRC
