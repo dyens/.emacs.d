@@ -132,7 +132,7 @@ find them with C-x C-f (find-file) if I really need to.
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'gruvbox t))
-(load-theme 'wombat t)
+;; (load-theme 'wombat t)
 ;; (load-theme 'deeper-blue t)
 
 ;;  (use-package apropospriate-theme
@@ -153,17 +153,17 @@ find them with C-x C-f (find-file) if I really need to.
 
   ;; My default theme
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;   (scroll-bar-mode 0)
-  ;;   (fringe-mode 0)
-  ;;   
-  ;;   (set-face-attribute 'mode-line nil :box nil)
-  ;;   (set-face-attribute 'mode-line-inactive nil :box nil)
-  ;;   
-  ;;   (set-face-attribute 'mode-line nil :background "#c6edf9")
-  ;;   (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
-  ;;   
-  ;;   (set-face-background 'vertical-border "gray")
-  ;;   (set-face-foreground 'vertical-border (face-background 'vertical-border))
+     (scroll-bar-mode 0)
+     (fringe-mode 0)
+     
+     (set-face-attribute 'mode-line nil :box nil)
+     (set-face-attribute 'mode-line-inactive nil :box nil)
+     
+     (set-face-attribute 'mode-line nil :background "#c6edf9")
+     (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+     
+     (set-face-background 'vertical-border "gray")
+     (set-face-foreground 'vertical-border (face-background 'vertical-border))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; (load-theme 'adwaita t)
@@ -212,6 +212,13 @@ find them with C-x C-f (find-file) if I really need to.
 
 * Evil mode
 #+BEGIN_SRC emacs-lisp :results output silent
+
+;; for work with abc_abc words
+(with-eval-after-load 'evil
+    (defalias #'forward-evil-word #'forward-evil-symbol)
+    ;; make evil-search-word look for symbol rather than word boundaries
+    (setq-default evil-symbol-word-search t))
+
 (use-package evil
   :ensure t
   :init
@@ -326,17 +333,17 @@ For backward word and forwardword
 
 * Company-mode
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package company
-    :ensure t
-    :custom
-    (company-begin-commands '(self-insert-command))
-    (company-idle-delay 0.0)
-    (company-minimum-prefix-length 1)
-    (company-show-numbers nil)
-    (company-tooltip-align-annotations 't)
-    :config
-    (add-hook 'after-init-hook 'global-company-mode)
-    )
+(use-package company
+  :ensure t
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay 0.3)
+  (company-minimum-prefix-length 1)
+  (company-show-numbers nil)
+  (company-tooltip-align-annotations 't)
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  )
 #+END_SRC
 
 * Python
@@ -428,7 +435,10 @@ For backward word and forwardword
   :ensure t
   )
 #+END_SRC
-
+** Remove font lock from python shell
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq python-shell-enable-font-lock nil)
+#+END_SRC
 ** Pytest
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package pytest
@@ -658,7 +668,7 @@ For backward word and forwardword
   (setq lsp-auto-guess-root t)
   (setq lsp-prefer-flymake nil)
 
-  (setq lsp-enable-snippet nil)
+  (setq lsp-enable-snippet t)
   (setq lsp-idle-delay 0.500)
   (setq lsp-headerline-breadcrumb-enable nil)
 
@@ -704,6 +714,7 @@ For backward word and forwardword
 ;    (add-to-list 'company-backends 'company-lsp)
 ; )
 #+END_SRC
+company-backends
 
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq python-shell-interpreter "ipython")
@@ -1068,7 +1079,7 @@ alias em="emacsclient -c -a emacs"
         smtpmail-starttls-credentials
         '(("smtp.gmail.com" 587 nil nil))
         smtpmail-auth-credentials
-        (expand-file-name "~/.authinfo.gpg")
+        (expand-file-name "~/.authinfo")
         smtpmail-default-smtp-server "smtp.gmail.com"
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587
@@ -1185,7 +1196,7 @@ alias em="emacsclient -c -a emacs"
      ))
 #+END_SRC
 
-* Tramp
+* Zoom
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package zoom
   :ensure t
@@ -1206,6 +1217,47 @@ alias em="emacsclient -c -a emacs"
 (add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
 (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 #+END_SRC
+* Multiple Cursors
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package evil-multiedit
+  :ensure t
+  :config
+  ;; Highlights all matches of the selection in the buffer.
+  (define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
+  
+  ;; Match the word under cursor (i.e. make it an edit region). Consecutive presses will
+  ;; incrementally add the next unmatched match.
+  (define-key evil-normal-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+  ;; Match selected region.
+  (define-key evil-visual-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+  ;; Insert marker at point
+  (define-key evil-insert-state-map (kbd "M-d") 'evil-multiedit-toggle-marker-here)
+  
+  ;; RET will toggle the region under the cursor
+  (define-key evil-multiedit-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+  
+  ;; ...and in visual mode, RET will disable all fields outside the selected region
+  (define-key evil-motion-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+  
+  ;; For moving between edit regions
+  (define-key evil-multiedit-state-map (kbd "C-n") 'evil-multiedit-next)
+  (define-key evil-multiedit-state-map (kbd "C-p") 'evil-multiedit-prev)
+  (define-key evil-multiedit-insert-state-map (kbd "C-n") 'evil-multiedit-next)
+  (define-key evil-multiedit-insert-state-map (kbd "C-p") 'evil-multiedit-prev)
+  
+  ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
+  (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
+)
+
+#+END_SRC
+
+* Truncate compilation buffer
+If in compilation buffer there are many lines it start to be a very slow
+#+BEGIN_SRC emacs-lisp :results output silent
+(add-hook 'compilation-filter-hook 'comint-truncate-buffer)
+(setq comint-buffer-maximum-size 2000)
+#+END_SRC
+
 * Restore performance
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; Make gc pauses faster by decreasing the threshold.
