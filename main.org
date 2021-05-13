@@ -1258,8 +1258,37 @@ If in compilation buffer there are many lines it start to be a very slow
 (setq comint-buffer-maximum-size 2000)
 #+END_SRC
 
+* Widnow monocle
+https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package emacs
+  :config
+  (defvar dy/window-configuration nil
+    "Current window configuration.
+Intended for use by `dy/window-monocle'.")
+
+  (define-minor-mode dy/window-single-toggle
+    "Toggle between multiple windows and single window.
+This is the equivalent of maximising a window.  Tiling window
+managers such as DWM, BSPWM refer to this state as 'monocle'."
+    :lighter " [M]"
+    :global nil
+    (if (one-window-p)
+        (when dy/window-configuration
+          (set-window-configuration dy/window-configuration))
+      (setq dy/window-configuration (current-window-configuration))
+      (delete-other-windows)))
+
+  (define-key evil-normal-state-map (kbd "<SPC> w s") 'dy/window-single-toggle)
+)
+
+#+END_SRC
+
 * Restore performance
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
 #+END_SRC
+
+
+
