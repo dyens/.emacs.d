@@ -1252,7 +1252,7 @@ alias em="emacsclient -c -a emacs"
   (defun dy-size-callback ()
     (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
           (t                            '(0.5 . 0.5))))
-  (custom-set-variables '(zoom-size 'size-callback)))
+  (custom-set-variables '(zoom-size 'dy-size-callback)))
 #+END_SRC
 
 * Lilypond
