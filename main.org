@@ -66,6 +66,35 @@ https://endlessparentheses.com/new-in-emacs-25-1-easily-search-non-ascii-charact
 #+END_SRC
 For refresh packages run (M-x package-refresh-contents)
 
+** straight.el
+
+Trying out =straight.el= for package management.  So far so good!
+
+#+BEGIN_SRC emacs-lisp :results output silent
+  ;; Bootstrap straight.el
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+          'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  ;; Always use straight to install on systems other than Linux
+  (setq straight-use-package-by-default (not (eq system-type 'gnu/linux)))
+
+  ;; Use straight.el for use-package expressions
+  (straight-use-package 'use-package)
+
+  ;; Load the helper package for commands like `straight-x-clean-unused-repos'
+  (require 'straight-x)
+#+END_SRC
+
 * Backup
 This is one of the things people usually want to change right away. By
 default, Emacs saves backup files in the current directory. These are
@@ -269,17 +298,13 @@ find them with C-x C-f (find-file) if I really need to.
 
 * Ivy
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package ivy
-    :ensure t
-    :config 
-    (ivy-mode 1)
-    )
-#+END_SRC
-
-* Super-word-mode
-For backward word and forwardword
-#+BEGIN_SRC emacs-lisp :results output silent
-  (superword-mode t)
+(use-package ivy
+  :ensure t
+  :config 
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  )
 #+END_SRC
 
 * Counsel
@@ -289,6 +314,19 @@ For backward word and forwardword
     :config 
     (global-set-key (kbd "M-x") 'counsel-M-x)
     )
+#+END_SRC
+
+* History in minibuffer
+#+BEGIN_SRC emacs-lisp :results output silent
+(straight-use-package 'prescient)
+(straight-use-package 'ivy-prescient)
+(straight-use-package 'company-prescient)
+#+END_SRC
+
+* Super-word-mode
+For backward word and forwardword
+#+BEGIN_SRC emacs-lisp :results output silent
+  (superword-mode t)
 #+END_SRC
 
 * Winum
@@ -556,7 +594,7 @@ For backward word and forwardword
     (setq $fargs
 	  (seq-filter '(lambda (arg)
 			 (let ((var-name (car arg)))
-			       (or
+			       (and
 				(not (string= "self" var-name))
 				(not (string= "*" var-name))
 				)))
