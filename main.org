@@ -285,7 +285,6 @@ find them with C-x C-f (find-file) if I really need to.
   (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
   (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 
-  (define-key evil-normal-state-map (kbd "<SPC> z") 'zoom)
   (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
   )
 
@@ -1242,19 +1241,6 @@ alias em="emacsclient -c -a emacs"
      ))
 #+END_SRC
 
-* Zoom
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package zoom
-  :ensure t
-  :custom
-  (zoom-mode t)
-  :config
-  (defun dy-size-callback ()
-    (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
-          (t                            '(0.5 . 0.5))))
-  (custom-set-variables '(zoom-size 'dy-size-callback)))
-#+END_SRC
-
 * Lilypond
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq load-path (append (list (expand-file-name "lilypond" init-dir)) load-path))
@@ -1325,11 +1311,28 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
       (setq dy-window-configuration (current-window-configuration))
       (delete-other-windows)))
 
-  (define-key evil-normal-state-map (kbd "<SPC> w s") 'dy-window-single-toggle)
+  (define-key evil-normal-state-map (kbd "<SPC> z") 'dy-window-single-toggle)
 )
 
 #+END_SRC
 
+* Zoom
+#+BEGIN_SRC emacs-lisp :results output silent
+;; (use-package zoom
+;;   :ensure t
+;;   :custom
+;;   (zoom-mode t)
+;;   :config
+;;   (defun dy-size-callback ()
+;;     (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
+;;           (t                            '(0.5 . 0.5))))
+;;   (setq zoom-size 'dy-size-callback))
+#+END_SRC
+* Lua
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package lua-mode
+  :ensure t)
+#+END_SRC
 * Restore performance
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; Make gc pauses faster by decreasing the threshold.
