@@ -66,6 +66,35 @@ https://endlessparentheses.com/new-in-emacs-25-1-easily-search-non-ascii-charact
 #+END_SRC
 For refresh packages run (M-x package-refresh-contents)
 
+** straight.el
+
+Trying out =straight.el= for package management.  So far so good!
+
+#+BEGIN_SRC emacs-lisp :results output silent
+  ;; Bootstrap straight.el
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+          'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  ;; Always use straight to install on systems other than Linux
+  (setq straight-use-package-by-default (not (eq system-type 'gnu/linux)))
+
+  ;; Use straight.el for use-package expressions
+  (straight-use-package 'use-package)
+
+  ;; Load the helper package for commands like `straight-x-clean-unused-repos'
+  (require 'straight-x)
+#+END_SRC
+
 * Backup
 This is one of the things people usually want to change right away. By
 default, Emacs saves backup files in the current directory. These are
@@ -132,7 +161,7 @@ find them with C-x C-f (find-file) if I really need to.
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'gruvbox t))
-(load-theme 'wombat t)
+;; (load-theme 'wombat t)
 ;; (load-theme 'deeper-blue t)
 
 ;;  (use-package apropospriate-theme
@@ -153,17 +182,17 @@ find them with C-x C-f (find-file) if I really need to.
 
   ;; My default theme
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;   (scroll-bar-mode 0)
-  ;;   (fringe-mode 0)
-  ;;   
-  ;;   (set-face-attribute 'mode-line nil :box nil)
-  ;;   (set-face-attribute 'mode-line-inactive nil :box nil)
-  ;;   
-  ;;   (set-face-attribute 'mode-line nil :background "#c6edf9")
-  ;;   (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
-  ;;   
-  ;;   (set-face-background 'vertical-border "gray")
-  ;;   (set-face-foreground 'vertical-border (face-background 'vertical-border))
+     (scroll-bar-mode 0)
+     (fringe-mode 0)
+     
+     (set-face-attribute 'mode-line nil :box nil)
+     (set-face-attribute 'mode-line-inactive nil :box nil)
+     
+     (set-face-attribute 'mode-line nil :background "#c6edf9")
+     (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+     
+     (set-face-background 'vertical-border "gray")
+     (set-face-foreground 'vertical-border (face-background 'vertical-border))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; (load-theme 'adwaita t)
@@ -212,6 +241,13 @@ find them with C-x C-f (find-file) if I really need to.
 
 * Evil mode
 #+BEGIN_SRC emacs-lisp :results output silent
+
+;; for work with abc_abc words
+(with-eval-after-load 'evil
+    (defalias #'forward-evil-word #'forward-evil-symbol)
+    ;; make evil-search-word look for symbol rather than word boundaries
+    (setq-default evil-symbol-word-search t))
+
 (use-package evil
   :ensure t
   :init
@@ -249,7 +285,6 @@ find them with C-x C-f (find-file) if I really need to.
   (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
   (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 
-  (define-key evil-normal-state-map (kbd "<SPC> z") 'zoom)
   (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
   )
 
@@ -262,17 +297,13 @@ find them with C-x C-f (find-file) if I really need to.
 
 * Ivy
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package ivy
-    :ensure t
-    :config 
-    (ivy-mode 1)
-    )
-#+END_SRC
-
-* Super-word-mode
-For backward word and forwardword
-#+BEGIN_SRC emacs-lisp :results output silent
-  (superword-mode t)
+(use-package ivy
+  :ensure t
+  :config 
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  )
 #+END_SRC
 
 * Counsel
@@ -282,6 +313,19 @@ For backward word and forwardword
     :config 
     (global-set-key (kbd "M-x") 'counsel-M-x)
     )
+#+END_SRC
+
+* History in minibuffer
+#+BEGIN_SRC emacs-lisp :results output silent
+(straight-use-package 'prescient)
+(straight-use-package 'ivy-prescient)
+(straight-use-package 'company-prescient)
+#+END_SRC
+
+* Super-word-mode
+For backward word and forwardword
+#+BEGIN_SRC emacs-lisp :results output silent
+  (superword-mode t)
 #+END_SRC
 
 * Winum
@@ -326,17 +370,17 @@ For backward word and forwardword
 
 * Company-mode
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package company
-    :ensure t
-    :custom
-    (company-begin-commands '(self-insert-command))
-    (company-idle-delay 0.0)
-    (company-minimum-prefix-length 1)
-    (company-show-numbers nil)
-    (company-tooltip-align-annotations 't)
-    :config
-    (add-hook 'after-init-hook 'global-company-mode)
-    )
+(use-package company
+  :ensure t
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay 0.3)
+  (company-minimum-prefix-length 1)
+  (company-show-numbers nil)
+  (company-tooltip-align-annotations 't)
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  )
 #+END_SRC
 
 * Python
@@ -355,7 +399,7 @@ For backward word and forwardword
   :config
 
   (setq python-indent-def-block-scale 1)
-  (add-hook 'python-mode-hook 'dy/python-setup)
+  (add-hook 'python-mode-hook 'dy-python-setup)
   ; Based on
   ; https://stackoverflow.com/questions/31443527/how-can-i-make-flycheck-use-virtualenv.
   ; Depends on modifying Python's sys.path in .pylintrc as in
@@ -369,7 +413,7 @@ For backward word and forwardword
     (flycheck-set-checker-executable (quote python-mypy)
                                   (executable-find "mypy"))))
 
-  (defun dy/python-setup ()
+  (defun dy-python-setup ()
     ; Check with flake8, pylint, and mypy. python-mypy already runs
     ; python-flake8, so there's no need to mention it here. However, we still
     ; need to mention python-pylint to run after python-flake8. This is a
@@ -428,7 +472,10 @@ For backward word and forwardword
   :ensure t
   )
 #+END_SRC
-
+** Remove font lock from python shell
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq python-shell-enable-font-lock nil)
+#+END_SRC
 ** Pytest
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package pytest
@@ -543,7 +590,15 @@ For backward word and forwardword
     (insert $docstring-shift)
     (setq $docstring-header (format "\"\"\"%s." $docstring-header))
     (insert $docstring-header)
-    (setq $fargs (seq-filter '(lambda (arg) (not (string= "self" (car arg)))) $fargs))
+    (setq $fargs
+	  (seq-filter '(lambda (arg)
+			 (let ((var-name (car arg)))
+			       (and
+				(not (string= "self" var-name))
+				(not (string= "*" var-name))
+				)))
+		      $fargs))
+    (message "%s" $fargs)
     (setq $docstring-args
       (mapcar '
        (lambda (arg)
@@ -602,14 +657,14 @@ For backward word and forwardword
        ((string= $block-type "async")
 	(let ($fname $fargs-string $fargs $docstring $docstring-header $docstring-args)
 	  (re-search-forward
-	   "[ \t]*async[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n]*\\)\)" nil t)
+	   "[ \t]*async[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n\*]*\\)\)" nil t)
 	    (setq $fname (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
 	    (setq $fargs-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
 	    (dy--python-add-docstring-to-function $fname $fargs-string $docstring-shift)))
        ((string= $block-type "def")
 	(let ($fname $fargs-string $fargs $docstring $docstring-header $docstring-args)
 	  (re-search-forward
-	   "[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n]*\\)\)" nil t)
+	   "[ \t]*def[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(\\([a-zA-Z0-9_\, \t\:=\n\*]*\\)\)" nil t)
 	    (setq $fname (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
 	    (setq $fargs-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
 	    (dy--python-add-docstring-to-function $fname $fargs-string $docstring-shift))))))
@@ -643,6 +698,36 @@ For backward word and forwardword
     (if (seq-contains (buffer-substring $start $end) ?=)
         (dy-python-kwargs-to-dict $start $end)
       (dy-python-dict-to-kwargs $start $end)))
+
+  (defun dy-py-split-string (&optional comma line-length)
+    "Split string to multiple."
+    (interactive)
+    (unless comma (setq comma "'"))
+    (unless line-length (setq line-length 70))
+    (let (start (string-ended nil))
+      (save-excursion
+        (search-backward comma)
+        (setq start (point))
+        (insert "(\n")
+        (indent-according-to-mode)
+        (goto-char (+ 1(point)))
+        (while (not string-ended)
+  	(re-search-forward (format "[[:space:]%s]" comma))
+  	(if (equal (buffer-substring-no-properties (match-beginning 0) (match-end 0)) " ")
+  	    (if (>= (current-column) line-length)
+  		(progn
+  		(insert (format "%s\n%s" comma comma))
+  		(indent-according-to-mode))
+  	      )
+  	  (setq string-ended 't)
+  	  )
+        )
+        (insert "\n)")
+        (indent-according-to-mode)
+      )
+    )
+  )
+ 
 #+END_SRC
 
 ** LSP
@@ -658,7 +743,7 @@ For backward word and forwardword
   (setq lsp-auto-guess-root t)
   (setq lsp-prefer-flymake nil)
 
-  (setq lsp-enable-snippet nil)
+  (setq lsp-enable-snippet t)
   (setq lsp-idle-delay 0.500)
   (setq lsp-headerline-breadcrumb-enable nil)
 
@@ -672,15 +757,22 @@ For backward word and forwardword
   )
 
 
-(use-package lsp-python-ms
+;; (use-package lsp-python-ms
+;;   :ensure t
+;;   :init (setq lsp-python-ms-auto-install-server t)
+;;   :hook (python-mode . (lambda ()
+;;                           (require 'lsp-python-ms)
+;;                           (setq-local ms-python-python-lint-enabled nil)
+;;                           (lsp)
+;;         ))
+;;   )  ; or lsp-deferred
+
+
+(use-package lsp-pyright
   :ensure t
-  :init (setq lsp-python-ms-auto-install-server t)
   :hook (python-mode . (lambda ()
-                          (require 'lsp-python-ms)
-                          (setq-local ms-python-python-lint-enabled nil)
-                          (lsp)
-        ))
-  )  ; or lsp-deferred
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 
 (use-package lsp-ui 
    :ensure t
@@ -704,6 +796,7 @@ For backward word and forwardword
 ;    (add-to-list 'company-backends 'company-lsp)
 ; )
 #+END_SRC
+company-backends
 
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq python-shell-interpreter "ipython")
@@ -729,6 +822,7 @@ For backward word and forwardword
      (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
      (define-key evil-visual-state-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
      (define-key evil-normal-state-map (kbd "<SPC> m i") 'dy-python-add-noqa)
+     (define-key evil-normal-state-map (kbd "<SPC> m s") 'dy-py-split-string)
      (define-key evil-normal-state-map (kbd "<SPC> m f") 'flycheck-list-errors)
      (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
      (define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
@@ -1030,6 +1124,16 @@ alias em="emacsclient -c -a emacs"
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 
 
+(defun enter-mu4e-context-mail ()
+  (setq mu4e-drafts-folder   "/mail[Gmail]/Drafts"
+        mu4e-sent-folder "/ambra/[Gmail]/Sent Mail"
+        mu4e-refile-folder  "/ambra/[Gmail]/All Mail"
+        mu4e-trash-folder  "/ambra/[Gmail]/Trash"
+        mu4e-maildir-shortcuts
+        '((:maildir "/ambra/inbox"       :key ?i)
+          (:maildir "/ambra/[Gmail]/Sent Mail"  :key ?s)
+          (:maildir "/ambra/[Gmail]/Trash" :key ?t))))
+
 (defun enter-mu4e-context-ambra ()
   (setq mu4e-drafts-folder   "/ambra/[Gmail]/Drafts"
         mu4e-sent-folder "/ambra/[Gmail]/Sent Mail"
@@ -1068,7 +1172,7 @@ alias em="emacsclient -c -a emacs"
         smtpmail-starttls-credentials
         '(("smtp.gmail.com" 587 nil nil))
         smtpmail-auth-credentials
-        (expand-file-name "~/.authinfo.gpg")
+        (expand-file-name "~/.authinfo")
         smtpmail-default-smtp-server "smtp.gmail.com"
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587
@@ -1076,7 +1180,26 @@ alias em="emacsclient -c -a emacs"
 
   (setq mu4e-contexts
         (list
-         ;; Work account
+         ;; Mail personal
+         (make-mu4e-context
+          :name "Mail"
+          :match-func
+            (lambda (msg)
+              (when msg
+                (string-prefix-p "/mail" (mu4e-message-field msg :maildir))))
+          :vars '((user-mail-address . "dyens@mail.ru")
+                  (smtpmail-starttls-credentials . '(("smtp.mail.com" 465 nil nil)))
+                  (smtpmail-auth-credentials . (expand-file-name "~/.authinfo"))
+                  (smtpmail-smtp-service . 465)
+		    (smtpmail-smtp-user . "dyens@mail.ru")
+	            (smtpmail-smtp-server . "smtp.mail.ru" )
+                  (user-full-name    . "Kapustin Alexander"))
+          :enter-func (lambda () (progn
+                              (mu4e-message "Entering Mail Context")
+                              (enter-mu4e-context-ambra)))
+          :leave-func (lambda () (mu4e-message "Leave Mail Context")))
+
+         ;; Ambra work account
          (make-mu4e-context
           :name "Ambra"
           :match-func
@@ -1084,13 +1207,15 @@ alias em="emacsclient -c -a emacs"
               (when msg
                 (string-prefix-p "/ambra" (mu4e-message-field msg :maildir))))
           :vars '((user-mail-address . "akapustin@ambrahealth.com")
+		    (smtpmail-smtp-user . "akapustin@ambrahealth.com")
+	            (smtpmail-smtp-server . "smtp.gmail.com" )
                   (user-full-name    . "Kapustin Alexander"))
           :enter-func (lambda () (progn
                               (mu4e-message "Entering Ambra Context")
                               (enter-mu4e-context-ambra)))
           :leave-func (lambda () (mu4e-message "Leave Ambra Context")))
 
-         ;; Personal account
+         ;; Quantumsoft work account
          (make-mu4e-context
           :name "Quantumsoft"
           :match-func
@@ -1098,6 +1223,8 @@ alias em="emacsclient -c -a emacs"
               (when msg
                 (string-prefix-p "/quantumsoft" (mu4e-message-field msg :maildir))))
           :vars '((user-mail-address . "alexander.kapustin@quantumsoft.ru")
+		    (smtpmail-smtp-user . "alexander.kapustin@quantumsoft.ru")
+	            (smtpmail-smtp-server . "smtp.gmail.com" )
                   (user-full-name    . "Kapustin Alexander"))
           :enter-func (lambda () (progn
                               (mu4e-message "Entering Quantumsoft Context")
@@ -1185,19 +1312,6 @@ alias em="emacsclient -c -a emacs"
      ))
 #+END_SRC
 
-* Tramp
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package zoom
-  :ensure t
-  :custom
-  (zoom-mode t)
-  :config
-  (defun dy-size-callback ()
-    (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
-          (t                            '(0.5 . 0.5))))
-  (custom-set-variables '(zoom-size 'size-callback)))
-#+END_SRC
-
 * Lilypond
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq load-path (append (list (expand-file-name "lilypond" init-dir)) load-path))
@@ -1207,16 +1321,184 @@ alias em="emacsclient -c -a emacs"
 (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 #+END_SRC
 
-
 * SLY
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package sly
   :ensure t)
 #+END_SRC
 
+* Multiple Cursors
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package evil-multiedit
+  :ensure t
+  :config
+  ;; Highlights all matches of the selection in the buffer.
+  (define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
+  
+  ;; Match the word under cursor (i.e. make it an edit region). Consecutive presses will
+  ;; incrementally add the next unmatched match.
+  (define-key evil-normal-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+  ;; Match selected region.
+  (define-key evil-visual-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+  ;; Insert marker at point
+  (define-key evil-insert-state-map (kbd "M-d") 'evil-multiedit-toggle-marker-here)
+  
+  ;; RET will toggle the region under the cursor
+  (define-key evil-multiedit-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+  
+  ;; ...and in visual mode, RET will disable all fields outside the selected region
+  (define-key evil-motion-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+  
+  ;; For moving between edit regions
+  (define-key evil-multiedit-state-map (kbd "C-n") 'evil-multiedit-next)
+  (define-key evil-multiedit-state-map (kbd "C-p") 'evil-multiedit-prev)
+  (define-key evil-multiedit-insert-state-map (kbd "C-n") 'evil-multiedit-next)
+  (define-key evil-multiedit-insert-state-map (kbd "C-p") 'evil-multiedit-prev)
+  
+  ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
+  (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
+)
+
+#+END_SRC
+
+* Widnow monocle
+https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package emacs
+  :config
+  (defvar dy-window-configuration nil
+    "Current window configuration.
+Intended for use by `dy-window-monocle'.")
+
+  (define-minor-mode dy-window-single-toggle
+    "Toggle between multiple windows and single window.
+This is the equivalent of maximising a window.  Tiling window
+managers such as DWM, BSPWM refer to this state as 'monocle'."
+    :lighter " [M]"
+    :global nil
+    (if (one-window-p)
+        (when dy-window-configuration
+          (set-window-configuration dy-window-configuration))
+      (setq dy-window-configuration (current-window-configuration))
+      (delete-other-windows)))
+
+  (define-key evil-normal-state-map (kbd "<SPC> z") 'dy-window-single-toggle)
+)
+
+#+END_SRC
+
+* Zoom
+#+BEGIN_SRC emacs-lisp :results output silent
+;; (use-package zoom
+;;   :ensure t
+;;   :custom
+;;   (zoom-mode t)
+;;   :config
+;;   (defun dy-size-callback ()
+;;     (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
+;;           (t                            '(0.5 . 0.5))))
+;;   (setq zoom-size 'dy-size-callback))
+#+END_SRC
+* Lua
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package lua-mode
+  :ensure t)
+#+END_SRC
+
+* Compilation mode
+** Truncate compilation buffer
+If in compilation buffer there are many lines it start to be a very slow
+#+BEGIN_SRC emacs-lisp :results output silent
+(add-hook 'compilation-filter-hook 'comint-truncate-buffer)
+(setq comint-buffer-maximum-size 2000)
+#+END_SRC
+
+** Scroll to the first error
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq compilation-scroll-output 'first-error)
+#+END_SRC
+
+** Notifications
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq compilation-finish-functions
+      (append compilation-finish-functions
+          '(dy-local-notify-compilation-finish)))
+
+(defun dy-local-notify-compilation-finish (buffer status)
+  "Notify compilation finish."
+  (dy-notify "Compilation finished in Emacs" status))
+#+END_SRC
+
+* Dy
+#+BEGIN_SRC emacs-lisp :results output silent
+
+(defun dy-notify (text &optional body)
+  "Desktop notify.
+
+  After next building emacs (build with bus) use:
+      (notifications-notify :text "test")
+  "
+  (interactive)
+  (unless body (setq body ""))
+  (call-process "notify-send" nil nil nil
+      "-t" "0"
+      "-i" "emacs"
+      text
+      body))
+
+(defun dy-screaming-to-camel (s)
+  "Convert screaming to camel case.
+  Example:
+      HELLO_WORLD -> HelloWorld
+  " 
+  (mapconcat 'capitalize (split-string s "_") ""))
+
+(defun amb-java-to-python-storage-errors ()
+  "Convert java storage errors to python"
+  (interactive)
+  (let* ((start (point))
+	 (end (search-forward ")"))
+	 (ex-definition (replace-regexp-in-string "[\s\n\t]+" " "(buffer-substring start end)))
+	 (reg-exp "\\(.*\\)(\\(.*\\), \"\\(.*\\)\", \\(.*\\), \"\\(.*\\)\")")
+
+	 )
+
+
+    (when (string-match reg-exp ex-definition)
+	(let ((class (match-string 1 ex-definition))
+	      (storage-code (match-string 2 ex-definition))
+	      (description (match-string 3 ex-definition))
+	      (http-status-code (match-string 4 ex-definition))
+	      (readable-status (match-string 5 ex-definition))
+	      class-string
+	      )
+	  (setq class (dy-screaming-to-camel (string-trim class)))
+	  (setq storage-code (string-trim storage-code))
+	  (setq description (string-trim description))
+	  (setq http-status-code (nth 1 (split-string (string-trim http-status-code)  "\\.")))
+	  (setq readable-status (string-trim readable-status))
+
+	  (setq class-string (format "
+class %s(StorageResponseException):
+    \"\"\"%s\"\"\"
+    storage_code = %s
+    description = '%s'
+    http_status_code = HTTPStatus\.%s
+    readable_status = %s
+
+" class class storage-code description http-status-code readable-status ))
+         (delete-region start end)
+	 (insert class-string)))))
+
+(define-key evil-normal-state-map (kbd "<SPC> `") 'amb-java-to-python-storage-errors)
+
+#+END_SRC
 
 * Restore performance
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
 #+END_SRC
+
+
+
