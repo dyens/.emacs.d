@@ -698,6 +698,36 @@ For backward word and forwardword
     (if (seq-contains (buffer-substring $start $end) ?=)
         (dy-python-kwargs-to-dict $start $end)
       (dy-python-dict-to-kwargs $start $end)))
+
+  (defun dy-py-split-string (&optional comma line-length)
+    "Split string to multiple."
+    (interactive)
+    (unless comma (setq comma "'"))
+    (unless line-length (setq line-length 70))
+    (let (start (string-ended nil))
+      (save-excursion
+        (search-backward comma)
+        (setq start (point))
+        (insert "(\n")
+        (indent-according-to-mode)
+        (goto-char (+ 1(point)))
+        (while (not string-ended)
+  	(re-search-forward (format "[[:space:]%s]" comma))
+  	(if (equal (buffer-substring-no-properties (match-beginning 0) (match-end 0)) " ")
+  	    (if (>= (current-column) line-length)
+  		(progn
+  		(insert (format "%s\n%s" comma comma))
+  		(indent-according-to-mode))
+  	      )
+  	  (setq string-ended 't)
+  	  )
+        )
+        (insert "\n)")
+        (indent-according-to-mode)
+      )
+    )
+  )
+ 
 #+END_SRC
 
 ** LSP
@@ -785,6 +815,7 @@ company-backends
      (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
      (define-key evil-visual-state-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
      (define-key evil-normal-state-map (kbd "<SPC> m i") 'dy-python-add-noqa)
+     (define-key evil-normal-state-map (kbd "<SPC> m s") 'dy-py-split-string)
      (define-key evil-normal-state-map (kbd "<SPC> m f") 'flycheck-list-errors)
      (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
      (define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
@@ -1086,6 +1117,16 @@ alias em="emacsclient -c -a emacs"
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 
 
+(defun enter-mu4e-context-mail ()
+  (setq mu4e-drafts-folder   "/mail[Gmail]/Drafts"
+        mu4e-sent-folder "/ambra/[Gmail]/Sent Mail"
+        mu4e-refile-folder  "/ambra/[Gmail]/All Mail"
+        mu4e-trash-folder  "/ambra/[Gmail]/Trash"
+        mu4e-maildir-shortcuts
+        '((:maildir "/ambra/inbox"       :key ?i)
+          (:maildir "/ambra/[Gmail]/Sent Mail"  :key ?s)
+          (:maildir "/ambra/[Gmail]/Trash" :key ?t))))
+
 (defun enter-mu4e-context-ambra ()
   (setq mu4e-drafts-folder   "/ambra/[Gmail]/Drafts"
         mu4e-sent-folder "/ambra/[Gmail]/Sent Mail"
@@ -1132,7 +1173,26 @@ alias em="emacsclient -c -a emacs"
 
   (setq mu4e-contexts
         (list
-         ;; Work account
+         ;; Mail personal
+         (make-mu4e-context
+          :name "Mail"
+          :match-func
+            (lambda (msg)
+              (when msg
+                (string-prefix-p "/mail" (mu4e-message-field msg :maildir))))
+          :vars '((user-mail-address . "dyens@mail.ru")
+                  (smtpmail-starttls-credentials . '(("smtp.mail.com" 465 nil nil)))
+                  (smtpmail-auth-credentials . (expand-file-name "~/.authinfo"))
+                  (smtpmail-smtp-service . 465)
+		    (smtpmail-smtp-user . "dyens@mail.ru")
+	            (smtpmail-smtp-server . "smtp.mail.ru" )
+                  (user-full-name    . "Kapustin Alexander"))
+          :enter-func (lambda () (progn
+                              (mu4e-message "Entering Mail Context")
+                              (enter-mu4e-context-ambra)))
+          :leave-func (lambda () (mu4e-message "Leave Mail Context")))
+
+         ;; Ambra work account
          (make-mu4e-context
           :name "Ambra"
           :match-func
@@ -1140,13 +1200,15 @@ alias em="emacsclient -c -a emacs"
               (when msg
                 (string-prefix-p "/ambra" (mu4e-message-field msg :maildir))))
           :vars '((user-mail-address . "akapustin@ambrahealth.com")
+		    (smtpmail-smtp-user . "akapustin@ambrahealth.com")
+	            (smtpmail-smtp-server . "smtp.gmail.com" )
                   (user-full-name    . "Kapustin Alexander"))
           :enter-func (lambda () (progn
                               (mu4e-message "Entering Ambra Context")
                               (enter-mu4e-context-ambra)))
           :leave-func (lambda () (mu4e-message "Leave Ambra Context")))
 
-         ;; Personal account
+         ;; Quantumsoft work account
          (make-mu4e-context
           :name "Quantumsoft"
           :match-func
@@ -1154,6 +1216,8 @@ alias em="emacsclient -c -a emacs"
               (when msg
                 (string-prefix-p "/quantumsoft" (mu4e-message-field msg :maildir))))
           :vars '((user-mail-address . "alexander.kapustin@quantumsoft.ru")
+		    (smtpmail-smtp-user . "alexander.kapustin@quantumsoft.ru")
+	            (smtpmail-smtp-server . "smtp.gmail.com" )
                   (user-full-name    . "Kapustin Alexander"))
           :enter-func (lambda () (progn
                               (mu4e-message "Entering Quantumsoft Context")
@@ -1283,13 +1347,6 @@ alias em="emacsclient -c -a emacs"
 
 #+END_SRC
 
-* Truncate compilation buffer
-If in compilation buffer there are many lines it start to be a very slow
-#+BEGIN_SRC emacs-lisp :results output silent
-(add-hook 'compilation-filter-hook 'comint-truncate-buffer)
-(setq comint-buffer-maximum-size 2000)
-#+END_SRC
-
 * Widnow monocle
 https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1333,6 +1390,98 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (use-package lua-mode
   :ensure t)
 #+END_SRC
+
+* Compilation mode
+** Truncate compilation buffer
+If in compilation buffer there are many lines it start to be a very slow
+#+BEGIN_SRC emacs-lisp :results output silent
+(add-hook 'compilation-filter-hook 'comint-truncate-buffer)
+(setq comint-buffer-maximum-size 2000)
+#+END_SRC
+
+** Scroll to the first error
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq compilation-scroll-output 'first-error)
+#+END_SRC
+
+** Notifications
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq compilation-finish-functions
+      (append compilation-finish-functions
+          '(dy-local-notify-compilation-finish)))
+
+(defun dy-local-notify-compilation-finish (buffer status)
+  "Notify compilation finish."
+  (dy-notify "Compilation finished in Emacs" status))
+#+END_SRC
+
+* Dy
+#+BEGIN_SRC emacs-lisp :results output silent
+
+(defun dy-notify (text &optional body)
+  "Desktop notify.
+
+  After next building emacs (build with bus) use:
+      (notifications-notify :text "test")
+  "
+  (interactive)
+  (unless body (setq body ""))
+  (call-process "notify-send" nil nil nil
+      "-t" "0"
+      "-i" "emacs"
+      text
+      body))
+
+(defun dy-screaming-to-camel (s)
+  "Convert screaming to camel case.
+  Example:
+      HELLO_WORLD -> HelloWorld
+  " 
+  (mapconcat 'capitalize (split-string s "_") ""))
+
+(defun amb-java-to-python-storage-errors ()
+  "Convert java storage errors to python"
+  (interactive)
+  (let* ((start (point))
+	 (end (search-forward ")"))
+	 (ex-definition (replace-regexp-in-string "[\s\n\t]+" " "(buffer-substring start end)))
+	 (reg-exp "\\(.*\\)(\\(.*\\), \"\\(.*\\)\", \\(.*\\), \"\\(.*\\)\")")
+
+	 )
+
+
+    (when (string-match reg-exp ex-definition)
+	(let ((class (match-string 1 ex-definition))
+	      (storage-code (match-string 2 ex-definition))
+	      (description (match-string 3 ex-definition))
+	      (http-status-code (match-string 4 ex-definition))
+	      (readable-status (match-string 5 ex-definition))
+	      class-string
+	      )
+	  (setq class (dy-screaming-to-camel (string-trim class)))
+	  (setq storage-code (string-trim storage-code))
+	  (setq description (string-trim description))
+	  (setq http-status-code (nth 1 (split-string (string-trim http-status-code)  "\\.")))
+	  (setq readable-status (string-trim readable-status))
+
+	  (setq class-string (format "
+class %s(StorageResponseException):
+    \"\"\"%s\"\"\"
+    storage_code = %s
+    description = '%s'
+    http_status_code = HTTPStatus\.%s
+    readable_status = %s
+
+" class class storage-code description http-status-code readable-status ))
+         (delete-region start end)
+	 (insert class-string)))))
+
+(define-key evil-normal-state-map (kbd "<SPC> `") 'amb-java-to-python-storage-errors)
+
+#+END_SRC
+
+
+
 * Restore performance
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; Make gc pauses faster by decreasing the threshold.
