@@ -72,6 +72,7 @@ Trying out =straight.el= for package management.  So far so good!
 
 #+BEGIN_SRC emacs-lisp :results output silent
   ;; Bootstrap straight.el
+  (setq native-comp-deferred-compilation-deny-list nil)
   (defvar bootstrap-version)
   (let ((bootstrap-file
         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
