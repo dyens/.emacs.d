@@ -1430,6 +1430,34 @@ If in compilation buffer there are many lines it start to be a very slow
   (dy-notify "Compilation finished in Emacs" status))
 #+END_SRC
 
+* Dired
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom (
+    (dired-listing-switches "-agho --group-directories-first")
+    (dired-dwim-target t)
+  )
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "h" 'dired-single-up-directory
+    "l" 'dired-single-buffer))
+
+(use-package dired-single
+  :ensure t)
+
+(use-package dired-open
+  :ensure t
+  :config
+  ;; Doesn't work as expected!
+  ;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+  (setq dired-open-extensions '(("png" . "feh")
+                                ("mp4" . "mplayer"))))
+
+#+END_SRC
+
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
 
