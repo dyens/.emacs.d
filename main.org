@@ -285,7 +285,8 @@ find them with C-x C-f (find-file) if I really need to.
 
   (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
   (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-
+  ;; Instead of C-u
+  (define-key evil-normal-state-map (kbd "<SPC> u") 'universal-argument)
   (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
   )
 
