@@ -1459,6 +1459,43 @@ If in compilation buffer there are many lines it start to be a very slow
 
 #+END_SRC
 
+* Eshell
+#+BEGIN_SRC emacs-lisp :results output silent
+;; From SystemCrafters
+;; https://github.com/daviwil/emacs-from-scratch/blob/bbfbc77b3afab0c14149e07d0ab08d275d4ba575/Emacs.org#terminals
+(defun dy-configure-eshell ()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+  ;; Bind some useful keys for evil-mode
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+  (evil-normalize-keymaps)
+
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt
+ :ensure t
+)
+
+(use-package eshell
+  :hook (eshell-first-time-mode . dy-configure-eshell)
+  :config
+
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop" "zsh" "vi")))
+
+  (eshell-git-prompt-use-theme 'powerline)
+)
+#+END_SRC
+
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
 
