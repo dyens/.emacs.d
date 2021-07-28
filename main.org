@@ -1407,6 +1407,24 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   :ensure t)
 #+END_SRC
 
+* Org Roam
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/org_roam")
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         :map org-mode-map
+         ("C-M-i"    . completion-at-point))
+  :config
+  (org-roam-setup))
+#+END_SRC
+
 * Compilation mode
 ** Truncate compilation buffer
 If in compilation buffer there are many lines it start to be a very slow
@@ -1559,6 +1577,20 @@ class %s(StorageResponseException):
 
 (define-key evil-normal-state-map (kbd "<SPC> `") 'amb-java-to-python-storage-errors)
 
+
+;; https://protesilaos.com/codelog/2021-07-24-emacs-misc-custom-commands/
+;; A variant of this is present in the crux.el package by Bozhidar
+;; Batsov.
+(defun dy-rename-file-and-buffer (name)
+  "Apply NAME to current file and rename its buffer.
+Do not try to make a new directory or anything fancy."
+  (interactive
+   (list (read-string "Rename current file: " (buffer-file-name))))
+  (let ((file (buffer-file-name)))
+    (if (vc-registered file)
+        (vc-rename-file file name)
+      (rename-file file name))
+    (set-visited-file-name name t t)))
 #+END_SRC
 
 * Restore performance
