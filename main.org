@@ -270,13 +270,6 @@ find them with C-x C-f (find-file) if I really need to.
   (define-key evil-normal-state-map (kbd "<SPC> 5") 'winum-select-window-5)
   (define-key evil-normal-state-map (kbd "<SPC> 6") 'winum-select-window-6)
 
-  (define-key evil-normal-state-map (kbd "<SPC> l 0") 'eyebrowse-switch-to-window-config-0)
-  (define-key evil-normal-state-map (kbd "<SPC> l 1") 'eyebrowse-switch-to-window-config-1)
-  (define-key evil-normal-state-map (kbd "<SPC> l 2") 'eyebrowse-switch-to-window-config-2)
-  (define-key evil-normal-state-map (kbd "<SPC> l 3") 'eyebrowse-switch-to-window-config-3)
-  (define-key evil-normal-state-map (kbd "<SPC> l 4") 'eyebrowse-switch-to-window-config-4)
-  (define-key evil-normal-state-map (kbd "<SPC> l 5") 'eyebrowse-switch-to-window-config-5)
-  (define-key evil-normal-state-map (kbd "<SPC> l 6") 'eyebrowse-switch-to-window-config-6)
   (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
   (define-key evil-normal-state-map (kbd "<SPC> a") 'org-agenda)
 
@@ -288,6 +281,9 @@ find them with C-x C-f (find-file) if I really need to.
   ;; Instead of C-u
   (define-key evil-normal-state-map (kbd "<SPC> u") 'universal-argument)
   (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
+
+  (define-key evil-normal-state-map (kbd "<SPC> l") 'perspective-map)
+
   )
 
 (use-package evil-collection
@@ -342,15 +338,6 @@ For backward word and forwardword
     (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
     (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
     (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
-    )
-#+END_SRC
-
-* Eyebrowse
-#+BEGIN_SRC emacs-lisp :results output silent
-  (use-package eyebrowse
-    :ensure t
-    :config 
-    (eyebrowse-mode)
     )
 #+END_SRC
 
@@ -908,6 +895,7 @@ company-backends
   (org-display-inline-images t)
   (org-redisplay-inline-images t)
   (org-startup-with-inline-images "inlineimages")
+  (org-startup-folded t)
   (org-agenda-files (list "~/org/agenda.org"))
   (org-log-done 'time)
   ;; Remove tab useless source block identation
@@ -929,6 +917,7 @@ company-backends
   ; (org-babel-do-load-languages
   ;  'org-babel-load-languages
   ;  '((translate . t))))
+  (setq org-clock-sound "~/.emacs.d/alarm.wav")
 )
  (require 'org-tempo)
  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -1513,6 +1502,21 @@ If in compilation buffer there are many lines it start to be a very slow
 
   (eshell-git-prompt-use-theme 'powerline)
 )
+#+END_SRC
+
+* Perspective
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package perspective
+  :ensure t
+  :config
+  (persp-mode)
+)
+(use-package persp-projectile
+  :ensure t
+  :config
+  (define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
+)
+
 #+END_SRC
 
 * Dy
