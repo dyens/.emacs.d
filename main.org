@@ -1526,7 +1526,7 @@ If in compilation buffer there are many lines it start to be a very slow
   "Desktop notify.
 
   After next building emacs (build with bus) use:
-      (notifications-notify :text "test")
+      (notifications-notify :text \"test\")
   "
   (interactive)
   (unless body (setq body ""))
