@@ -181,19 +181,24 @@ find them with C-x C-f (find-file) if I really need to.
   ;;
   ;;  (load-theme 'modus-operandi t)           ; Light theme
 
+   (load-theme 'apropospriate-dark t)
+
+
+
+
   ;; My default theme
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     (scroll-bar-mode 0)
-     (fringe-mode 0)
-     
-     (set-face-attribute 'mode-line nil :box nil)
-     (set-face-attribute 'mode-line-inactive nil :box nil)
-     
-     (set-face-attribute 'mode-line nil :background "#c6edf9")
-     (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
-     
-     (set-face-background 'vertical-border "gray")
-     (set-face-foreground 'vertical-border (face-background 'vertical-border))
+  ;;   (scroll-bar-mode 0)
+  ;;   (fringe-mode 0)
+  ;;   
+  ;;   (set-face-attribute 'mode-line nil :box nil)
+  ;;   (set-face-attribute 'mode-line-inactive nil :box nil)
+  ;;   
+  ;;   (set-face-attribute 'mode-line nil :background "#c6edf9")
+  ;;   (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+  ;;   
+  ;;   (set-face-background 'vertical-border "gray")
+  ;;   (set-face-foreground 'vertical-border (face-background 'vertical-border))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; (load-theme 'adwaita t)
@@ -273,8 +278,10 @@ find them with C-x C-f (find-file) if I really need to.
   (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
   (define-key evil-normal-state-map (kbd "<SPC> a") 'org-agenda)
 
-  (define-key evil-normal-state-map (kbd "<SPC> c") 'comment-line)
-  (define-key evil-visual-state-map (kbd "<SPC> c") 'comment-line)
+  (define-key evil-normal-state-map (kbd "<SPC> c") 'compile)
+
+  (define-key evil-normal-state-map (kbd "<SPC> #") 'comment-line)
+  (define-key evil-visual-state-map (kbd "<SPC> #") 'comment-line)
 
   (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
   (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
