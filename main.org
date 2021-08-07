@@ -292,6 +292,16 @@ find them with C-x C-f (find-file) if I really need to.
 
   (define-key evil-normal-state-map (kbd "<SPC> l") 'perspective-map)
 
+  ;; fast function
+  (define-key evil-normal-state-map (kbd "<SPC> ~") 'dy-set-fast-function)
+
+  (defun dy-function-not-found ()
+    "Function is not find"
+    (interactive)
+    (error "Fast function is not defined: use dy-set-fast-function"))
+
+  (define-key evil-normal-state-map (kbd "<SPC> `") 'dy-function-not-found)
+
   )
 
 (use-package evil-collection
@@ -1595,6 +1605,11 @@ class %s(StorageResponseException):
 
 (define-key evil-normal-state-map (kbd "<SPC> `") 'amb-java-to-python-storage-errors)
 
+(defun dy-set-fast-function (fn_name)
+  "Set some function on <SPC> ` in evil normal state map."
+  (interactive "aBind function name: ")
+  (define-key evil-normal-state-map (kbd "<SPC> `") fn_name)
+  )
 
 ;; https://protesilaos.com/codelog/2021-07-24-emacs-misc-custom-commands/
 ;; A variant of this is present in the crux.el package by Bozhidar
