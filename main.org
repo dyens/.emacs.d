@@ -261,6 +261,9 @@ find them with C-x C-f (find-file) if I really need to.
   :init
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
+  ;; Put a cursor to a new window
+  (setq evil-vsplit-window-right t)
+  (setq evil-split-window-below t)
   :config 
   (evil-mode 1)
   ;; With new evil changes and new emacs evil use different undo systemes
@@ -533,7 +536,7 @@ For backward word and forwardword
     "Split a python argument string into ((name, type, default)..) tuples"
     (let* (
            (args (split-string arg-string "[[:blank:]]*,[[:blank:]]*" t))
-           (args (seq-filter '(lambda (x) (not (string-blank-p x))) args))
+           (args (seq-filter (lambda (x) (not (string-blank-p x))) args))
            (args (mapcar 'string-trim args))
            (arg-values (mapcar 'dy-python-arg-params args))
            )
@@ -584,7 +587,7 @@ For backward word and forwardword
 
 
   (add-hook 'dy-python-mode-hook
-            '(lambda () (set (make-local-variable 'yas-indent-line) 'fixed)))
+            (lambda () (set (make-local-variable 'yas-indent-line) 'fixed)))
 
 
 (defun dy--python-add-docstring-to-function ($fname $fargs-string $docstring-shift)
@@ -600,7 +603,7 @@ For backward word and forwardword
     (setq $docstring-header (format "\"\"\"%s." $docstring-header))
     (insert $docstring-header)
     (setq $fargs
-	  (seq-filter '(lambda (arg)
+	  (seq-filter (lambda (arg)
 			 (let ((var-name (car arg)))
 			       (and
 				(not (string= "self" var-name))
@@ -609,7 +612,7 @@ For backward word and forwardword
 		      $fargs))
     (message "%s" $fargs)
     (setq $docstring-args
-      (mapcar '
+      (mapcar
        (lambda (arg)
          (format ":param %s: %s"
     	     (car arg)
