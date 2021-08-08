@@ -245,6 +245,12 @@ find them with C-x C-f (find-file) if I really need to.
                     ;:width 'normal
 )
 #+END_SRC
+** Winner mode
+#+BEGIN_SRC emacs-lisp :results output silent
+;; C-c left - undo
+;; C-c rignt - redo
+(winner-mode t)
+#+END_SRC
 
 * Evil mode
 #+BEGIN_SRC emacs-lisp :results output silent
