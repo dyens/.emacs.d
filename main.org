@@ -182,6 +182,7 @@ find them with C-x C-f (find-file) if I really need to.
   ;;  (load-theme 'modus-operandi t)           ; Light theme
 
    (load-theme 'apropospriate-dark t)
+   (global-hl-line-mode t)
 
 
 
