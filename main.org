@@ -237,7 +237,7 @@ find them with C-x C-f (find-file) if I really need to.
                     :family "Iosevka SS04"
                     :height 110
                     :weight 'regular
-                    ;:width 'normal
+                    :width 'normal
 )
 #+END_SRC
 ** Winner mode
