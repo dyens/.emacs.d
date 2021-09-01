@@ -1,4 +1,4 @@
-:#+TITLE: Emacs configuration
+#+TITLE: Emacs configuration
 #+STARTUP: indent
 #+OPTIONS: H:5 num:nil tags:nil toc:nil timestamps:t
 #+LAYOUT: post
@@ -1145,34 +1145,57 @@ alias em="emacsclient -c -a emacs"
 
 
 (defun enter-mu4e-context-mail ()
-  (setq mu4e-drafts-folder   "/mail[Gmail]/Drafts"
-        mu4e-sent-folder "/ambra/[Gmail]/Sent Mail"
-        mu4e-refile-folder  "/ambra/[Gmail]/All Mail"
-        mu4e-trash-folder  "/ambra/[Gmail]/Trash"
+  (setq mu4e-drafts-folder   "/mail/drafts"
+        mu4e-sent-folder "/mail/sent"
+        ;; mu4e-refile-folder  "/mail/[Gmail]/All Mail"
+        mu4e-trash-folder  "/mail/trash"
         mu4e-maildir-shortcuts
-        '((:maildir "/ambra/inbox"       :key ?i)
-          (:maildir "/ambra/[Gmail]/Sent Mail"  :key ?s)
-          (:maildir "/ambra/[Gmail]/Trash" :key ?t))))
+        '((:maildir "/mail/inbox" :key ?i)
+          (:maildir "/mail/sent"  :key ?s)
+          (:maildir "/mail/trash" :key ?t))))
 
 (defun enter-mu4e-context-ambra ()
   (setq mu4e-drafts-folder   "/ambra/[Gmail]/Drafts"
         mu4e-sent-folder "/ambra/[Gmail]/Sent Mail"
-        mu4e-refile-folder  "/ambra/[Gmail]/All Mail"
+        ;; mu4e-refile-folder  "/ambra/[Gmail]/All Mail"
         mu4e-trash-folder  "/ambra/[Gmail]/Trash"
         mu4e-maildir-shortcuts
-        '((:maildir "/ambra/inbox"       :key ?i)
-          (:maildir "/ambra/[Gmail]/Sent Mail"  :key ?s)
+        '((:maildir "/ambra/inbox" :key ?i)
+          (:maildir "/ambra/[Gmail]/Sent Mail" :key ?s)
           (:maildir "/ambra/[Gmail]/Trash" :key ?t))))
 
 (defun enter-mu4e-context-quantumsoft ()
   (setq mu4e-drafts-folder   "/quantumsoft/[Gmail]/Drafts"
         mu4e-sent-folder "/quantumsoft/[Gmail]/Sent Mail"
-        mu4e-refile-folder  "/quantumsoft/[Gmail]/All Mail"
+        ;; mu4e-refile-folder  "/quantumsoft/[Gmail]/All Mail"
         mu4e-trash-folder  "/quantumsoft/[Gmail]/Trash"
         mu4e-maildir-shortcuts
-        '((:maildir "/quantumsoft/inbox"       :key ?i)
-          (:maildir "/quantumsoft/[Gmail]/Sent Mail"  :key ?s)
+        '((:maildir "/quantumsoft/inbox" :key ?i)
+          (:maildir "/quantumsoft/[Gmail]/Sent Mail" :key ?s)
           (:maildir "/quantumsoft/[Gmail]/Trash" :key ?t))))
+
+(setq dy-mu4e-bookmarks-mail
+      '(("maildir:/mail/inbox" "Inbox" ?i)
+        ("flag:unread AND to:dyens@mail.ru" "Unread messages" ?u)
+        ("date:today..now AND to:dyens@mail.ru" "Today's messages" ?t)
+        ("date:7d..now AND to:dyens@mail.ru" "Last 7 days" ?w)
+        ("mime:image/* AND to:dyens@mail.ru" "Messages with images" ?p)))
+
+
+(setq dy-mu4e-bookmarks-ambra
+      '(("maildir:/ambra/inbox" "Inbox" ?i)
+        ("flag:unread AND to:akapustin@ambrahealth.com" "Unread messages" ?u)
+        ("date:today..now AND to:akapustin@ambrahealth.com" "Today's messages" ?t)
+        ("date:7d..now AND to:akapustin@ambrahealth.com" "Last 7 days" ?w)
+        ("mime:image/* AND to:akapustin@ambrahealth.com" "Messages with images" ?p)))
+
+
+(setq dy-mu4e-bookmarks-quantumsoft
+      '(("maildir:/quantumsoft/inbox" "Inbox" ?i)
+        ("flag:unread AND to:akapustin@quantumsofthealth.ru" "Unread messages" ?u)
+        ("date:today..now AND to:akapustin@quantumsofthealth.ru" "Today's messages" ?t)
+        ("date:7d..now AND to:akapustin@quantumsofthealth.ru" "Last 7 days" ?w)
+        ("mime:image/* AND to:akapustin@quantumsofthealth.ru" "Messages with images" ?p)))
 
 
 (use-package mu4e
@@ -1186,6 +1209,7 @@ alias em="emacsclient -c -a emacs"
   (setq mu4e-update-interval (* 10 60))
   (setq mu4e-get-mail-command "mbsync -a")
   (setq mu4e-maildir "~/mailbox")
+  (setq mu4e-bookmarks dy-mu4e-bookmarks-mail)
 
   (setq message-send-mail-function 'smtpmail-send-it
         starttls-use-gnutls t
@@ -1199,36 +1223,39 @@ alias em="emacsclient -c -a emacs"
         smtpmail-debug-info t)
 
   (setq mu4e-contexts
-        (list
+        `(
          ;; Mail personal
-         (make-mu4e-context
+         ,(make-mu4e-context
           :name "Mail"
           :match-func
             (lambda (msg)
               (when msg
                 (string-prefix-p "/mail" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "dyens@mail.ru")
+          :vars `((user-mail-address . "dyens@mail.ru")
                   (smtpmail-starttls-credentials . '(("smtp.mail.com" 465 nil nil)))
                   (smtpmail-auth-credentials . (expand-file-name "~/.authinfo"))
                   (smtpmail-smtp-service . 465)
 		    (smtpmail-smtp-user . "dyens@mail.ru")
 	            (smtpmail-smtp-server . "smtp.mail.ru" )
-                  (user-full-name    . "Kapustin Alexander"))
+                  (smtpmail-stream-type . ssl)
+                  (mu4e-bookmarks . ,dy-mu4e-bookmarks-mail)
+                  (user-full-name . "Kapustin Alexander"))
           :enter-func (lambda () (progn
                               (mu4e-message "Entering Mail Context")
-                              (enter-mu4e-context-ambra)))
+                              (enter-mu4e-context-mail)))
           :leave-func (lambda () (mu4e-message "Leave Mail Context")))
 
          ;; Ambra work account
-         (make-mu4e-context
+         ,(make-mu4e-context
           :name "Ambra"
           :match-func
             (lambda (msg)
               (when msg
                 (string-prefix-p "/ambra" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "akapustin@ambrahealth.com")
+          :vars `((user-mail-address . "akapustin@ambrahealth.com")
 		    (smtpmail-smtp-user . "akapustin@ambrahealth.com")
 	            (smtpmail-smtp-server . "smtp.gmail.com" )
+                  (mu4e-bookmarks . ,dy-mu4e-bookmarks-ambra)
                   (user-full-name    . "Kapustin Alexander"))
           :enter-func (lambda () (progn
                               (mu4e-message "Entering Ambra Context")
@@ -1236,15 +1263,16 @@ alias em="emacsclient -c -a emacs"
           :leave-func (lambda () (mu4e-message "Leave Ambra Context")))
 
          ;; Quantumsoft work account
-         (make-mu4e-context
+         ,(make-mu4e-context
           :name "Quantumsoft"
           :match-func
             (lambda (msg)
               (when msg
                 (string-prefix-p "/quantumsoft" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "alexander.kapustin@quantumsoft.ru")
+          :vars `((user-mail-address . "alexander.kapustin@quantumsoft.ru")
 		    (smtpmail-smtp-user . "alexander.kapustin@quantumsoft.ru")
 	            (smtpmail-smtp-server . "smtp.gmail.com" )
+                  (mu4e-bookmarks . ,dy-mu4e-bookmarks-quantumsoft)
                   (user-full-name    . "Kapustin Alexander"))
           :enter-func (lambda () (progn
                               (mu4e-message "Entering Quantumsoft Context")
