@@ -1495,9 +1495,15 @@ If in compilation buffer there are many lines it start to be a very slow
       (append compilation-finish-functions
           '(dy-local-notify-compilation-finish)))
 
+(defcustom dy-compilation-notify nil
+  "Non-nil means automatically frobnicate all buffers."
+  :type 'boolean
+  :require 'compilation-mode
+  :group 'dy-custom)
+
 (defun dy-local-notify-compilation-finish (buffer status)
   "Notify compilation finish."
-  (dy-notify "Compilation finished in Emacs" status))
+  (if dy-compilation-notify (dy-notify "Compilation finished in Emacs" status)))
 #+END_SRC
 
 * Dired
