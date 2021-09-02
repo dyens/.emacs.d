@@ -1585,7 +1585,22 @@ If in compilation buffer there are many lines it start to be a very slow
 )
 
 #+END_SRC
+* C++
+** Clang-Format
+#+BEGIN_SRC emacs-lisp :results output silent
+;; clang-format --style=google --dump-config > .clang-format 
+(use-package clang-format
+  :ensure t
+)
+#+END_SRC
 
+** Bidnings
+#+BEGIN_SRC emacs-lisp :results output silent
+  (add-hook
+   'c++-mode-hook
+   (lambda()
+     (define-key evil-normal-state-map (kbd "<SPC> =") 'clang-format-buffer)))
+#+END_SRC
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
 
