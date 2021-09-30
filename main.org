@@ -1461,15 +1461,19 @@ If in compilation buffer there are many lines it start to be a very slow
 (setq compilation-scroll-output 'first-error)
 #+END_SRC
 
-** Notifications
+** COMMENT Notifications
 #+BEGIN_SRC emacs-lisp :results output silent
+(defcustom dy-notify-after-compilation nil "Notifcation after compilation" :type 'hook :options '(t nil) :group 'dy-settings)
+;; (custom-set-variables '(dy-notify-after-compilation t))
+
 (setq compilation-finish-functions
       (append compilation-finish-functions
           '(dy-local-notify-compilation-finish)))
 
 (defun dy-local-notify-compilation-finish (buffer status)
   "Notify compilation finish."
-  (dy-notify "Compilation finished in Emacs" status))
+  (if dy-notify-after-compilation
+      (dy-notify "Compilation finished in Emacs" status)))
 #+END_SRC
 
 * Dired
