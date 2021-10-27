@@ -157,7 +157,7 @@ find them with C-x C-f (find-file) if I really need to.
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'gruvbox t))
-;; (load-theme 'wombat t)
+(load-theme 'wombat t)
 ;; (load-theme 'deeper-blue t)
 
 ;;  (use-package apropospriate-theme
@@ -183,7 +183,7 @@ find them with C-x C-f (find-file) if I really need to.
 
 
   ;; My default theme
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun dy-light-theme ()
     (scroll-bar-mode 0)
     (fringe-mode 0)
     
@@ -194,8 +194,10 @@ find them with C-x C-f (find-file) if I really need to.
     (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
     
     (set-face-background 'vertical-border "gray")
-    (set-face-foreground 'vertical-border (face-background 'vertical-border))
+    (set-face-foreground 'vertical-border (face-background 'vertical-border)))
   
+;; (dy-light-theme)
+
 
     ; (load-theme 'adwaita t)
     ; (load-theme 'gruvbox-dark-hard t)
@@ -769,6 +771,11 @@ For backward word and forwardword
   (setq lsp-rust-server 'rust-analyzer)
   )
 
+(use-package ccls
+    :ensure t
+    :hook ((c-mode c++-mode objc-mode cuda-mode) .
+         (lambda () (require 'ccls) (lsp))))
+
 
 ;; (use-package lsp-python-ms
 ;;   :ensure t
@@ -942,7 +949,7 @@ company-backends
   ;  'org-babel-load-languages
   ;  '((translate . t))))
   (setq org-clock-sound "~/.emacs.d/alarm.wav")
-
+  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (setq org-capture-templates
          '(("t" "Tasks" entry (file+headline "~/org/agenda.org" "Tasks")
   	  "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))\n" )))
@@ -1606,7 +1613,7 @@ If in compilation buffer there are many lines it start to be a very slow
      (define-key evil-normal-state-map (kbd "<SPC> =") 'clang-format-buffer)))
 #+END_SRC
 
-** Bidnings
+** Ggtags
 #+BEGIN_SRC emacs-lisp :results output silent
 
 (use-package ggtags
@@ -1638,10 +1645,10 @@ If in compilation buffer there are many lines it start to be a very slow
   (interactive)
   (unless body (setq body ""))
   (call-process "notify-send" nil nil nil
-      "-t" "0"
-      "-i" "emacs"
-      text
-      body))
+		"-t" "0"
+		"-i" "emacs"
+		text
+		body))
 
 (defun dy-screaming-to-camel (s)
   "Convert screaming to camel case.
@@ -1662,30 +1669,31 @@ If in compilation buffer there are many lines it start to be a very slow
 
 
     (when (string-match reg-exp ex-definition)
-	(let ((class (match-string 1 ex-definition))
-	      (storage-code (match-string 2 ex-definition))
-	      (description (match-string 3 ex-definition))
-	      (http-status-code (match-string 4 ex-definition))
-	      (readable-status (match-string 5 ex-definition))
-	      class-string
-	      )
-	  (setq class (dy-screaming-to-camel (string-trim class)))
-	  (setq storage-code (string-trim storage-code))
-	  (setq description (string-trim description))
-	  (setq http-status-code (nth 1 (split-string (string-trim http-status-code)  "\\.")))
-	  (setq readable-status (string-trim readable-status))
+      (let ((class (match-string 1 ex-definition))
+	    (storage-code (match-string 2 ex-definition))
+	    (description (match-string 3 ex-definition))
+	    (http-status-code (match-string 4 ex-definition))
+	    (readable-status (match-string 5 ex-definition))
+	    class-string
+	    )
+	(setq class (dy-screaming-to-camel (string-trim class)))
+	(setq storage-code (string-trim storage-code))
+	(setq description (string-trim description))
+	(setq http-status-code (nth 1 (split-string (string-trim http-status-code)  "\\.")))
+	(setq readable-status (string-trim readable-status))
 
-	  (setq class-string (format "
+	(setq class-string (format "
 class %s(StorageResponseException):
-    \"\"\"%s\"\"\"
+    \"\"\"%s.\"\"\"
+
     storage_code = %s
     description = '%s'
-    http_status_code = HTTPStatus\.%s
-    readable_status = %s
+    http_status_code = HTTPStatus\.%s.value
+    readable_status = '%s'
 
 " class class storage-code description http-status-code readable-status ))
-         (delete-region start end)
-	 (insert class-string)))))
+        (delete-region start end)
+	(insert class-string)))))
 
 (define-key evil-normal-state-map (kbd "<SPC> `") 'amb-java-to-python-storage-errors)
 
@@ -1718,10 +1726,10 @@ Do not try to make a new directory or anything fancy."
 	 (p1 (region-beginning))
 	 (p2 (region-end)))
     (if (use-region-p)
-    (google-translate-translate
-     source-language target-language
-     (buffer-substring-no-properties p1 p2))
-    (google-translate-at-point))))
+	(google-translate-translate
+	 source-language target-language
+	 (buffer-substring-no-properties p1 p2))
+      (google-translate-at-point))))
 
 
 (defun dy-google-translate-reverse ()
@@ -1732,8 +1740,41 @@ Do not try to make a new directory or anything fancy."
 	 (p1 (region-beginning))
 	 (p2 (region-end)))
     (if (use-region-p)
-    (google-translate-translate
-     source-language target-language
-     (buffer-substring-no-properties p1 p2))
-    (google-translate-at-point-reverse))))
+	(google-translate-translate
+	 source-language target-language
+	 (buffer-substring-no-properties p1 p2))
+      (google-translate-at-point-reverse))))
+
+(defun dy-setup-hud-project ()
+  "Set environment for hud project."
+  (interactive)
+  (progn
+    (setenv "CMAKE_PREFIX_PATH" "/home/dyens/ros_catkin_ws/install_isolated:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
+    (setenv "LD_LIBRARY_PATH" "/home/dyens/ros_catkin_ws/install_isolated/lib::/usr/local/cuda/lib64:/usr/local/cuda/lib64")
+    (setenv "PATH" "/home/dyens/ros_catkin_ws/install_isolated/bin:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/home/dyens/.local/bin:/home/dyens/.cargo/bin:/usr/lib64/qt-3.3/bin:/usr/share/Modules/bin:/usr/lib64/ccache:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/cuda/bin:/usr/local/go/go/bin:/home/dyens/bin:/usr/local/cuda/bin:/usr/local/go/go/bin")
+    (setenv "PKG_CONFIG_PATH" "/home/dyens/ros_catkin_ws/install_isolated/lib/pkgconfig")
+    (setenv "PYTHONPATH" "/home/dyens/ros_catkin_ws/install_isolated/lib/python3.9/site-packages")
+    (setenv "ROS_ETC_DIR" "/home/dyens/ros_catkin_ws/install_isolated/etc/ros")
+    (setenv "ROS_PACKAGE_PATH" "/home/dyens/ros_catkin_ws/install_isolated/share")
+    (setenv "ROS_ROOT" "/home/dyens/ros_catkin_ws/install_isolated/share/ros")
+    (setq default-directory "/home/dyens/dev/quantumsoft/catkin_ws/src/hud_data/src/")))
+
+
+(defun dy-hud-cppcheck ()
+  "Start cpp check for hud."
+  (interactive)
+  (projectile-with-default-dir (projectile-acquire-root)
+    (async-shell-command
+     "cd catkin_ws && cppcheck -q --enable=all --std=c++17  --inconclusive --project=src/compile_commands.json  --suppress=\"*:/home/dyens/ros_catkin_ws/*\" --suppress=\"*:devel/include/helm_msgs/*\""
+     "*hud-cppcheck*")))
+
+
+(defun dy-hud-tidy ()
+  "Start cpp check for hud."
+  (interactive)
+  (projectile-with-default-dir (projectile-acquire-root)
+    (async-shell-command
+     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print | xargs clang-tidy -checks='*,-clang-analyzer-optin.cplusplus.VirtualCall,-llvmlibc-callee-namespace'"
+     "*hud-tidy")))
+
 #+END_SRC
