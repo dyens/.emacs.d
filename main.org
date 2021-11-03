@@ -1777,16 +1777,35 @@ Do not try to make a new directory or anything fancy."
   (interactive)
   (projectile-with-default-dir (projectile-acquire-root)
     (async-shell-command
-     "cd catkin_ws && cppcheck -q --enable=all --std=c++17  --inconclusive --project=src/compile_commands.json  --suppress=\"*:/home/dyens/ros_catkin_ws/*\" --suppress=\"*:devel/include/helm_msgs/*\""
+     "cd catkin_ws && cppcheck -q --enable=all --std=c++17  --inconclusive --project=src/compile_commands.json  --suppress=\"*:/home/dyens/ros_catkin_ws/*\" --suppress=\"*:devel/include/helm_msgs/*\" --suppress=\"unusedFunction:*\" -i build"
      "*hud-cppcheck*")))
 
-
 (defun dy-hud-tidy ()
-  "Start cpp check for hud."
+  "Start tidy for hud."
   (interactive)
   (projectile-with-default-dir (projectile-acquire-root)
     (async-shell-command
-     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print | xargs clang-tidy -checks='*,-clang-analyzer-optin.cplusplus.VirtualCall,-llvmlibc-callee-namespace'"
-     "*hud-tidy")))
+     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print | xargs clang-tidy -checks='*,-clang-analyzer-optin.cplusplus.VirtualCall,-llvmlibc-callee-namespace,-modernize-use-trailing-return-type,-llvmlibc-implementation-in-namespace,-modernize-use-trailing-return-type,-llvmlibc-restrict-system-libc-headers,-modernize-use-nodiscard'"
+     "*hud-tidy*")))
+
+(defun dy-hud-clazy ()
+  "Start clazy for hud."
+  (interactive)
+  (projectile-with-default-dir (projectile-acquire-root)
+    (async-shell-command
+     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print | xargs /home/dyens/Qt/Tools/QtCreator/libexec/qtcreator/clang/bin/clazy-standalone"
+     "*hud-clazy*")))
+
+
+(defun dy-include-cpp-header ()
+  "Include cpp header."
+  (interactive)
+  (save-excursion
+    (let ((bname (replace-regexp-in-string "[.]" "_" (string-inflection-upcase-function (buffer-name)))))
+    (goto-char (point-min))
+    (insert (format "#ifndef %s\n#define %s\n\n" bname bname))
+    (goto-char (point-max))
+    (insert (format "\n#endif //%s" bname)))))
+
 
 #+END_SRC
