@@ -1785,7 +1785,12 @@ Do not try to make a new directory or anything fancy."
   (interactive)
   (projectile-with-default-dir (projectile-acquire-root)
     (async-shell-command
-     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print | xargs clang-tidy -checks='*,-clang-analyzer-optin.cplusplus.VirtualCall,-llvmlibc-callee-namespace,-modernize-use-trailing-return-type,-llvmlibc-implementation-in-namespace,-modernize-use-trailing-return-type,-llvmlibc-restrict-system-libc-headers,-modernize-use-nodiscard'"
+     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print \
+     | xargs clang-tidy -checks='*,-clang-analyzer-optin.cplusplus.VirtualCall,-llvmlibc-callee-namespace \
+     ,-modernize-use-trailing-return-type,-llvmlibc-implementation-in-namespace,-modernize-use-trailing-return-type \
+     ,-llvmlibc-restrict-system-libc-headers,-modernize-use-nodiscard,-altera-struct-pack-align \
+     ,-fuchsia-default-arguments-declarations,-fuchsia-default-arguments-calls, \
+     ,-cppcoreguidelines-special-member-functions,-hicpp-special-member-functions'"
      "*hud-tidy*")))
 
 (defun dy-hud-clazy ()
