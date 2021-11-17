@@ -67,7 +67,6 @@ Trying out =straight.el= for package management.  So far so good!
 
 #+BEGIN_SRC emacs-lisp :results output silent
   ;; Bootstrap straight.el
-  (setq native-comp-deferred-compilation-deny-list nil)
   (defvar bootstrap-version)
   (let ((bootstrap-file
         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -277,9 +276,11 @@ find them with C-x C-f (find-file) if I really need to.
   ;; With new evil changes and new emacs evil use different undo systemes
   (evil-set-undo-system 'undo-redo)
 
-  (define-key evil-normal-state-map (kbd "<SPC> b") 'ivy-switch-buffer)
-  (define-key evil-normal-state-map (kbd "<SPC> f") 'counsel-find-file)
-  (define-key evil-normal-state-map (kbd "<SPC> s") 'projectile-ripgrep)
+  (define-key evil-normal-state-map (kbd "<SPC> f") 'find-file)
+  (define-key evil-normal-state-map (kbd "<SPC> b") 'switch-to-buffer)
+  (define-key evil-normal-state-map (kbd "<SPC> i") 'consult-imenu)
+  (define-key evil-normal-state-map (kbd "<SPC> I") 'consult-imenu-multi)
+  (define-key evil-normal-state-map (kbd "<SPC> s") 'consult-ripgrep)
 
   (define-key evil-normal-state-map (kbd "<SPC> 1") 'winum-select-window-1)
   (define-key evil-normal-state-map (kbd "<SPC> 2") 'winum-select-window-2)
@@ -331,31 +332,85 @@ find them with C-x C-f (find-file) if I really need to.
 
 #+END_SRC
 
-* Ivy
+* Vertico
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package ivy
+(use-package vertico
+:ensure t
+:init
+(vertico-mode))
+#+END_SRC
+* Orderless
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package orderless
   :ensure t
-  :config 
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  )
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+#+END_SRC
+* Savehist
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; Alternatively try `consult-completing-read-multiple'.
+  (defun crm-indicator (args)
+    (cons (concat "[CRM] " (car args)) (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+#+END_SRC
+* Marginalia
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package marginalia
+  :ensure t
+  ;; Either bind `marginalia-cycle` globally or only in the minibuffer
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  (marginalia-mode))
 #+END_SRC
 
-* Counsel
+* Consult
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package counsel
-    :ensure t
-    :config 
-    (global-set-key (kbd "M-x") 'counsel-M-x)
-    )
+(use-package consult
+:ensure t
+:config
+(setq consult-preview-key nil))
 #+END_SRC
 
-* History in minibuffer
+* Embark
 #+BEGIN_SRC emacs-lisp :results output silent
-(straight-use-package 'prescient)
-(straight-use-package 'ivy-prescient)
-(straight-use-package 'company-prescient)
+(use-package embark
+:ensure t
+:bind
+(("C-." . embark-act)
+ ("C-h B" . embark-bindings)))
 #+END_SRC
 
 * Super-word-mode
@@ -366,17 +421,18 @@ For backward word and forwardword
 
 * Winum
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package winum
-    :ensure t
-    :config 
-    (winum-mode)
-    (define-key compilation-mode-map (kbd "<SPC> 1") 'winum-select-window-1)
-    (define-key compilation-mode-map (kbd "<SPC> 2") 'winum-select-window-2)
-    (define-key compilation-mode-map (kbd "<SPC> 3") 'winum-select-window-3)
-    (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
-    (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
-    (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
-    )
+(use-package winum
+  :ensure t
+  :after compilation-mode
+  :config 
+  (winum-mode)
+  (define-key compilation-mode-map (kbd "<SPC> 1") 'winum-select-window-1)
+  (define-key compilation-mode-map (kbd "<SPC> 2") 'winum-select-window-2)
+  (define-key compilation-mode-map (kbd "<SPC> 3") 'winum-select-window-3)
+  (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
+  (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
+  (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
+  )
 #+END_SRC
 
 * Magit
@@ -813,9 +869,6 @@ For backward word and forwardword
    :commands lsp-ui-mode
 )
 
-;; if you are ivy user
-(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-
 ; (use-package company-lsp 
 ;    :ensure t
 ;    :commands company-lsp
@@ -843,26 +896,26 @@ company-backends
 
 ** Bidnings
 #+BEGIN_SRC emacs-lisp :results output silent
-  (add-hook
-   'python-mode-hook
-   (lambda()
-     (define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one)
-     (define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all)
-     (define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module)
-     (define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one)
-     (define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer)
-     (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
-     (define-key evil-visual-state-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
-     (define-key evil-normal-state-map (kbd "<SPC> m i") 'dy-python-add-noqa)
-     (define-key evil-normal-state-map (kbd "<SPC> m s") 'dy-py-split-string)
-     (define-key evil-normal-state-map (kbd "<SPC> m f") 'flycheck-list-errors)
-     (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
-     (define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
-     (define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python)
-     (define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region)
-     (define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer)
-     (define-key evil-normal-state-map (kbd "<SPC> I") 'lsp-ui-imenu)
-     ))
+(add-hook
+ 'python-mode-hook
+ (lambda()
+   (define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one)
+   (define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all)
+   (define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module)
+   (define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one)
+   (define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer)
+   (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
+   (define-key evil-visual-state-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
+   (define-key evil-normal-state-map (kbd "<SPC> m i") 'dy-python-add-noqa)
+   (define-key evil-normal-state-map (kbd "<SPC> m s") 'dy-py-split-string)
+   (define-key evil-normal-state-map (kbd "<SPC> m f") 'flycheck-list-errors)
+   (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
+   (define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
+   (define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python)
+   (define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region)
+   (define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer)
+   (define-key evil-normal-state-map (kbd "<SPC> I") 'lsp-ui-imenu)
+   ))
 #+END_SRC
 
 * Ansi-color
@@ -888,21 +941,14 @@ company-backends
 
 * Projectile
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package projectile
-    :ensure t
-    :config 
-    (projectile-mode +1)
-    (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
-    (setq projectile-completion-system 'ivy)
-    (setq projectile-use-git-grep t)
-    (use-package counsel-projectile
-      :ensure t
-      :config
-      (counsel-projectile-mode t)
-      )
-    )
+(use-package projectile
+  :ensure t
+  :config 
+  (projectile-mode +1)
+  (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
+  (setq projectile-use-git-grep t)
+  (setq projectile-completion-system 'default))
 #+END_SRC
-
 * Docker
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package dockerfile-mode
@@ -1100,7 +1146,6 @@ company-backends
 * Post Settings
 ** Quit minibuffer by one escape
 #+BEGIN_SRC emacs-lisp :results output silent
-  (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
 #+END_SRC
 
@@ -1398,11 +1443,24 @@ alias em="emacsclient -c -a emacs"
   :ensure t)
 #+END_SRC
 
+* Tree sitter
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package tree-sitter
+  :ensure t
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+)
+(use-package tree-sitter-langs
+  :ensure t)
+#+END_SRC
+
 * Multiple Cursors
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package evil-multiedit
   :ensure t
   :config
+  (require 'evil-multiedit)
   ;; Highlights all matches of the selection in the buffer.
   (define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
   
@@ -1413,22 +1471,8 @@ alias em="emacsclient -c -a emacs"
   (define-key evil-visual-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
   ;; Insert marker at point
   (define-key evil-insert-state-map (kbd "M-d") 'evil-multiedit-toggle-marker-here)
-  
-  ;; RET will toggle the region under the cursor
-  (define-key evil-multiedit-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
-  
-  ;; ...and in visual mode, RET will disable all fields outside the selected region
-  (define-key evil-motion-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
-  
-  ;; For moving between edit regions
-  (define-key evil-multiedit-state-map (kbd "C-n") 'evil-multiedit-next)
-  (define-key evil-multiedit-state-map (kbd "C-p") 'evil-multiedit-prev)
-  (define-key evil-multiedit-insert-state-map (kbd "C-n") 'evil-multiedit-next)
-  (define-key evil-multiedit-insert-state-map (kbd "C-p") 'evil-multiedit-prev)
-  
-  ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
-  (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
-)
+   ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
+  (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match))
 
 #+END_SRC
 
