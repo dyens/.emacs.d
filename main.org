@@ -411,6 +411,10 @@ find them with C-x C-f (find-file) if I really need to.
 :bind
 (("C-." . embark-act)
  ("C-h B" . embark-bindings)))
+
+(use-package embark-consult
+:after embark
+:ensure t)
 #+END_SRC
 
 * Super-word-mode
@@ -1851,10 +1855,22 @@ Do not try to make a new directory or anything fancy."
   (interactive)
   (save-excursion
     (let ((bname (replace-regexp-in-string "[.]" "_" (string-inflection-upcase-function (buffer-name)))))
-    (goto-char (point-min))
-    (insert (format "#ifndef %s\n#define %s\n\n" bname bname))
-    (goto-char (point-max))
-    (insert (format "\n#endif //%s" bname)))))
+      (goto-char (point-min))
+      (insert (format "#ifndef %s\n#define %s\n\n" bname bname))
+      (goto-char (point-max))
+      (insert (format "\n#endif //%s" bname)))))
 
 
+(defun dy-hud-tidy-check-one ()
+  "Tidy check one file."
+  (interactive)
+
+
+  (projectile-with-default-dir (projectile-acquire-root)
+    (async-shell-command
+     (format "cd catkin_ws && clang-tidy %s" (buffer-file-name))
+     "*hud-tidy-one-file*")))
+
+;; cd catkin_ws && catkin_make install  -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 
+;; cd catkin_ws && clang-tidy $(find src/hud_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/hud_data/ -name "*.h" -not -path "*/msgs/*")
 #+END_SRC
