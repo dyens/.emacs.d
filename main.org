@@ -257,6 +257,7 @@ find them with C-x C-f (find-file) if I really need to.
 * Evil mode
 #+BEGIN_SRC emacs-lisp :results output silent
 
+(setq evil-want-C-i-jump nil)
 ;; for work with abc_abc words
 (with-eval-after-load 'evil
     (defalias #'forward-evil-word #'forward-evil-symbol)
@@ -271,6 +272,8 @@ find them with C-x C-f (find-file) if I really need to.
   ;; Put a cursor to a new window
   (setq evil-vsplit-window-right t)
   (setq evil-split-window-below t)
+  ;; Fix org tab key
+  (setq evil-want-C-i-jump nil)
   :config 
   (evil-mode 1)
   ;; With new evil changes and new emacs evil use different undo systemes
@@ -429,13 +432,13 @@ For backward word and forwardword
   :ensure t
   :after compilation-mode
   :config 
-  (winum-mode)
   (define-key compilation-mode-map (kbd "<SPC> 1") 'winum-select-window-1)
   (define-key compilation-mode-map (kbd "<SPC> 2") 'winum-select-window-2)
   (define-key compilation-mode-map (kbd "<SPC> 3") 'winum-select-window-3)
   (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
   (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
   (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
+  (winum-mode)
   )
 #+END_SRC
 
