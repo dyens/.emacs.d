@@ -156,7 +156,7 @@ find them with C-x C-f (find-file) if I really need to.
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'gruvbox t))
-(load-theme 'wombat t)
+;; (load-theme 'wombat t)
 ;; (load-theme 'deeper-blue t)
 
 ;;  (use-package apropospriate-theme
@@ -180,6 +180,12 @@ find them with C-x C-f (find-file) if I really need to.
 
 
 
+(use-package kaolin-themes
+  :ensure t
+  :config 
+  (load-theme 'kaolin-light t))
+
+
 
   ;; My default theme
 (defun dy-light-theme ()
@@ -195,7 +201,7 @@ find them with C-x C-f (find-file) if I really need to.
     (set-face-background 'vertical-border "gray")
     (set-face-foreground 'vertical-border (face-background 'vertical-border)))
   
-;; (dy-light-theme)
+ ;; (dy-light-theme)
 
 
     ; (load-theme 'adwaita t)
@@ -432,13 +438,13 @@ For backward word and forwardword
   :ensure t
   :after compilation-mode
   :config 
+  (winum-mode)
   (define-key compilation-mode-map (kbd "<SPC> 1") 'winum-select-window-1)
   (define-key compilation-mode-map (kbd "<SPC> 2") 'winum-select-window-2)
   (define-key compilation-mode-map (kbd "<SPC> 3") 'winum-select-window-3)
   (define-key compilation-mode-map (kbd "<SPC> 4") 'winum-select-window-4)
   (define-key compilation-mode-map (kbd "<SPC> 5") 'winum-select-window-5)
   (define-key compilation-mode-map (kbd "<SPC> 6") 'winum-select-window-6)
-  (winum-mode)
   )
 #+END_SRC
 
@@ -452,10 +458,16 @@ For backward word and forwardword
 
 * Forge
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package forge
-    :after magit
-    :ensure t
-    )
+(use-package forge
+  :after magit
+  :ensure t
+  :config
+  ;; Add qs github acc
+  (push 
+    '("github.com-qs"
+    "api.github.com"
+    "github.com"
+    forge-github-repository) forge-alist))
 #+END_SRC
 
 * Company-mode
@@ -836,6 +848,7 @@ For backward word and forwardword
   (setq lsp-enable-snippet t)
   (setq lsp-idle-delay 0.500)
   (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-lens-enable nil)
 
   ; (setq-default lsp-pyls-configuration-sources ["flake8"])
   (setq lsp-pyls-plugins-pycodestyle-enabled nil
@@ -1696,6 +1709,17 @@ If in compilation buffer there are many lines it start to be a very slow
 ;; 
 ;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
 #+END_SRC
+* RG
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package rg
+  :ensure t)
+#+END_SRC
+* Code review
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package code-review
+  :ensure t
+  )
+#+END_SRC
 * Telega
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package telega
@@ -1881,5 +1905,5 @@ Do not try to make a new directory or anything fancy."
      "*hud-tidy-one-file*")))
 
 ;; cd catkin_ws && catkin_make install  -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 
-;; cd catkin_ws && clang-tidy $(find src/hud_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/hud_data/ -name "*.h" -not -path "*/msgs/*")
+;; cd catkin_ws && clang-tidy $(find src/hud_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/hud_data/ -name "*.h" -not -path "*/msgs/*") $(find src/ros_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/ros_data/ -name "*.h" -not -path "*/msgs/*")
 #+END_SRC
