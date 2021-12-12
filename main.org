@@ -317,7 +317,7 @@ find them with C-x C-f (find-file) if I really need to.
   (defun dy-function-not-found ()
     "Function is not find"
     (interactive)
-    (error "Fast function is not defined: use dy-set-fast-function"))
+ (error "Fast function is not defined: use dy-set-fast-function"))
 
   (define-key evil-normal-state-map (kbd "<SPC> `") 'dy-function-not-found)
 
@@ -333,6 +333,13 @@ find them with C-x C-f (find-file) if I really need to.
   :after evil
   :ensure t
 )
+
+(use-package evil-escape
+  :after evil
+  :ensure t
+  :config
+  (setq-default evil-escape-key-sequence "fd")
+  (evil-escape-mode 1))
 
 #+END_SRC
 
