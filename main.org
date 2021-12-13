@@ -1711,6 +1711,17 @@ If in compilation buffer there are many lines it start to be a very slow
   :ensure t)
 #+END_SRC
 
+* Dap mode
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package dap-mode
+  :ensure t
+  :config
+    )
+#+END_SRC
+
+
+
+
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
 
