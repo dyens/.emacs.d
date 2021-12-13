@@ -334,6 +334,13 @@ find them with C-x C-f (find-file) if I really need to.
   :ensure t
 )
 
+(use-package evil-escape
+  :after evil
+  :ensure t
+  :config
+(setq-default evil-escape-key-sequence "fd")
+(evil-escape-mode 1)
+)
 #+END_SRC
 
 * Vertico
