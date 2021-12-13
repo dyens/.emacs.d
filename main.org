@@ -439,7 +439,14 @@ For backward word and forwardword
 (use-package magit
   :ensure t
   :commands magit-status
-  )
+  :config
+  (defun dy-git-commit-setup ()
+    (let ((current-branch-name (upcase (magit-get-current-branch))))
+      (message current-branch-name)
+      (if (string-match-p (regexp-quote "QUANT") current-branch-name)
+      (insert (format "%s: " current-branch-name )))))
+
+  (add-hook 'git-commit-setup-hook 'dy-git-commit-setup))
 #+END_SRC
 
 * Forge
