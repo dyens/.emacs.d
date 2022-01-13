@@ -1852,14 +1852,14 @@ Do not try to make a new directory or anything fancy."
   "Set environment for hud project."
   (interactive)
   (progn
-    (setenv "CMAKE_PREFIX_PATH" "/home/dyens/ros_catkin_ws/install_isolated:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
-    (setenv "LD_LIBRARY_PATH" "/home/dyens/ros_catkin_ws/install_isolated/lib::/usr/local/cuda/lib64:/usr/local/cuda/lib64")
-    (setenv "PATH" "/home/dyens/ros_catkin_ws/install_isolated/bin:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/home/dyens/.local/bin:/home/dyens/.cargo/bin:/usr/lib64/qt-3.3/bin:/usr/share/Modules/bin:/usr/lib64/ccache:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/cuda/bin:/usr/local/go/go/bin:/home/dyens/bin:/usr/local/cuda/bin:/usr/local/go/go/bin")
-    (setenv "PKG_CONFIG_PATH" "/home/dyens/ros_catkin_ws/install_isolated/lib/pkgconfig")
-    (setenv "PYTHONPATH" "/home/dyens/ros_catkin_ws/install_isolated/lib/python3.9/site-packages")
-    (setenv "ROS_ETC_DIR" "/home/dyens/ros_catkin_ws/install_isolated/etc/ros")
-    (setenv "ROS_PACKAGE_PATH" "/home/dyens/ros_catkin_ws/install_isolated/share")
-    (setenv "ROS_ROOT" "/home/dyens/ros_catkin_ws/install_isolated/share/ros")
+    (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
+    (setenv "LD_LIBRARY_PATH" "/usr/lib64/ros/lib:/usr/local/cuda/lib64:/usr/local/cuda/lib64")
+    (setenv "PATH" "/usr/lib64/ros/bin:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/home/dyens/.local/bin:/home/dyens/.cargo/bin:/usr/lib64/qt-3.3/bin:/usr/share/Modules/bin:/usr/lib64/ccache:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/cuda/bin:/usr/local/go/go/bin:/home/dyens/bin:/usr/local/cuda/bin:/usr/local/go/go/bin")
+    (setenv "PKG_CONFIG_PATH" "/usr/lib64/ros/lib/pkgconfig")
+    (setenv "PYTHONPATH" "/usr/lib64/ros/lib/python3.10/site-packages")
+    (setenv "ROS_ETC_DIR" "/usr/lib64/ros/etc/ros")
+    (setenv "ROS_PACKAGE_PATH" "/usr/lib64/ros/share")
+    (setenv "ROS_ROOT" "/usr/lib64/ros/share/ros")
     (setq default-directory "/home/dyens/dev/quantumsoft/catkin_ws/src/hud_data/src/")))
 
 
@@ -1871,18 +1871,18 @@ Do not try to make a new directory or anything fancy."
      "cd catkin_ws && cppcheck -q --enable=all --std=c++17  --inconclusive --project=src/compile_commands.json  --suppress=\"*:/home/dyens/ros_catkin_ws/*\" --suppress=\"*:devel/include/helm_msgs/*\" --suppress=\"unusedFunction:*\" -i build"
      "*hud-cppcheck*")))
 
+
 (defun dy-hud-tidy ()
   "Start tidy for hud."
   (interactive)
-  (projectile-with-default-dir (projectile-acquire-root)
-    (async-shell-command
-     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print \
-     | xargs clang-tidy -checks='*,-clang-analyzer-optin.cplusplus.VirtualCall,-llvmlibc-callee-namespace \
-     ,-modernize-use-trailing-return-type,-llvmlibc-implementation-in-namespace,-modernize-use-trailing-return-type \
-     ,-llvmlibc-restrict-system-libc-headers,-modernize-use-nodiscard,-altera-struct-pack-align \
-     ,-fuchsia-default-arguments-declarations,-fuchsia-default-arguments-calls, \
-     ,-cppcoreguidelines-special-member-functions,-hicpp-special-member-functions'"
-     "*hud-tidy*")))
+  (let ((compilation-buffer-name-function (lambda (x) "*tidy checks*"))
+    (default-directory (projectile-acquire-root)))
+      (compile
+       ;; funny command
+       ;; Note: run-clang-tidy does not work - it use all files in project (include moc files)
+       "cd catkin_ws && find src -type d \\( -path src/.ccls-cache -o -path src/hud_data/include/hud_data/msgs -o -path src/hud_data/src/msgs \\) -prune -o \\( -name '*.cpp' -o -name '*.h' \\) -print \
+       | xargs -n1 -P9 clang-tidy")))
+
 
 (defun dy-hud-clazy ()
   "Start clazy for hud."
