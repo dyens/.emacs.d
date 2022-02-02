@@ -1688,10 +1688,13 @@ If in compilation buffer there are many lines it start to be a very slow
 (use-package ggtags
   :ensure t
   :config
-    (add-hook 'c-mode-common-hook
-            (lambda ()
-                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
-                (ggtags-mode 1)))))
+;; With lsp is good to use default evil go to definition
+;; 
+;;    (add-hook 'c-mode-common-hook
+;;            (lambda ()
+;;                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+;;                (ggtags-mode 1))))
+  )
 
 ;; (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
 ;; (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
@@ -1848,6 +1851,8 @@ Do not try to make a new directory or anything fancy."
 	 (buffer-substring-no-properties p1 p2))
       (google-translate-at-point-reverse))))
 
+;; Compilation command: cd catkin_ws && catkin_make install -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wfatal-errors
+;; Tidy diff command: git diff  --name-only  --diff-filter=ACM  dev...QUANT-206  | grep -E '\.cpp|\.h' |xargs -n1 -P9 clang-tidy
 (defun dy-setup-hud-project ()
   "Set environment for hud project."
   (interactive)
