@@ -1735,10 +1735,15 @@ If in compilation buffer there are many lines it start to be a very slow
   :config
     )
 #+END_SRC
-
-
-
-
+* Guile (geiser)
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package geiser-guile
+  :ensure t
+  :custom
+  (geiser-guile-binary "guile2.2")
+  :config
+    )
+#+END_SRC
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
 
