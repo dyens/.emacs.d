@@ -1218,6 +1218,19 @@ alias em="emacsclient -c -a emacs"
 ;; mu init --maildir=~/mailbox --my-address=alexander.kapustin@quantumsoft.ru --my-address=akapustin@ambrahealth.com --my-address=dyens@mail.ru
 ;; mu index
 
+
+
+
+(defun dy-emails-set-all-as-read ()
+  "Make all emails read."
+  (interactive)
+  (require 'mu4e-contrib)
+  (with-temp-buffer
+    (mu4e-headers-search-bookmark "flag:unread AND NOT flag:trashed")
+    (sleep-for 0.15)
+    (mu4e-headers-mark-all-unread-read)
+    (mu4e-mark-execute-all 'no-confirmation)))
+
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 
 
@@ -1323,21 +1336,21 @@ alias em="emacsclient -c -a emacs"
           :leave-func (lambda () (mu4e-message "Leave Mail Context")))
 
          ;; Ambra work account
-         ,(make-mu4e-context
-          :name "Ambra"
-          :match-func
-            (lambda (msg)
-              (when msg
-                (string-prefix-p "/ambra" (mu4e-message-field msg :maildir))))
-          :vars `((user-mail-address . "akapustin@ambrahealth.com")
-		    (smtpmail-smtp-user . "akapustin@ambrahealth.com")
-	            (smtpmail-smtp-server . "smtp.gmail.com" )
-                  (mu4e-bookmarks . ,dy-mu4e-bookmarks-ambra)
-                  (user-full-name    . "Kapustin Alexander"))
-          :enter-func (lambda () (progn
-                              (mu4e-message "Entering Ambra Context")
-                              (enter-mu4e-context-ambra)))
-          :leave-func (lambda () (mu4e-message "Leave Ambra Context")))
+         ;; ,(make-mu4e-context
+         ;;  :name "Ambra"
+         ;;  :match-func
+         ;;    (lambda (msg)
+         ;;      (when msg
+         ;;        (string-prefix-p "/ambra" (mu4e-message-field msg :maildir))))
+         ;;  :vars `((user-mail-address . "akapustin@ambrahealth.com")
+	 ;;            (smtpmail-smtp-user . "akapustin@ambrahealth.com")
+	 ;;            (smtpmail-smtp-server . "smtp.gmail.com" )
+         ;;          (mu4e-bookmarks . ,dy-mu4e-bookmarks-ambra)
+         ;;          (user-full-name    . "Kapustin Alexander"))
+         ;;  :enter-func (lambda () (progn
+         ;;                      (mu4e-message "Entering Ambra Context")
+         ;;                      (enter-mu4e-context-ambra)))
+         ;;  :leave-func (lambda () (mu4e-message "Leave Ambra Context")))
 
          ;; Quantumsoft work account
          ,(make-mu4e-context
@@ -1676,10 +1689,12 @@ If in compilation buffer there are many lines it start to be a very slow
 
 ** Bidnings
 #+BEGIN_SRC emacs-lisp :results output silent
-  (add-hook
-   'c++-mode-hook
-   (lambda()
-     (define-key evil-normal-state-map (kbd "<SPC> =") 'clang-format-buffer)))
+(add-hook
+ 'c++-mode-hook
+ (lambda()
+   (define-key evil-normal-state-map (kbd "<SPC> =") 'clang-format-buffer)
+   (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-dox-fn)
+   ))
 #+END_SRC
 
 ** Ggtags
@@ -1718,8 +1733,8 @@ If in compilation buffer there are many lines it start to be a very slow
 #+END_SRC
 * Telega
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package telega
-  :ensure t)
+;; (use-package telega
+;;   :ensure t)
 #+END_SRC
 
 * Ace window
@@ -1735,14 +1750,19 @@ If in compilation buffer there are many lines it start to be a very slow
   :config
     )
 #+END_SRC
-* Guile (geiser)
+
+* Lispy
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package geiser-guile
+(use-package lispy
   :ensure t
-  :custom
-  (geiser-guile-binary "guile2.2")
   :config
     )
+
+(use-package evil-lispy
+  :ensure t
+  :config
+    )
+
 #+END_SRC
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1870,7 +1890,29 @@ Do not try to make a new directory or anything fancy."
     (setenv "ROS_ETC_DIR" "/usr/lib64/ros/etc/ros")
     (setenv "ROS_PACKAGE_PATH" "/usr/lib64/ros/share")
     (setenv "ROS_ROOT" "/usr/lib64/ros/share/ros")
+    (setenv "ROS_LANG_DISABLE" "genlisp:genpy:gennodejs:geneus")
+    (setenv "HUD_DATA_SNAPSHOT_PATH" "/home/dyens/dev/quantumsoft/snapshots")
+    (setenv "ROS_PARALLEL_JOBS" "-j8 -l8")
+    ;; (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "TRUE")
+    (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "FALSE")
     (setq default-directory "/home/dyens/dev/quantumsoft/catkin_ws/src/hud_data/src/")))
+
+
+(defun dy-hud-choose-compile-command (command)
+  "Compilation hud project and libs."
+  (interactive
+  (list
+   (completing-read "Compilation command: "
+         '(
+           "cd catkin_ws && time catkin_make run_tests --use-ninja"
+           "make"
+           "make clean"
+           ))))
+       (projectile--run-project-cmd command projectile-compilation-cmd-map
+                    :show-prompt t
+                    :prompt-prefix "Compile command: "
+                    :save-buffers t
+        :use-comint-mode projectile-compile-use-comint-mode))
 
 
 (defun dy-hud-cppcheck ()
@@ -1906,7 +1948,7 @@ Do not try to make a new directory or anything fancy."
 (defun dy-include-cpp-header ()
   "Include cpp header."
   (interactive)
-  (save-excursion
+ (save-excursion
     (let ((bname (replace-regexp-in-string "[.]" "_" (string-inflection-upcase-function (buffer-name)))))
       (goto-char (point-min))
       (insert (format "#ifndef %s\n#define %s\n\n" bname bname))
@@ -1926,4 +1968,52 @@ Do not try to make a new directory or anything fancy."
 
 ;; cd catkin_ws && catkin_make install  -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 
 ;; cd catkin_ws && clang-tidy $(find src/hud_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/hud_data/ -name "*.h" -not -path "*/msgs/*") $(find src/ros_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/ros_data/ -name "*.h" -not -path "*/msgs/*")
+
+
+(defun dy-dox-fn ()
+  "Create doxygen docstring.
+
+Cursor should be pointed on start fn eclaration."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (let ((pstart (point))
+	    (pend)
+	    (rtype)
+	    (fname)
+	    (fargs)
+	    (docstring)
+	    )
+	(search-forward ";")
+	(setq pend (point))
+	(narrow-to-region pstart pend)
+	(goto-char 0)
+	(re-search-forward "[ \t]*\\(.+\\)[ \t]+\\(.+\\)[ \t]*\(\\(.*\\)\)")
+	(setq rtype (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
+	(setq fname (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
+	(setq fargs (dy-parse-cpp-args (buffer-substring-no-properties (match-beginning 3) (match-end 3))))
+	(setq docstring (concat
+"/**\n"
+"  * \\brief\n"
+"  * %s\n"
+"  * \\details\n"
+"  * %s\n"
+"  *\/\n"
+				))
+
+		
+	(goto-char 0)
+	(insert (format docstring fname fname))))))
+
+(defun dy-parse-cpp-args (args-string)
+  "Cpp args parser"
+  (let ((f (lambda (el)
+	     (string-trim
+	       (car (last (split-string el " ")))
+	       "[ \t\n\r&*]+"
+	       "[ \t\n\r]+"))))
+    (mapcar
+     f
+     (split-string args-string ","))))
+
 #+END_SRC
