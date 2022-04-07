@@ -1904,7 +1904,9 @@ Do not try to make a new directory or anything fancy."
   (list
    (completing-read "Compilation command: "
          '(
-           "cd catkin_ws && time catkin_make run_tests --use-ninja"
+	     "cd catkin_ws && catkin_make run_tests --use-ninja"
+	     "cd catkin_ws && catkin_make run_tests_hud_data_gtest_utils_camera_object_bbox  --use-ninja"
+	     "cd catkin_ws && catkin_make bag_analyze  -DFORCE_BUILD_ANALYZER:BOOL=true"
            "make"
            "make clean"
            ))))
