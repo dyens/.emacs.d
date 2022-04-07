@@ -912,22 +912,22 @@ company-backends
 (add-hook
  'python-mode-hook
  (lambda()
-   (define-key evil-normal-state-map (kbd "<SPC> t") 'pytest-one)
-   (define-key evil-normal-state-map (kbd "<SPC> T a") 'pytest-all)
-   (define-key evil-normal-state-map (kbd "<SPC> T b") 'pytest-module)
-   (define-key evil-normal-state-map (kbd "<SPC> T p") 'pytest-pdb-one)
-   (define-key evil-normal-state-map (kbd "<SPC> i") 'py-isort-buffer)
-   (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-python-create-docstring)
-   (define-key evil-visual-state-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
-   (define-key evil-normal-state-map (kbd "<SPC> m i") 'dy-python-add-noqa)
-   (define-key evil-normal-state-map (kbd "<SPC> m s") 'dy-py-split-string)
-   (define-key evil-normal-state-map (kbd "<SPC> m f") 'flycheck-list-errors)
-   (define-key evil-normal-state-map (kbd "g d") 'lsp-find-definition)
-   (define-key evil-normal-state-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
-   (define-key evil-normal-state-map (kbd "<SPC> m R") 'run-python)
-   (define-key evil-visual-state-map (kbd "<SPC> m r") 'python-shell-send-region)
-   (define-key evil-normal-state-map (kbd "<SPC> m b") 'python-shell-send-buffer)
-   (define-key evil-normal-state-map (kbd "<SPC> I") 'lsp-ui-imenu)
+   (define-key evil-normal-state-local-map (kbd "<SPC> t") 'pytest-one)
+   (define-key evil-normal-state-local-map (kbd "<SPC> T a") 'pytest-all)
+   (define-key evil-normal-state-local-map (kbd "<SPC> T b") 'pytest-module)
+   (define-key evil-normal-state-local-map (kbd "<SPC> T p") 'pytest-pdb-one)
+   (define-key evil-normal-state-local-map (kbd "<SPC> i") 'py-isort-buffer)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m d") 'dy-python-create-docstring)
+   (define-key evil-visual-state-local-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m i") 'dy-python-add-noqa)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m s") 'dy-py-split-string)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m f") 'flycheck-list-errors)
+   (define-key evil-normal-state-local-map (kbd "g d") 'lsp-find-definition)
+   (define-key evil-normal-state-local-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m R") 'run-python)
+   (define-key evil-visual-state-local-map (kbd "<SPC> m r") 'python-shell-send-region)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m b") 'python-shell-send-buffer)
+   (define-key evil-normal-state-local-map (kbd "<SPC> I") 'lsp-ui-imenu)
    ))
 #+END_SRC
 
@@ -1117,13 +1117,13 @@ company-backends
   (add-hook
    'rust-mode-hook
    (lambda()
-     (define-key evil-normal-state-map (kbd "<SPC> m c") 'rust-run-clippy)
-     (define-key evil-normal-state-map (kbd "<SPC> m C") 'rust-compile)
-     (define-key evil-normal-state-map (kbd "<SPC> m r") 'rust-run)
-     (define-key evil-normal-state-map (kbd "<SPC> T a") 'rust-test)
-     (define-key evil-normal-state-map (kbd "g d") 'racer-find-definition)
-     (define-key evil-normal-state-map (kbd "<SPC> T b") 'rust-test-buffer)
-     (define-key evil-normal-state-map (kbd "<SPC> t") 'rust-test-at-point)
+     (define-key evil-normal-state-local-map (kbd "<SPC> m c") 'rust-run-clippy)
+     (define-key evil-normal-state-local-map (kbd "<SPC> m C") 'rust-compile)
+     (define-key evil-normal-state-local-map (kbd "<SPC> m r") 'rust-run)
+     (define-key evil-normal-state-local-map (kbd "<SPC> T a") 'rust-test)
+     (define-key evil-normal-state-local-map (kbd "g d") 'racer-find-definition)
+     (define-key evil-normal-state-local-map (kbd "<SPC> T b") 'rust-test-buffer)
+     (define-key evil-normal-state-local-map (kbd "<SPC> t") 'rust-test-at-point)
      ))
 #+END_SRC
 
@@ -1159,7 +1159,7 @@ company-backends
 * Post Settings
 ** Quit minibuffer by one escape
 #+BEGIN_SRC emacs-lisp :results output silent
-  ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer
+  ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer)
 #+END_SRC
 
 * Tramp
@@ -1392,7 +1392,7 @@ alias em="emacsclient -c -a emacs"
       ("{ Curly brackets" . (123 125))       ; { }
       ("[ Square brackets" . (91 93))        ; [ ]
       ("< Angled brackets" . (60 62))        ; < >
-      ("« tree brakets" . (171 187))) ; « »
+      ("« tree brakets" . (171 187)))        ; « »
     "Alist of pairs for use with.")
 
   ;; From https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
@@ -1446,11 +1446,11 @@ alias em="emacsclient -c -a emacs"
   (add-hook
    'smerge-mode-hook
    (lambda()
-     (define-key evil-normal-state-map (kbd "<SPC> j") 'smerge-next)
-     (define-key evil-normal-state-map (kbd "<SPC> k") 'smerge-prev)
-     (define-key evil-normal-state-map (kbd "<SPC> <SPC>") 'smerge-keep-current)
-     (define-key evil-normal-state-map (kbd "<SPC> h") 'smerge-keep-other)
-     (define-key evil-normal-state-map (kbd "<SPC> l") 'smerge-keep-mine)
+     (define-key evil-normal-state-local-map (kbd "<SPC> j") 'smerge-next)
+     (define-key evil-normal-state-local-map (kbd "<SPC> k") 'smerge-prev)
+     (define-key evil-normal-state-local-map (kbd "<SPC> <SPC>") 'smerge-keep-current)
+     (define-key evil-normal-state-local-map (kbd "<SPC> h") 'smerge-keep-other)
+     (define-key evil-normal-state-local-map (kbd "<SPC> l") 'smerge-keep-mine)
      ))
 #+END_SRC
 
@@ -1753,16 +1753,31 @@ If in compilation buffer there are many lines it start to be a very slow
 
 * Lispy
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package lispy
+;; (use-package lispy
+;;   :ensure t
+;;   :config
+;;     )
+;; 
+;; (use-package evil-lispy
+;;   :ensure t
+;;   :config
+;;     )
+#+END_SRC
+* Paredit
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package paredit
   :ensure t
   :config
+  (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+  ;; enable in the *scratch* buffer
+  (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+  (add-hook 'ielm-mode-hook #'paredit-mode)
+  (add-hook 'lisp-mode-hook #'paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
+  (add-hook 'c++-mode-hook #'paredit-mode)
+  (add-hook 'c-mode-hook #'paredit-mode)
+  (add-hook 'python-mode-hook #'paredit-mode)
     )
-
-(use-package evil-lispy
-  :ensure t
-  :config
-    )
-
 #+END_SRC
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
