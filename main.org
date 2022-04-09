@@ -1910,7 +1910,21 @@ Do not try to make a new directory or anything fancy."
     (setenv "ROS_PARALLEL_JOBS" "-j8 -l8")
     ;; (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "TRUE")
     (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "FALSE")
-    (setq default-directory "/home/dyens/dev/quantumsoft/catkin_ws/src/hud_data/src/")))
+    (setq default-directory "/home/dyens/dev/quantumsoft/catkin_ws/src/hud_data/src/")
+
+    (defun dy-open-hud-in-github-dev()
+      (interactive)
+      (dy-open-in-github "https://github.com/helm-ai/quantumsoft" 'dev))
+    (defun dy-open-hud-in-github-rev()
+      (interactive)
+      (dy-open-in-github "https://github.com/helm-ai/quantumsoft" 'rev))
+
+    (define-key evil-normal-state-map (kbd "<SPC> m b") 'dy-open-hud-in-github-dev)
+    (define-key evil-normal-state-map (kbd "<SPC> m B") 'dy-open-hud-in-github-rev)
+
+    (define-key evil-visual-state-map (kbd "<SPC> m b") 'dy-open-hud-in-github-dev)
+    (define-key evil-visual-state-map (kbd "<SPC> m B") 'dy-open-hud-in-github-rev)
+    ))
 
 
 (defun dy-hud-choose-compile-command (command)
@@ -2032,5 +2046,29 @@ Cursor should be pointed on start fn eclaration."
     (mapcar
      f
      (split-string args-string ","))))
+
+
+
+(defun dy-open-in-github (github-url  &optional mode)
+  "Open source file in github."
+  (interactive)
+  (let (
+	(github-path
+	 (cond
+	  ((eq mode nil) "dev")
+	  ((eq mode 'dev) "dev")
+	  ((eq mode 'branch) (magit-get-current-branch))
+	  ((eq mode 'rev) (magit-rev-abbrev "HEAD"))))
+
+	(project-file (magit-file-relative-name ( buffer-file-name)) )
+	(highlight
+	 (if (use-region-p)
+             (let ((l1 (line-number-at-pos (region-beginning)))
+                   (l2 (line-number-at-pos (- (region-end) 1))))
+               (format "#L%d-L%d" l1 l2))
+           ""))
+	(url))
+    (setq url (format "%s/blob/%s/%s%s" github-url github-path project-file highlight))
+    (shell-command (concat "firefox " url))))
 
 #+END_SRC
