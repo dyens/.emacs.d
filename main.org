@@ -1168,6 +1168,12 @@ private:
 (define-abbrev c++-mode-abbrev-table "fn"
   "" 'cpp-skeleton-fn)
 
+(define-abbrev c++-mode-abbrev-table "getter"
+  "" 'cpp-skeleton-get)
+
+(define-abbrev c++-mode-abbrev-table "setter"
+  "" 'cpp-skeleton-set)
+
 (define-abbrev c++-mode-abbrev-table "for"
   "" 'cpp-skeleton-for)
 
@@ -1203,6 +1209,22 @@ private:
 -1"{"\n
 -2"}"\n
 )
+
+(define-skeleton cpp-skeleton-get
+  "cpp-skeleton-get" nil
+"[[nodiscard]] int get" _ "() const"\n
+-2"{"\n
+-2"}"\n
+)
+
+(define-skeleton cpp-skeleton-set
+  "cpp-skeleton-set" nil
+"void set" _ "() "\n
+-2"{"\n
+-2"}"\n
+)
+
+
 
 (define-skeleton cpp-skeleton-print
   "cpp-skeleton-print" nil
