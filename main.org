@@ -1130,30 +1130,103 @@ company-backends
 * Abbrev
 ** Settings
 #+BEGIN_SRC emacs-lisp :results output silent
-  (clear-abbrev-table global-abbrev-table)
+(clear-abbrev-table global-abbrev-table)
 
-  (define-abbrev-table 'global-abbrev-table
+(define-abbrev-table 'global-abbrev-table
+  '(
+
+    ;; net abbrev
+    ("afaik" "as far as i know" )
+    ))
+
+(when (boundp 'python-mode-abbrev-table)
+  (clear-abbrev-table python-mode-abbrev-table))
+
+(define-abbrev-table 'python-mode-abbrev-table
+  '(
+    ("ass" "assert")
+    ("fr" "from")
+    ("imp" "import")
+    ("tr" "import pdb; pdb.set_trace()")
+
+    ))
+
+  (define-abbrev-table 'c++-mode-abbrev-table
     '(
-
-      ;; net abbrev
-      ("afaik" "as far as i know" )
+      ("cls" "class A {
+public:
+    A();
+private:
+    int var;
+}")
       ))
 
-  (when (boundp 'python-mode-abbrev-table)
-    (clear-abbrev-table python-mode-abbrev-table))
 
-  (define-abbrev-table 'python-mode-abbrev-table
-    '(
-      ("ass" "assert")
-      ("fr" "from")
-      ("imp" "import")
-      ("tr" "import pdb; pdb.set_trace()")
+(define-abbrev c++-mode-abbrev-table "if"
+  "" 'cpp-skeleton-if)
 
-      ))
+(define-abbrev c++-mode-abbrev-table "fn"
+  "" 'cpp-skeleton-fn)
 
-  (set-default 'abbrev-mode t)
+(define-abbrev c++-mode-abbrev-table "for"
+  "" 'cpp-skeleton-for)
 
-  (setq save-abbrevs nil)
+(define-abbrev c++-mode-abbrev-table "print"
+  "" 'cpp-skeleton-print)
+
+(define-abbrev c++-mode-abbrev-table "cls"
+  "" 'cpp-skeleton-cls)
+
+(define-abbrev c++-mode-abbrev-table "ns"
+  "" 'cpp-skeleton-ns)
+
+(setq skeleton-end-hook nil)
+;; (clear-abbrev-table c++-mode-abbrev-table)
+
+(define-skeleton cpp-skeleton-if
+  "cpp-skeleton-if" nil
+"if (" _ ")"\n
+-2"{"\n
+-2"}"\n
+)
+
+(define-skeleton cpp-skeleton-for
+  "cpp-skeleton-for" nil
+"for (" _ ")"\n
+-2"{"\n
+-2"}"\n
+)
+
+(define-skeleton cpp-skeleton-fn
+  "cpp-skeleton-fn" nil
+"void " _ "()"\n
+-1"{"\n
+-2"}"\n
+)
+
+(define-skeleton cpp-skeleton-print
+  "cpp-skeleton-print" nil
+"std::cout << " _ " << std::endl;"\n
+)
+
+(define-skeleton cpp-skeleton-cls
+  "cpp-skeleton-cls" nil
+"class " _  \n
+-1"{"\n
+-2"public:"\n
+-2"private:"\n
+-2"}"\n
+)
+
+(define-skeleton cpp-skeleton-ns
+  "cpp-skeleton-ns" nil
+"namespace " _ "{"\n
+-2"}"\n
+)
+
+(set-default 'abbrev-mode t)
+
+(setq save-abbrevs nil)
 #+END_SRC
 
 * Post Settings
@@ -1897,7 +1970,8 @@ Do not try to make a new directory or anything fancy."
   "Set environment for hud project."
   (interactive)
   (progn
-    (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
+    (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.3.0-static/lib/cmake")
+    ;;(setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
     (setenv "LD_LIBRARY_PATH" "/usr/lib64/ros/lib:/usr/local/cuda/lib64:/usr/local/cuda/lib64")
     (setenv "PATH" "/usr/lib64/ros/bin:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/home/dyens/.local/bin:/home/dyens/.cargo/bin:/usr/lib64/qt-3.3/bin:/usr/share/Modules/bin:/usr/lib64/ccache:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/cuda/bin:/usr/local/go/go/bin:/home/dyens/bin:/usr/local/cuda/bin:/usr/local/go/go/bin")
     (setenv "PKG_CONFIG_PATH" "/usr/lib64/ros/lib/pkgconfig")
