@@ -170,21 +170,37 @@ find them with C-x C-f (find-file) if I really need to.
   ;;  (use-package modus-operandi-theme
   ;;    :ensure t)
   ;;
-  ;;  (use-package modus-vivendi-theme
-  ;;    :ensure t)
+  ;; (use-package modus-vivendi-theme
+  ;; :ensure t)
   ;;
   ;;  (load-theme 'modus-operandi t)           ; Light theme
-
    ;; (load-theme 'apropospriate-dark t)
    ;; (global-hl-line-mode t)
 
 
 
-(use-package kaolin-themes
-  :ensure t
-  :config 
-  (load-theme 'kaolin-light t))
+;;(use-package kaolin-themes
+;;  :ensure t
+;;  :config 
+;;  (load-theme 'kaolin-light t))
 
+;; BEST!!!!
+;; (load-theme 'dichromacy t)
+
+
+(defun dy-modus-theme () 
+  (setq modus-themes-italic-constructs t
+      modus-themes-region '(bg-only)
+      modus-themes-bold-constructs t
+      modus-themes-syntax '( faint yellow-comments green-strings alt-syntax)
+      modus-themes-paren-match '(bold intense underline)
+      modus-themes-mode-line '(accented borderless)
+      )
+  ;; dark theme
+   (load-theme 'modus-vivendi t)
+
+   )
+(dy-modus-theme)
 
 
   ;; My default theme
@@ -206,7 +222,7 @@ find them with C-x C-f (find-file) if I really need to.
 
     ; (load-theme 'adwaita t)
     ; (load-theme 'gruvbox-dark-hard t)
-    ; (load-theme 'gruber-darker t)
+    ;; (load-theme 'gruber-darker t)
 
     ; (load-theme 'dracula t)
 
@@ -284,6 +300,7 @@ find them with C-x C-f (find-file) if I really need to.
   (evil-mode 1)
   ;; With new evil changes and new emacs evil use different undo systemes
   (evil-set-undo-system 'undo-redo)
+  (define-key evil-normal-state-map (kbd "<f5>") #'modus-themes-toggle)
 
   (define-key evil-normal-state-map (kbd "<SPC> f") 'find-file)
   (define-key evil-normal-state-map (kbd "<SPC> b") 'switch-to-buffer)
@@ -832,6 +849,9 @@ For backward word and forwardword
 (use-package lsp-mode
   :ensure t
   :commands lsp
+
+  :hook ((c-mode c++-mode objc-mode cuda-mode) .
+       (lambda () (lsp)))
   :config
   ;; Disable automatic set flycheck-checker to lsp
   (setq lsp-diagnostic-package :none)
@@ -852,10 +872,10 @@ For backward word and forwardword
   (setq lsp-rust-server 'rust-analyzer)
   )
 
-(use-package ccls
-    :ensure t
-    :hook ((c-mode c++-mode objc-mode cuda-mode) .
-         (lambda () (require 'ccls) (lsp))))
+;; (use-package ccls
+;;     :ensure t
+;;     :hook ((c-mode c++-mode objc-mode cuda-mode) .
+;;          (lambda () (require 'ccls) (lsp))))
 
 
 ;; (use-package lsp-python-ms
@@ -1026,6 +1046,10 @@ company-backends
   	  "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))\n" )))
 )
 
+(use-package org-mime
+  :ensure t
+ )
+ 
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
@@ -1049,15 +1073,16 @@ company-backends
 
 * Rust
 #+BEGIN_SRC emacs-lisp :results output silent
- ;; (use-package rust-mode
- ;;   :ensure t
- ;;   :custom
- ;;   (rust-format-on-save t "Format rust code on save")
- ;;   (company-tooltip-align-annotations t "Company annotations")
- ;;   :mode ("\\rs\\'" . rust-mode)
- ;;   :config
- ;;   (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
- ;; )
+(use-package rust-mode
+  :ensure t
+  :custom
+  (rust-format-on-save t "Format rust code on save")
+  ;; (company-tooltip-align-annotations t "Company annotations")
+  :mode ("\\rs\\'" . rust-mode)
+  :config
+  (add-hook 'rust-mode-hook #'lsp)
+  ;; (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+)
 #+END_SRC
 
 ** Racer
@@ -1162,8 +1187,8 @@ private:
       ))
 
 
-(define-abbrev c++-mode-abbrev-table "if"
-  "" 'cpp-skeleton-if)
+;; (define-abbrev c++-mode-abbrev-table "if"
+;;   "" 'cpp-skeleton-if)
 
 (define-abbrev c++-mode-abbrev-table "fn"
   "" 'cpp-skeleton-fn)
@@ -1174,8 +1199,8 @@ private:
 (define-abbrev c++-mode-abbrev-table "setter"
   "" 'cpp-skeleton-set)
 
-(define-abbrev c++-mode-abbrev-table "for"
-  "" 'cpp-skeleton-for)
+;;(define-abbrev c++-mode-abbrev-table "for"
+;;  "" 'cpp-skeleton-for)
 
 (define-abbrev c++-mode-abbrev-table "print"
   "" 'cpp-skeleton-print)
@@ -1382,6 +1407,14 @@ alias em="emacsclient -c -a emacs"
         ("date:7d..now AND to:akapustin@quantumsofthealth.ru" "Last 7 days" ?w)
         ("mime:image/* AND to:akapustin@quantumsofthealth.ru" "Messages with images" ?p)))
 
+
+(setq mu4e-alert-mu4e-header-func-var  "A")
+(use-package mu4e-alert
+    :ensure t
+    :config
+    (mu4e-alert-set-default-style 'libnotify)
+    (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+ )
 
 (use-package mu4e
   :ensure nil
@@ -1764,6 +1797,7 @@ If in compilation buffer there are many lines it start to be a very slow
 (use-package perspective
   :ensure t
   :config
+  (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode)
 )
 (use-package persp-projectile
@@ -1858,6 +1892,22 @@ If in compilation buffer there are many lines it start to be a very slow
 ;;   :config
 ;;     )
 #+END_SRC
+* Nov (epub reading)
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package nov
+  :ensure t
+  :config
+   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+    )
+#+END_SRC
+* PDF
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
+#+END_SRC
+
 * Paredit
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package paredit
@@ -1869,9 +1919,9 @@ If in compilation buffer there are many lines it start to be a very slow
   (add-hook 'ielm-mode-hook #'paredit-mode)
   (add-hook 'lisp-mode-hook #'paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
-  (add-hook 'c++-mode-hook #'paredit-mode)
-  (add-hook 'c-mode-hook #'paredit-mode)
-  (add-hook 'python-mode-hook #'paredit-mode)
+  ;; (add-hook 'c++-mode-hook #'paredit-mode)
+  ;; (add-hook 'c-mode-hook #'paredit-mode)
+  ;; (add-hook 'python-mode-hook #'paredit-mode)
     )
 #+END_SRC
 * Dy
@@ -1992,8 +2042,9 @@ Do not try to make a new directory or anything fancy."
   "Set environment for hud project."
   (interactive)
   (progn
-    (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.3.0-static/lib/cmake")
-    ;;(setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
+    ;; (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.3.0-static/lib/cmake")
+    ;; (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
+    (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.3.0/gcc_64/lib/cmake")
     (setenv "LD_LIBRARY_PATH" "/usr/lib64/ros/lib:/usr/local/cuda/lib64:/usr/local/cuda/lib64")
     (setenv "PATH" "/usr/lib64/ros/bin:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/home/dyens/.local/bin:/home/dyens/.cargo/bin:/usr/lib64/qt-3.3/bin:/usr/share/Modules/bin:/usr/lib64/ccache:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/cuda/bin:/usr/local/go/go/bin:/home/dyens/bin:/usr/local/cuda/bin:/usr/local/go/go/bin")
     (setenv "PKG_CONFIG_PATH" "/usr/lib64/ros/lib/pkgconfig")
@@ -2001,10 +2052,14 @@ Do not try to make a new directory or anything fancy."
     (setenv "ROS_ETC_DIR" "/usr/lib64/ros/etc/ros")
     (setenv "ROS_PACKAGE_PATH" "/usr/lib64/ros/share")
     (setenv "ROS_ROOT" "/usr/lib64/ros/share/ros")
-    (setenv "ROS_LANG_DISABLE" "genlisp:genpy:gennodejs:geneus")
+    ;; (setenv "ROS_LANG_DISABLE" "genlisp:genpy:gennodejs:geneus")
+    ;; (setenv "ROS_LANG_DISABLE" "")
+    (setenv "HUD_DATA_FIXTURES_PATH" "/home/dyens/dev/quantumsoft/fixtures")
     (setenv "HUD_DATA_SNAPSHOT_PATH" "/home/dyens/dev/quantumsoft/snapshots")
     (setenv "ROS_PARALLEL_JOBS" "-j8 -l8")
+    (setenv "CCACHE_RECACHE" "1")
     ;; (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "TRUE")
+    (setenv "PLANTUML_JAR_PATH" "/home/dyens/dev/quantumsoft/docs/sources")
     (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "FALSE")
     (setq default-directory "/home/dyens/dev/quantumsoft/catkin_ws/src/hud_data/src/")
 
@@ -2168,3 +2223,5 @@ Cursor should be pointed on start fn eclaration."
     (shell-command (concat "firefox " url))))
 
 #+END_SRC
+
+
