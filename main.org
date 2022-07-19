@@ -1085,6 +1085,14 @@ company-backends
 )
 #+END_SRC
 
+** Rustic
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package rustic
+  :ensure t
+  :config
+)
+#+END_SRC
+
 ** Racer
 #+BEGIN_SRC emacs-lisp :results output silent
 ;;  (use-package racer
@@ -1139,17 +1147,18 @@ company-backends
 
 ** Bidnings
 #+BEGIN_SRC emacs-lisp :results output silent
-  (add-hook
-   'rust-mode-hook
-   (lambda()
-     (define-key evil-normal-state-local-map (kbd "<SPC> m c") 'rust-run-clippy)
-     (define-key evil-normal-state-local-map (kbd "<SPC> m C") 'rust-compile)
-     (define-key evil-normal-state-local-map (kbd "<SPC> m r") 'rust-run)
-     (define-key evil-normal-state-local-map (kbd "<SPC> T a") 'rust-test)
-     (define-key evil-normal-state-local-map (kbd "g d") 'racer-find-definition)
-     (define-key evil-normal-state-local-map (kbd "<SPC> T b") 'rust-test-buffer)
-     (define-key evil-normal-state-local-map (kbd "<SPC> t") 'rust-test-at-point)
-     ))
+(add-hook
+ 'rust-mode-hook
+ (lambda()
+   (define-key evil-normal-state-local-map (kbd "<SPC> m c") 'rust-run-clippy)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m C") 'rust-compile)
+   (define-key evil-normal-state-local-map (kbd "<SPC> m r") 'rust-run)
+   (define-key evil-normal-state-local-map (kbd "<SPC> T a") 'rust-test)
+   (define-key evil-normal-state-local-map (kbd "g d") 'racer-find-definition)
+   (define-key evil-normal-state-local-map (kbd "<SPC> T b") 'rust-test-buffer)
+   (define-key evil-normal-state-local-map (kbd "<SPC> =") 'lsp-format-buffer)
+   (define-key evil-normal-state-local-map (kbd "<SPC> t") 'rust-test-at-point)
+   ))
 #+END_SRC
 
 * Abbrev
@@ -1166,6 +1175,13 @@ company-backends
 
 (when (boundp 'python-mode-abbrev-table)
   (clear-abbrev-table python-mode-abbrev-table))
+
+(define-abbrev-table 'rust-mode-abbrev-table
+  '(
+    ("print" "println!(\"{:?}\", var);")
+    ))
+
+
 
 (define-abbrev-table 'python-mode-abbrev-table
   '(
@@ -1211,6 +1227,9 @@ private:
 (define-abbrev c++-mode-abbrev-table "ns"
   "" 'cpp-skeleton-ns)
 
+(define-abbrev c++-mode-abbrev-table "maint"
+  "" 'cpp-skeleton-main-t)
+
 (setq skeleton-end-hook nil)
 ;; (clear-abbrev-table c++-mode-abbrev-table)
 
@@ -1249,8 +1268,6 @@ private:
 -2"}"\n
 )
 
-
-
 (define-skeleton cpp-skeleton-print
   "cpp-skeleton-print" nil
 "std::cout << " _ " << std::endl;"\n
@@ -1268,6 +1285,18 @@ private:
 (define-skeleton cpp-skeleton-ns
   "cpp-skeleton-ns" nil
 "namespace " _ "{"\n
+-2"}"\n
+)
+
+(define-skeleton cpp-skeleton-main-t
+  "cpp-skeleton-main-t" nil
+"#include<iostream>" \n
+"#include<vector>" \n
+"#include<map>" \n
+"#include<memory>" \n
+\n
+"int main() {" \n
+> _ \n
 -2"}"\n
 )
 
