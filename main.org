@@ -147,110 +147,110 @@ find them with C-x C-f (find-file) if I really need to.
 ** Theme
 #+BEGIN_SRC emacs-lisp :results output silent
 
-  ;;(use-package color-theme-sanityinc-tomorrow
-  ;;  :ensure t
-  ;;  :config
-  ;;  (color-theme-sanityinc-tomorrow-night))
+;;(use-package color-theme-sanityinc-tomorrow
+;;  :ensure t
+;;  :config
+;;  (color-theme-sanityinc-tomorrow-night))
 
-  ;; (use-package gruvbox-theme
-  ;;   :ensure t
-  ;;   :config
-  ;;   (load-theme 'gruvbox t))
-  ;; (load-theme 'wombat t)
-  ;; (load-theme 'deeper-blue t)
+;; (use-package gruvbox-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'gruvbox t))
+;; (load-theme 'wombat t)
+;; (load-theme 'deeper-blue t)
 
-  ;;  (use-package apropospriate-theme
-  ;;    :ensure t
-  ;;    :config 
-  ;;    (load-theme 'apropospriate-dark t)
-  ;;    ;; or
-  ;;    ;; (load-theme 'apropospriate-light t)
-  ;;  )
+;;  (use-package apropospriate-theme
+;;    :ensure t
+;;    :config 
+;;    (load-theme 'apropospriate-dark t)
+;;    ;; or
+;;    ;; (load-theme 'apropospriate-light t)
+;;  )
 
-    ;;  (use-package modus-operandi-theme
-    ;;    :ensure t)
-    ;;
-    ;; (use-package modus-vivendi-theme
-    ;; :ensure t)
-    ;;
-    ;;  (load-theme 'modus-operandi t)           ; Light theme
-     ;; (load-theme 'apropospriate-dark t)
-     ;; (global-hl-line-mode t)
-
-
-
-  ;;(use-package kaolin-themes
-  ;;  :ensure t
-  ;;  :config 
-  ;;  (load-theme 'kaolin-light t))
-
-  ;; BEST!!!!
-  ;; (load-theme 'dichromacy t)
-
-  (use-package ef-themes
-    :ensure t
-    :config
-    (load-theme 'ef-day t)
-  )
-
-  (defun dy-modus-theme () 
-    (setq modus-themes-italic-constructs t
-        modus-themes-region '(bg-only)
-        modus-themes-bold-constructs t
-        modus-themes-syntax '( faint yellow-comments green-strings alt-syntax)
-        modus-themes-paren-match '(bold intense underline)
-        modus-themes-mode-line '(accented borderless)
-        )
-    ;; dark theme
-     (load-theme 'modus-vivendi t)
-     )
-  ;; (dy-modus-theme)
+  ;;  (use-package modus-operandi-theme
+  ;;    :ensure t)
+  ;;
+  ;; (use-package modus-vivendi-theme
+  ;; :ensure t)
+  ;;
+  ;;  (load-theme 'modus-operandi t)           ; Light theme
+   ;; (load-theme 'apropospriate-dark t)
+   ;; (global-hl-line-mode t)
 
 
-    ;; My default theme
-  (defun dy-light-theme ()
-      (scroll-bar-mode 0)
-      (fringe-mode 0)
 
-      (set-face-attribute 'mode-line nil :box nil)
-      (set-face-attribute 'mode-line-inactive nil :box nil)
+;;(use-package kaolin-themes
+;;  :ensure t
+;;  :config 
+;;  (load-theme 'kaolin-light t))
 
-      (set-face-attribute 'mode-line nil :background "#c6edf9")
-      (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+;; BEST!!!!
+;; (load-theme 'dichromacy t)
 
-      (set-face-background 'vertical-border "gray")
-      (set-face-foreground 'vertical-border (face-background 'vertical-border)))
+(use-package ef-themes
+  :ensure t
+  :config
+  (load-theme 'ef-day t)
+)
 
-   ;; (dy-light-theme)
+(defun dy-modus-theme () 
+  (setq modus-themes-italic-constructs t
+      modus-themes-region '(bg-only)
+      modus-themes-bold-constructs t
+      modus-themes-syntax '( faint yellow-comments green-strings alt-syntax)
+      modus-themes-paren-match '(bold intense underline)
+      modus-themes-mode-line '(accented borderless)
+      )
+  ;; dark theme
+   (load-theme 'modus-vivendi t)
+   )
+;; (dy-modus-theme)
 
 
-      ; (load-theme 'adwaita t)
-      ; (load-theme 'gruvbox-dark-hard t)
-      ;; (load-theme 'gruber-darker t)
+  ;; My default theme
+(defun dy-light-theme ()
+    (scroll-bar-mode 0)
+    (fringe-mode 0)
 
-      ; (load-theme 'dracula t)
+    (set-face-attribute 'mode-line nil :box nil)
+    (set-face-attribute 'mode-line-inactive nil :box nil)
 
-      ; (require 'doom-themes)
+    (set-face-attribute 'mode-line nil :background "#c6edf9")
+    (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
 
-      ;; Global settings (defaults)
-      ; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-      ;     doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (set-face-background 'vertical-border "gray")
+    (set-face-foreground 'vertical-border (face-background 'vertical-border)))
 
-      ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
-      ;; may have their own settings.
-      ; (load-theme 'whiteboard t)
+ ;; (dy-light-theme)
 
-      ;; Enable flashing mode-line on errors
-      ; (doom-themes-visual-bell-config)
 
-      ;; Enable custom neotree theme (all-the-icons must be installed!)
-      ; (doom-themes-neotree-config)
-      ;; or for treemacs users
-      ; (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
-      ; (doom-themes-treemacs-config)
+    ; (load-theme 'adwaita t)
+    ; (load-theme 'gruvbox-dark-hard t)
+    ;; (load-theme 'gruber-darker t)
 
-      ;; Corrects (and improves) org-mode's native fontification.
-      ; (doom-themes-org-config)
+    ; (load-theme 'dracula t)
+
+    ; (require 'doom-themes)
+
+    ;; Global settings (defaults)
+    ; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+    ;     doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+    ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+    ;; may have their own settings.
+    ; (load-theme 'whiteboard t)
+
+    ;; Enable flashing mode-line on errors
+    ; (doom-themes-visual-bell-config)
+
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    ; (doom-themes-neotree-config)
+    ;; or for treemacs users
+    ; (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+    ; (doom-themes-treemacs-config)
+
+;; Corrects (and improves) org-mode's native fontification.
+    ; (doom-themes-org-config)
 #+END_SRC
 
 ** Pretty symbols
@@ -263,7 +263,7 @@ find them with C-x C-f (find-file) if I really need to.
 (set-face-attribute 'default nil
                     :family "Iosevka SS04"
                     :height 110
-                    :weight 'regular
+                    :weight 'medium
                     :width 'normal
 )
 #+END_SRC
