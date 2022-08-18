@@ -1,0 +1,23 @@
+fundamental-mode ;; Available everywhere
+
+
+fundamental-mode ;; Available everywhere
+
+(today (format-time-string "%Y-%m-%d"))
+
+(asciibox "+-" (make-string (length str) ?-) "-+" n
+          "| " (s str)                       " |" n
+          "+-" (make-string (length str) ?-) "-+" n)
+
+
+
+python-mode
+
+(def "def " p "(" p "):" n> q)
+(print "print(" q ")")
+(pdb "import pdb; pdb.set_trace()")
+(for "for " p " in " p ":" n> q)
+(class "class " p ":" n> q)
+
+c++-mode
+(print "std::cout << " q " << std::endl;")
