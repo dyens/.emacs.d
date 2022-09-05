@@ -19,5 +19,22 @@ python-mode
 (for "for " p " in " p ":" n> q)
 (class "class " p ":" n> q)
 
+(capture-sql
+"from django.db import connection" n>
+"from django.test.utils import CaptureQueriesContext" n>
+"with CaptureQueriesContext(connection) as ctx:" n>
+q n>
+"print(ctx.captured_queries)")
+
+
 c++-mode
 (print "std::cout << " q " << std::endl;")
+(main_temp
+"#include <iostream>" n
+"#include <vector>" n
+"#include <cassert>" n
+n
+"int main() {" n
+"  assert(false, \"Some error!\");" n
+"}"
+)
