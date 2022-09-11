@@ -45,6 +45,7 @@ Base settings
 Display line numbers
 #+BEGIN_SRC emacs-lisp :results output silent
 (global-display-line-numbers-mode)
+(setq display-line-numbers 'relative) 
 #+END_SRC
 
 Search for non ascii characters
@@ -305,6 +306,10 @@ find them with C-x C-f (find-file) if I really need to.
   ;; With new evil changes and new emacs evil use different undo systemes
   (evil-set-undo-system 'undo-redo)
   (define-key evil-normal-state-map (kbd "<f5>") #'modus-themes-toggle)
+
+  ;; C-o defined for jump back
+  ;; C-i for jump forward
+  (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward)
 
   (define-key evil-normal-state-map (kbd "<SPC> f") 'find-file)
   (define-key evil-normal-state-map (kbd "<SPC> b") 'switch-to-buffer)
@@ -1911,6 +1916,13 @@ If in compilation buffer there are many lines it start to be a very slow
 ;; 
 ;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
 #+END_SRC
+** Cmake
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package cmake-mode
+  :ensure t
+  )
+#+END_SRC
+
 * RG
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package rg
@@ -1985,6 +1997,12 @@ If in compilation buffer there are many lines it start to be a very slow
   ;; (add-hook 'c-mode-hook #'paredit-mode)
   ;; (add-hook 'python-mode-hook #'paredit-mode)
     )
+#+END_SRC
+* Vue
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package vue-mode
+  :ensure t
+  )
 #+END_SRC
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
