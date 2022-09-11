@@ -18,6 +18,12 @@ python-mode
 (pdb "import pdb; pdb.set_trace()")
 (for "for " p " in " p ":" n> q)
 (class "class " p ":" n> q)
+(ifmain
+"def main():" n>
+q n n
+"if __name__ == '__main__':" n> 
+"main()"
+)
 
 (capture-sql
 "from django.db import connection" n>
