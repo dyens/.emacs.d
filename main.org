@@ -44,7 +44,7 @@ Base settings
 
 Display line numbers
 #+BEGIN_SRC emacs-lisp :results output silent
-(setq display-line-numbers 'relative) 
+(customize-set-variable 'display-line-numbers-type 'visual)
 (global-display-line-numbers-mode)
 #+END_SRC
 
@@ -510,7 +510,7 @@ For backward word and forwardword
 (use-package corfu
   :ensure t
   ;; Optional customizations
-  ;; :custom
+  :custom
   ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
   ;; (corfu-separator ?\s)          ;; Orderless field separator
@@ -920,12 +920,13 @@ For backward word and forwardword
   (setq lsp-enable-snippet t)
   (setq lsp-idle-delay 0.500)
   (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-lens-enable nil)
+  ;; (setq lsp-lens-enable nil)
 
   ; (setq-default lsp-pyls-configuration-sources ["flake8"])
   (setq lsp-pyls-plugins-pycodestyle-enabled nil
         lsp-pyls-plugins-pyflakes-enabled nil
         lsp-pyls-plugins-flake8-enabled t
+        lsp-enable-completion-at-point nil
   )
 
   (setq lsp-rust-server 'rust-analyzer)
@@ -2046,7 +2047,10 @@ If in compilation buffer there are many lines it start to be a very slow
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package vue-mode
   :ensure t
-  )
+  :config
+  (setq js-indent-level 2)
+  (setq css-indent-offset 2)
+)
 #+END_SRC
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
