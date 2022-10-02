@@ -109,6 +109,18 @@ Disk space is cheap. Save lots.
   (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
 #+END_SRC
 
+* World time
+#+BEGIN_SRC emacs-lisp :results output silent
+(custom-set-variables
+ '(zoneinfo-style-world-list
+   '(("Etc/UTC" "ITC")
+     ("Europe/Moscow" "Moscow")
+     ("Asia/Irkutsk" "Irkutsk")
+     ("America/New_York" "New York")
+     )))
+#+END_SRC
+
+
 * History
 This is one of the things people usually want to change right away. By
 default, Emacs saves backup files in the current directory. These are
