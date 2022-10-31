@@ -148,6 +148,10 @@ find them with C-x C-f (find-file) if I really need to.
   (display-time-mode -1)
 #+END_SRC
 
+** Fix gaps in DWM
+#+BEGIN_SRC emacs-lisp :results output silent
+  (setq frame-resize-pixelwise t)
+#+END_SRC
 ** Column number mode
 #+BEGIN_SRC emacs-lisp :results output silent
 ;(setq column-number-mode t) ;; show columns in addition to rows in mode line
@@ -200,10 +204,16 @@ find them with C-x C-f (find-file) if I really need to.
 ;; BEST!!!!
 ;; (load-theme 'dichromacy t)
 
-(use-package ef-themes
+;; (use-package ef-themes
+;;   :ensure t
+;;   :config
+;;   (load-theme 'ef-day t)
+;; )
+
+(use-package gruvbox-theme
   :ensure t
   :config
-  (load-theme 'ef-day t)
+  (load-theme 'gruvbox-light-medium t)
 )
 
 (defun dy-modus-theme () 
@@ -479,12 +489,29 @@ For backward word and forwardword
   :config
   (defun dy-git-commit-setup ()
     (let ((current-branch-name (upcase (magit-get-current-branch))))
-      (message current-branch-name)
       (if (string-match-p (regexp-quote "WEBDEV") current-branch-name)
 	  (let ((issue-number (format "WEBDEV%s" (cadr (split-string current-branch-name "WEBDEV")))))
-	       (insert (format " %s\n\nhttps://zyrl.atlassian.net/browse/%s" issue-number issue-number))
-	       (goto-char 0)
-	       (evil-insert 0)))))
+	    (insert (format " %s\n\nhttps://zyrl.atlassian.net/browse/%s" issue-number issue-number))
+	    (goto-char 0)
+	    (evil-insert 0)))
+
+      (if (string-match-p (regexp-quote "VTBCLOUD") current-branch-name)
+	  (when (string-match "\\(VTBCLOUD-\[0-9\]+\\)-\\(.*\\)" current-branch-name)
+	    (let ((issue-number (match-string 1 current-branch-name))
+		  (default-commit-message (dy-capitalize-first-char (replace-regexp-in-string "-" " " (downcase (match-string 2 current-branch-name))))))
+	      (insert (format "%s: #comment %s\n" issue-number default-commit-message))
+(evil-previous-line 1)
+(evil-end-of-line)
+(evil-visual-state 1)
+            (evil-backward-char (- (length default-commit-message) 1)) 
+
+	      ))
+	)))
+
+
+
+  
+
   (add-hook 'git-commit-setup-hook 'dy-git-commit-setup))
 #+END_SRC
 
@@ -614,7 +641,10 @@ For backward word and forwardword
     ; We need to tell Emacs to do paragrah-filling at 79 caharacters
     ; (column-enforce-mode only highlights regions --- it does not change how
     ; paragraph filling is done).
-    (setq fill-column 79)))
+    (setq fill-column 79)
+    (add-hook 'completion-at-point-functions
+              #'lsp-completion-at-point
+              'append)))
 
 
 
@@ -999,11 +1029,24 @@ company-backends
 ;;  )
 #+END_SRC
 
+
+** GO
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package go-mode
+  :ensure t
+  :config
+  (add-hook 'go-mode-hook 'lsp-deferred)
+  )
+#+END_SRC
+
 ** Bidnings
 #+BEGIN_SRC emacs-lisp :results output silent
+(defcustom dy-pytest-arguments "--disable-warnings"
+  "Pytest run arguments.")
+
 (defun dy-pytest-one-without-warnings ()
   (interactive)
-  (pytest-one "--disable-warnings")
+  (pytest-one  dy-pytest-arguments)
   )
 
 (add-hook
@@ -1250,6 +1293,8 @@ tody
 * Abbrev
 ** Settings
 #+BEGIN_SRC emacs-lisp :results output silent
+
+(defun dy-setup-my-abbrev () 
 (clear-abbrev-table global-abbrev-table)
 
 (define-abbrev-table 'global-abbrev-table
@@ -1281,9 +1326,9 @@ tody
   (define-abbrev-table 'c++-mode-abbrev-table
     '(
       ("cls" "class A {
-public:
+Public:
     A();
-private:
+Private:
     int var;
 }")
       ))
@@ -1389,6 +1434,9 @@ private:
 (set-default 'abbrev-mode t)
 
 (setq save-abbrevs nil)
+)
+
+;;(dy-setup-my-abbrev )
 #+END_SRC
 
 * Tempel
@@ -1397,20 +1445,13 @@ private:
 :ensure t
 :config
 (global-tempel-abbrev-mode)
+(set-default 'abbrev-mode t)
 )
 #+END_SRC
 * Post Settings
 ** Quit minibuffer by one escape
 #+BEGIN_SRC emacs-lisp :results output silent
   ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer)
-#+END_SRC
-
-* Tramp
-#+BEGIN_SRC emacs-lisp :results output silent
-  (use-package docker-tramp
-    :ensure t
-    :config 
-    )
 #+END_SRC
 
 * Plantuml
@@ -1430,8 +1471,16 @@ private:
 (use-package org-jira
   :ensure t
   :custom
-  (jiralib-url "https://zyrl.atlassian.net")
-  (jiralib-token (cons "Cookie" "cloud.session.token=eyJraWQiOiJzZXNzaW9uLXNlcnZpY2VcL3Byb2QtMTU5Mjg1ODM5NCIsImFsZyI6IlJTMjU2In0.eyJhc3NvY2lhdGlvbnMiOltdLCJzdWIiOiI2MTU0NjM4ZTA3MWE3MjAwNzFmMzExYjgiLCJlbWFpbERvbWFpbiI6InF1YW50dW1zb2Z0LnJ1IiwiaW1wZXJzb25hdGlvbiI6W10sImNyZWF0ZWQiOjE2NTcyMTY5ODQsInJlZnJlc2hUaW1lb3V0IjoxNjYwODIxMTgzLCJ2ZXJpZmllZCI6dHJ1ZSwiaXNzIjoic2Vzc2lvbi1zZXJ2aWNlIiwic2Vzc2lvbklkIjoiMjM4MTFjZGUtM2Q1Yy00ZThhLWExYWItZmUxMjExZDRiNzg3Iiwic3RlcFVwcyI6W10sImF1ZCI6ImF0bGFzc2lhbiIsIm5iZiI6MTY2MDgyMDU4MywiZXhwIjoxNjYzNDEyNTgzLCJpYXQiOjE2NjA4MjA1ODMsImVtYWlsIjoiYWxleGFuZGVyLmthcHVzdGluQHF1YW50dW1zb2Z0LnJ1IiwianRpIjoiMjM4MTFjZGUtM2Q1Yy00ZThhLWExYWItZmUxMjExZDRiNzg3In0.SzvrFOt1iwgXe0vRNh-cSg3T-cGA_aobdRjq8yfJ0I8vXel3vSkyNp-V_EzNd8QVqU0E7Avbdk0nrI18GjZp8WEfNQx6d7MPqLTLWcXa006OGiKTczZk6N9NMsYg7ZtMoqcq1FDezL2v7t0ywv5vCo3zCKHHvIUytdNaHbNq8UuVwP5uffoyRD2eF5OLygKyp1f2uSOmgpdNjRogdbmtGPJG8qaA18vhN_qOixd_QUD2463XoF5JGza5sFp58rGb3FAZGIaoElD0pHwfkavxzQsB8Feb135jmwRVao5ooQJrJ7ygG8cEAGLc95nJ_RuFCkGSNpOaDfovjRomEIY3Sw"))
+  (jiralib-url "https://jira.croc.ru/")
+  :config
+  (setq jiralib-token
+      (cons "Authorization"
+          (concat "Bearer " (auth-source-pick-first-password
+              :host "jira.croc.ru"))))
+  ;; (jiralib-token "NDk0MjY2MjQwNTM1OvHdVcynoYBNk4wtVojPH9bcY8o0")
+
+  ;; (jiralib-url "https://zyrl.atlassian.net")
+  ;; (jiralib-token (cons "Cookie" "cloud.session.token=eyJraWQiOiJzZXNzaW9uLXNlcnZpY2VcL3Byb2QtMTU5Mjg1ODM5NCIsImFsZyI6IlJTMjU2In0.eyJhc3NvY2lhdGlvbnMiOltdLCJzdWIiOiI2MTU0NjM4ZTA3MWE3MjAwNzFmMzExYjgiLCJlbWFpbERvbWFpbiI6InF1YW50dW1zb2Z0LnJ1IiwiaW1wZXJzb25hdGlvbiI6W10sImNyZWF0ZWQiOjE2NTcyMTY5ODQsInJlZnJlc2hUaW1lb3V0IjoxNjYwODIxMTgzLCJ2ZXJpZmllZCI6dHJ1ZSwiaXNzIjoic2Vzc2lvbi1zZXJ2aWNlIiwic2Vzc2lvbklkIjoiMjM4MTFjZGUtM2Q1Yy00ZThhLWExYWItZmUxMjExZDRiNzg3Iiwic3RlcFVwcyI6W10sImF1ZCI6ImF0bGFzc2lhbiIsIm5iZiI6MTY2MDgyMDU4MywiZXhwIjoxNjYzNDEyNTgzLCJpYXQiOjE2NjA4MjA1ODMsImVtYWlsIjoiYWxleGFuZGVyLmthcHVzdGluQHF1YW50dW1zb2Z0LnJ1IiwianRpIjoiMjM4MTFjZGUtM2Q1Yy00ZThhLWExYWItZmUxMjExZDRiNzg3In0.SzvrFOt1iwgXe0vRNh-cSg3T-cGA_aobdRjq8yfJ0I8vXel3vSkyNp-V_EzNd8QVqU0E7Avbdk0nrI18GjZp8WEfNQx6d7MPqLTLWcXa006OGiKTczZk6N9NMsYg7ZtMoqcq1FDezL2v7t0ywv5vCo3zCKHHvIUytdNaHbNq8UuVwP5uffoyRD2eF5OLygKyp1f2uSOmgpdNjRogdbmtGPJG8qaA18vhN_qOixd_QUD2463XoF5JGza5sFp58rGb3FAZGIaoElD0pHwfkavxzQsB8Feb135jmwRVao5ooQJrJ7ygG8cEAGLc95nJ_RuFCkGSNpOaDfovjRomEIY3Sw"))
   ;; (jiralib-url "https://jira.cindicator.net")
   )
 #+END_SRC
@@ -1916,6 +1965,21 @@ If in compilation buffer there are many lines it start to be a very slow
 )
 #+END_SRC
 
+* Vterm
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package vterm
+  :ensure t
+  :custom
+  (vterm-shell "zsh")
+)
+#+END_SRC
+* Multi-Vterm
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package multi-vterm
+  :after vterm
+  :ensure t)
+#+END_SRC
+
 * Perspective
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package perspective
@@ -2064,6 +2128,17 @@ If in compilation buffer there are many lines it start to be a very slow
   (setq css-indent-offset 2)
 )
 #+END_SRC
+* Kubernetes
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package kubernetes
+  :ensure t
+)
+
+(use-package kubernetes-evil
+  :ensure t
+  :after kubernetes)
+#+END_SRC
+
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
 

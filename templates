@@ -13,11 +13,11 @@ fundamental-mode ;; Available everywhere
 
 python-mode
 
-(def "def " p "(" p "):" n> q)
+(def "def" p "(" p "):" n> q)
 (print "print(" q ")")
 (pdb "import pdb; pdb.set_trace()")
-(for "for " p " in " p ":" n> q)
-(class "class " p ":" n> q)
+(for "for" p " in " p ":" n> q)
+(class "class" p ":" n> q)
 (ifmain
 "def main():" n>
 q n n
