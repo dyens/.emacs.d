@@ -53,6 +53,11 @@ https://endlessparentheses.com/new-in-emacs-25-1-easily-search-non-ascii-charact
 #+BEGIN_SRC emacs-lisp :results output silent
   (setq search-default-mode #'char-fold-to-regexp)
 #+END_SRC
+
+Warning level
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq warning-minimum-level :emergency)
+#+END_SRC
 * Installing use-package
 ** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1444,8 +1449,8 @@ Private:
 (use-package tempel
 :ensure t
 :config
-(global-tempel-abbrev-mode)
-(set-default 'abbrev-mode t)
+;; (global-tempel-abbrev-mode)
+;; (set-default 'abbrev-mode t)
 )
 #+END_SRC
 * Post Settings
@@ -1927,7 +1932,6 @@ If in compilation buffer there are many lines it start to be a very slow
                                 ("mp4" . "mplayer"))))
 
 #+END_SRC
-
 * Eshell
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; From SystemCrafters
