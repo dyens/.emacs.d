@@ -363,6 +363,13 @@ find them with C-x C-f (find-file) if I really need to.
 
   (define-key evil-normal-state-map (kbd "<SPC> l") 'perspective-map)
 
+  ;; Github jump
+  (define-key evil-normal-state-map (kbd "<SPC> m b") 'dy-open-in-github-branch)
+  (define-key evil-normal-state-map (kbd "<SPC> m B") 'dy-open-in-github-rev)
+
+  (define-key evil-visual-state-map (kbd "<SPC> m b") 'dy-open-in-github-branch)
+  (define-key evil-visual-state-map (kbd "<SPC> m B") 'dy-open-in-github-rev)
+
   ;; fast function
   (define-key evil-normal-state-map (kbd "<SPC> ~") 'dy-set-fast-function)
   (define-key evil-visual-state-map (kbd "<SPC> ~") 'dy-set-fast-function)
@@ -370,7 +377,7 @@ find them with C-x C-f (find-file) if I really need to.
   (defun dy-function-not-found ()
     "Function is not find"
     (interactive)
- (error "Fast function is not defined: use dy-set-fast-function"))
+  (error "Fast function is not defined: use dy-set-fast-function"))
 
   (define-key evil-normal-state-map (kbd "<SPC> `") 'dy-function-not-found)
 
@@ -2167,46 +2174,6 @@ If in compilation buffer there are many lines it start to be a very slow
   " 
   (mapconcat 'capitalize (split-string s "_") ""))
 
-(defun amb-java-to-python-storage-errors ()
-  "Convert java storage errors to python"
-  (interactive)
-  (let* ((start (point))
-	 (end (search-forward ")"))
-	 (ex-definition (replace-regexp-in-string "[\s\n\t]+" " "(buffer-substring start end)))
-	 (reg-exp "\\(.*\\)(\\(.*\\), \"\\(.*\\)\", \\(.*\\), \"\\(.*\\)\")")
-
-	 )
-
-
-    (when (string-match reg-exp ex-definition)
-      (let ((class (match-string 1 ex-definition))
-	    (storage-code (match-string 2 ex-definition))
-	    (description (match-string 3 ex-definition))
-	    (http-status-code (match-string 4 ex-definition))
-	    (readable-status (match-string 5 ex-definition))
-	    class-string
-	    )
-	(setq class (dy-screaming-to-camel (string-trim class)))
-	(setq storage-code (string-trim storage-code))
-	(setq description (string-trim description))
-	(setq http-status-code (nth 1 (split-string (string-trim http-status-code)  "\\.")))
-	(setq readable-status (string-trim readable-status))
-
-	(setq class-string (format "
-class %s(StorageResponseException):
-    \"\"\"%s.\"\"\"
-
-    storage_code = %s
-    description = '%s'
-    http_status_code = HTTPStatus\.%s.value
-    readable_status = '%s'
-
-" class class storage-code description http-status-code readable-status ))
-        (delete-region start end)
-	(insert class-string)))))
-
-(define-key evil-normal-state-map (kbd "<SPC> `") 'amb-java-to-python-storage-errors)
-
 (defun dy-set-fast-function (fn_name)
   "Set some function on <SPC> ` in evil normal state map."
   (interactive "aBind function name: ")
@@ -2255,82 +2222,25 @@ Do not try to make a new directory or anything fancy."
 	 (buffer-substring-no-properties p1 p2))
       (google-translate-at-point-reverse))))
 
-;; Compilation command: cd catkin_ws && catkin_make install -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-Wfatal-errors
-;; Tidy diff command: git diff  --name-only  --diff-filter=ACM  dev...QUANT-206  | grep -E '\.cpp|\.h' |xargs -n1 -P9 clang-tidy
-(defun dy-setup-hud-project ()
-  "Set environment for hud project."
-  (interactive)
-  (progn
-    ;; (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.3.0-static/lib/cmake")
-    ;; (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.2.0/gcc_64/lib/cmake")
-    (setenv "CMAKE_PREFIX_PATH" "/usr/lib64/ros:/home/dyens/Qt/6.3.0/gcc_64/lib/cmake")
-    (setenv "LD_LIBRARY_PATH" "/usr/lib64/ros/lib:/usr/local/cuda/lib64:/usr/local/cuda/lib64")
-    (setenv "PATH" "/usr/lib64/ros/bin:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/home/dyens/.local/bin:/home/dyens/.cargo/bin:/usr/lib64/qt-3.3/bin:/usr/share/Modules/bin:/usr/lib64/ccache:/home/dyens/.local/bin:/home/dyens/.poetry/bin:/home/dyens/.cargo/bin:/home/dyens/.pyenv/bin:/home/dyens/.poetry/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/cuda/bin:/usr/local/go/go/bin:/home/dyens/bin:/usr/local/cuda/bin:/usr/local/go/go/bin")
-    (setenv "PKG_CONFIG_PATH" "/usr/lib64/ros/lib/pkgconfig")
-    (setenv "PYTHONPATH" "/usr/lib64/ros/lib/python3.10/site-packages")
-    (setenv "ROS_ETC_DIR" "/usr/lib64/ros/etc/ros")
-    (setenv "ROS_PACKAGE_PATH" "/usr/lib64/ros/share")
-    (setenv "ROS_ROOT" "/usr/lib64/ros/share/ros")
-    ;; (setenv "ROS_LANG_DISABLE" "genlisp:genpy:gennodejs:geneus")
-    ;; (setenv "ROS_LANG_DISABLE" "")
-    (setenv "HUD_DATA_FIXTURES_PATH" "/home/dyens/dev/quantumsoft/fixtures")
-    (setenv "HUD_DATA_SNAPSHOT_PATH" "/home/dyens/dev/quantumsoft/snapshots")
-    (setenv "ROS_PARALLEL_JOBS" "-j8 -l8")
-    (setenv "CCACHE_RECACHE" "1")
-    ;; (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "TRUE")
-    (setenv "PLANTUML_JAR_PATH" "/home/dyens/dev/quantumsoft/docs/sources")
-    (setenv "HUD_DATA_SNAPSHOT_CREATE_IF_NOT_EXISTS" "FALSE")
-    (setq default-directory "/home/dyens/dev/quantumsoft/catkin_ws/src/hud_data/src/")
 
-    (defun dy-open-hud-in-github-dev()
-      (interactive)
-      (dy-open-in-github "https://github.com/helm-ai/quantumsoft" 'dev))
-    (defun dy-open-hud-in-github-rev()
-      (interactive)
-      (dy-open-in-github "https://github.com/helm-ai/quantumsoft" 'rev))
-
-    (define-key evil-normal-state-map (kbd "<SPC> m b") 'dy-open-hud-in-github-dev)
-    (define-key evil-normal-state-map (kbd "<SPC> m B") 'dy-open-hud-in-github-rev)
-
-    (define-key evil-visual-state-map (kbd "<SPC> m b") 'dy-open-hud-in-github-dev)
-    (define-key evil-visual-state-map (kbd "<SPC> m B") 'dy-open-hud-in-github-rev)
-    ))
-
-(defun setup-zyrl-project ()
-  "Set environment for zyrl project."
-  (setq zyrl-github-page "https://github.com/zyrl-sf/z-dash")
-  (interactive)
-    (defun dy-open-zyrl-in-github-dev()
-      (interactive)
-      (dy-open-in-github zyrl-github-page 'dev))
-    (defun dy-open-zyrl-in-github-rev()
-      (interactive)
-      (dy-open-in-github zyrl-github-page 'rev))
-
-    (define-key evil-normal-state-map (kbd "<SPC> m b") 'dy-open-zyrl-in-github-dev)
-    (define-key evil-normal-state-map (kbd "<SPC> m B") 'dy-open-zyrl-in-github-rev)
-
-    (define-key evil-visual-state-map (kbd "<SPC> m b") 'dy-open-zyrl-in-github-dev)
-    (define-key evil-visual-state-map (kbd "<SPC> m B") 'dy-open-zyrl-in-github-rev)
-  )
 
 (defun dy-hud-choose-compile-command (command)
   "Compilation hud project and libs."
   (interactive
-  (list
-   (completing-read "Compilation command: "
-         '(
-	     "cd catkin_ws && catkin_make run_tests --use-ninja"
-	     "cd catkin_ws && catkin_make run_tests_hud_data_gtest_utils_camera_object_bbox  --use-ninja"
-	     "cd catkin_ws && catkin_make bag_analyze  -DFORCE_BUILD_ANALYZER:BOOL=true"
-           "make"
-           "make clean"
-           ))))
-       (projectile--run-project-cmd command projectile-compilation-cmd-map
-                    :show-prompt t
-                    :prompt-prefix "Compile command: "
-                    :save-buffers t
-        :use-comint-mode projectile-compile-use-comint-mode))
+   (list
+    (completing-read "Compilation command: "
+		     '(
+		       "cd catkin_ws && catkin_make run_tests --use-ninja"
+		       "cd catkin_ws && catkin_make run_tests_hud_data_gtest_utils_camera_object_bbox  --use-ninja"
+		       "cd catkin_ws && catkin_make bag_analyze  -DFORCE_BUILD_ANALYZER:BOOL=true"
+		       "make"
+		       "make clean"
+		       ))))
+  (projectile--run-project-cmd command projectile-compilation-cmd-map
+			       :show-prompt t
+			       :prompt-prefix "Compile command: "
+			       :save-buffers t
+			       :use-comint-mode projectile-compile-use-comint-mode))
 
 
 (defun dy-hud-cppcheck ()
@@ -2346,11 +2256,11 @@ Do not try to make a new directory or anything fancy."
   "Start tidy for hud."
   (interactive)
   (let ((compilation-buffer-name-function (lambda (x) "*tidy checks*"))
-    (default-directory (projectile-acquire-root)))
-      (compile
-       ;; funny command
-       ;; Note: run-clang-tidy does not work - it use all files in project (include moc files)
-       "cd catkin_ws && find src -type d \\( -path src/.ccls-cache -o -path src/hud_data/include/hud_data/msgs -o -path src/hud_data/src/msgs \\) -prune -o \\( -name '*.cpp' -o -name '*.h' \\) -print \
+	(default-directory (projectile-acquire-root)))
+    (compile
+     ;; funny command
+     ;; Note: run-clang-tidy does not work - it use all files in project (include moc files)
+     "cd catkin_ws && find src -type d \\( -path src/.ccls-cache -o -path src/hud_data/include/hud_data/msgs -o -path src/hud_data/src/msgs \\) -prune -o \\( -name '*.cpp' -o -name '*.h' \\) -print \
        | xargs -n1 -P9 clang-tidy")))
 
 
@@ -2366,7 +2276,7 @@ Do not try to make a new directory or anything fancy."
 (defun dy-include-cpp-header ()
   "Include cpp header."
   (interactive)
- (save-excursion
+  (save-excursion
     (let ((bname (replace-regexp-in-string "[.]" "_" (string-inflection-upcase-function (buffer-name)))))
       (goto-char (point-min))
       (insert (format "#ifndef %s\n#define %s\n\n" bname bname))
@@ -2411,15 +2321,15 @@ Cursor should be pointed on start fn eclaration."
 	(setq fname (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
 	(setq fargs (dy-parse-cpp-args (buffer-substring-no-properties (match-beginning 3) (match-end 3))))
 	(setq docstring (concat
-"/**\n"
-"  * \\brief\n"
-"  * %s\n"
-"  * \\details\n"
-"  * %s\n"
-"  *\/\n"
-				))
+			 "/**\n"
+			 "  * \\brief\n"
+			 "  * %s\n"
+			 "  * \\details\n"
+			 "  * %s\n"
+			 "  *\/\n"
+			 ))
 
-		
+	
 	(goto-char 0)
 	(insert (format docstring fname fname))))))
 
@@ -2427,22 +2337,31 @@ Cursor should be pointed on start fn eclaration."
   "Cpp args parser"
   (let ((f (lambda (el)
 	     (string-trim
-	       (car (last (split-string el " ")))
-	       "[ \t\n\r&*]+"
-	       "[ \t\n\r]+"))))
+	      (car (last (split-string el " ")))
+	      "[ \t\n\r&*]+"
+	      "[ \t\n\r]+"))))
     (mapcar
      f
      (split-string args-string ","))))
 
+(defun dy-get-git-origin-url ()
+  "Return current git origin url"
+  (let ((url (magit-git-output "config" "--get" "remote.origin.url")))
+    (cond
+     ((string-match "git@\\(.*\\):\\(.*\\)\.git" url) (format "https://%s/%s" (match-string 1 url) (match-string 2 url)))
+     ((string-match "\\(.*\\)\.git" url) (match-string 1 url) )
+     (t (error "Can not detect origin"))
+     )))
 
 
 (defun dy-open-in-github (github-url  &optional mode)
   "Open source file in github."
   (interactive)
   (let (
+	(github-url (if (null github-url) (dy-get-git-origin-url) (github-url)))
 	(github-path
 	 (cond
-	  ((eq mode nil) "dev")
+	  ((eq mode nil) (magit-get-current-branch))
 	  ((eq mode 'dev) "dev")
 	  ((eq mode 'branch) (magit-get-current-branch))
 	  ((eq mode 'rev) (magit-rev-abbrev "HEAD"))))
@@ -2458,6 +2377,11 @@ Cursor should be pointed on start fn eclaration."
     (setq url (format "%s/blob/%s/%s%s" github-url github-path project-file highlight))
     (shell-command (concat "firefox " url))))
 
+(defun dy-open-in-github-branch()
+    (interactive)
+    (dy-open-in-github nil 'branch))
+
+(defun dy-open-in-github-rev()
+    (interactive)
+    (dy-open-in-github nil 'rev))
 #+END_SRC
-
-
