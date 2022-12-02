@@ -332,54 +332,54 @@ find them with C-x C-f (find-file) if I really need to.
   (evil-mode 1)
   ;; With new evil changes and new emacs evil use different undo systemes
   (evil-set-undo-system 'undo-redo)
-  (define-key evil-normal-state-map (kbd "<f5>") #'modus-themes-toggle)
+  (keymap-set evil-normal-state-map "<f5>" #'modus-themes-toggle)
 
   ;; C-o defined for jump back
   ;; C-i for jump forward
-  (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward)
+  (keymap-set evil-normal-state-map "C-i" 'evil-jump-forward)
 
-  (define-key evil-normal-state-map (kbd "<SPC> f") 'find-file)
-  (define-key evil-normal-state-map (kbd "<SPC> b") 'switch-to-buffer)
-  (define-key evil-normal-state-map (kbd "<SPC> i") 'consult-imenu)
-  (define-key evil-normal-state-map (kbd "<SPC> I") 'consult-imenu-multi)
-  (define-key evil-normal-state-map (kbd "<SPC> s") 'consult-ripgrep)
+  (keymap-set evil-normal-state-map "<SPC> f" 'find-file)
+  (keymap-set evil-normal-state-map "<SPC> b" 'switch-to-buffer)
+  (keymap-set evil-normal-state-map "<SPC> i" 'consult-imenu)
+  (keymap-set evil-normal-state-map "<SPC> I" 'consult-imenu-multi)
+  (keymap-set evil-normal-state-map "<SPC> s" 'consult-ripgrep)
 
-  (define-key evil-normal-state-map (kbd "<SPC> w") 'ace-window)
+  (keymap-set evil-normal-state-map "<SPC> w" 'ace-window)
 
-  (define-key evil-normal-state-map (kbd "<SPC> g") 'magit-status)
-  (define-key evil-normal-state-map (kbd "<SPC> a a") 'org-agenda)
-  (define-key evil-normal-state-map (kbd "<SPC> a c") 'org-capture)
+  (keymap-set evil-normal-state-map "<SPC> g" 'magit-status)
+  (keymap-set evil-normal-state-map "<SPC> a a" 'org-agenda)
+  (keymap-set evil-normal-state-map "<SPC> a c" 'org-capture)
 
-  (define-key evil-normal-state-map (kbd "<SPC> c") 'compile)
+  (keymap-set evil-normal-state-map "<SPC> c" 'compile)
 
-  (define-key evil-normal-state-map (kbd "<SPC> #") 'comment-line)
-  (define-key evil-visual-state-map (kbd "<SPC> #") 'comment-line)
+  (keymap-set evil-normal-state-map "<SPC> #" 'comment-line)
+  (keymap-set evil-visual-state-map "<SPC> #" 'comment-line)
 
-  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-  (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+  (keymap-set evil-normal-state-map "C-u" 'evil-scroll-up)
+  (keymap-set evil-visual-state-map "C-u" 'evil-scroll-up)
   ;; Instead of C-u
-  (define-key evil-normal-state-map (kbd "<SPC> u") 'universal-argument)
-  (define-key evil-insert-state-map (kbd "C-l") 'yas-expand-from-trigger-key)
+  (keymap-set evil-normal-state-map "<SPC> u" 'universal-argument)
+  (keymap-set evil-insert-state-map "C-l" 'yas-expand-from-trigger-key)
 
-  (define-key evil-normal-state-map (kbd "<SPC> l") 'perspective-map)
+  (keymap-set evil-normal-state-map "<SPC> l" 'perspective-map)
 
   ;; Github jump
-  (define-key evil-normal-state-map (kbd "<SPC> m b") 'dy-open-in-github-branch)
-  (define-key evil-normal-state-map (kbd "<SPC> m B") 'dy-open-in-github-rev)
+  (keymap-set evil-normal-state-map "<SPC> m b" 'dy-open-in-github-branch)
+  (keymap-set evil-normal-state-map "<SPC> m B" 'dy-open-in-github-rev)
 
-  (define-key evil-visual-state-map (kbd "<SPC> m b") 'dy-open-in-github-branch)
-  (define-key evil-visual-state-map (kbd "<SPC> m B") 'dy-open-in-github-rev)
+  (keymap-set evil-visual-state-map "<SPC> m b" 'dy-open-in-github-branch)
+  (keymap-set evil-visual-state-map "<SPC> m B" 'dy-open-in-github-rev)
 
   ;; fast function
-  (define-key evil-normal-state-map (kbd "<SPC> ~") 'dy-set-fast-function)
-  (define-key evil-visual-state-map (kbd "<SPC> ~") 'dy-set-fast-function)
+  (keymap-set evil-normal-state-map "<SPC> ~" 'dy-set-fast-function)
+  (keymap-set evil-visual-state-map "<SPC> ~" 'dy-set-fast-function)
 
   (defun dy-function-not-found ()
     "Function is not find"
     (interactive)
   (error "Fast function is not defined: use dy-set-fast-function"))
 
-  (define-key evil-normal-state-map (kbd "<SPC> `") 'dy-function-not-found)
+  (keymap-set evil-normal-state-map "<SPC> `" 'dy-function-not-found)
 
   )
 
@@ -499,6 +499,8 @@ For backward word and forwardword
   :ensure t
   :commands magit-status
   :config
+  (setq magit-display-buffer-function 'magit-display-buffer-traditional)
+  ;; (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
   (defun dy-git-commit-setup ()
     (let ((current-branch-name (upcase (magit-get-current-branch))))
       (if (string-match-p (regexp-quote "WEBDEV") current-branch-name)
@@ -1064,23 +1066,23 @@ company-backends
 (add-hook
  'python-mode-hook
  (lambda()
-   (define-key evil-normal-state-local-map (kbd "<SPC> t") 'dy-pytest-one-without-warnings)
-   (define-key evil-normal-state-local-map (kbd "<SPC> T a") 'pytest-all)
-   (define-key evil-normal-state-local-map (kbd "<SPC> T b") 'pytest-module)
-   (define-key evil-normal-state-local-map (kbd "<SPC> T p") 'pytest-pdb-one)
-   (define-key evil-normal-state-local-map (kbd "<SPC> i") 'py-isort-buffer)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m d") 'dy-python-create-docstring)
-   (define-key evil-visual-state-local-map (kbd "<SPC> m a") 'dy-python-dict-kwargs-toogle)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m i") 'dy-python-add-noqa)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m s") 'dy-py-split-string)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m f") 'flycheck-list-errors)
-   (define-key evil-normal-state-local-map (kbd "g d") 'lsp-find-definition)
-   ;; (define-key evil-normal-state-local-map (kbd "<SPC> =") 'yapfify-region-or-buffer)
-   (define-key evil-normal-state-local-map (kbd "<SPC> =") 'blacken-buffer)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m R") 'run-python)
-   (define-key evil-visual-state-local-map (kbd "<SPC> m r") 'python-shell-send-region)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m b") 'python-shell-send-buffer)
-   (define-key evil-normal-state-local-map (kbd "<SPC> I") 'lsp-ui-imenu)
+   (keymap-set evil-normal-state-local-map "<SPC> t" 'dy-pytest-one-without-warnings)
+   (keymap-set evil-normal-state-local-map "<SPC> T a" 'pytest-all)
+   (keymap-set evil-normal-state-local-map "<SPC> T b" 'pytest-module)
+   (keymap-set evil-normal-state-local-map "<SPC> T p" 'pytest-pdb-one)
+   (keymap-set evil-normal-state-local-map "<SPC> i" 'py-isort-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)
+   (keymap-set evil-visual-state-local-map "<SPC> m a" 'dy-python-dict-kwargs-toogle)
+   (keymap-set evil-normal-state-local-map "<SPC> m i" 'dy-python-add-noqa)
+   (keymap-set evil-normal-state-local-map "<SPC> m s" 'dy-py-split-string)
+   (keymap-set evil-normal-state-local-map "<SPC> m f" 'flycheck-list-errors)
+   (keymap-set evil-normal-state-local-map "g d" 'lsp-find-definition)
+   ;; (keymap-set evil-normal-state-local-map "<SPC> =" 'yapfify-region-or-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> =" 'blacken-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> m R" 'run-python)
+   (keymap-set evil-visual-state-local-map "<SPC> m r" 'python-shell-send-region)
+   (keymap-set evil-normal-state-local-map "<SPC> m b" 'python-shell-send-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> I" 'lsp-ui-imenu)
    ))
 #+END_SRC
 
@@ -1111,7 +1113,7 @@ company-backends
   :ensure t
   :config 
   (projectile-mode +1)
-  (define-key evil-normal-state-map (kbd "<SPC> p") 'projectile-command-map)
+  (keymap-set evil-normal-state-map "<SPC> p" 'projectile-command-map)
   (setq projectile-use-git-grep t)
   (setq projectile-completion-system 'default))
 #+END_SRC
@@ -1222,7 +1224,7 @@ tody
   :mode ("\\rs\\'" . rust-mode)
   :config
   (add-hook 'rust-mode-hook #'lsp)
-  ;; (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  ;; (keymap-set rust-mode-map "TAB" #'company-indent-or-complete-common)
 )
 #+END_SRC
 
@@ -1291,14 +1293,14 @@ tody
 (add-hook
  'rust-mode-hook
  (lambda()
-   (define-key evil-normal-state-local-map (kbd "<SPC> m c") 'rust-run-clippy)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m C") 'rust-compile)
-   (define-key evil-normal-state-local-map (kbd "<SPC> m r") 'rust-run)
-   (define-key evil-normal-state-local-map (kbd "<SPC> T a") 'rust-test)
-   (define-key evil-normal-state-local-map (kbd "g d") 'racer-find-definition)
-   (define-key evil-normal-state-local-map (kbd "<SPC> T b") 'rust-test-buffer)
-   (define-key evil-normal-state-local-map (kbd "<SPC> =") 'lsp-format-buffer)
-   (define-key evil-normal-state-local-map (kbd "<SPC> t") 'rust-test-at-point)
+   (keymap-set evil-normal-state-local-map "<SPC> m c" 'rust-run-clippy)
+   (keymap-set evil-normal-state-local-map "<SPC> m C" 'rust-compile)
+   (keymap-set evil-normal-state-local-map "<SPC> m r" 'rust-run)
+   (keymap-set evil-normal-state-local-map "<SPC> T a" 'rust-test)
+   (keymap-set evil-normal-state-local-map "g d" 'racer-find-definition)
+   (keymap-set evil-normal-state-local-map "<SPC> T b" 'rust-test-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> =" 'lsp-format-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> t" 'rust-test-at-point)
    ))
 #+END_SRC
 
@@ -1461,11 +1463,6 @@ Private:
 )
 #+END_SRC
 * Post Settings
-** Quit minibuffer by one escape
-#+BEGIN_SRC emacs-lisp :results output silent
-  ;; (define-key ido-completion-map (kbd "<escape") 'ido-exit-minibuffer)
-#+END_SRC
-
 * Plantuml
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package plantuml-mode
@@ -1502,7 +1499,7 @@ Private:
   (use-package expand-region
     :ensure t
     :config
-    (define-key evil-normal-state-map (kbd "<SPC> e") 'er/expand-region)
+    (keymap-set evil-normal-state-map "<SPC> e" 'er/expand-region)
     )
 #+END_SRC
 * Daemon
@@ -1719,7 +1716,7 @@ alias em="emacsclient -c -a emacs"
            (right (caddr (assoc choice data))))
       (insert-pair arg left right)))
 
-  (define-key evil-visual-state-map (kbd "<SPC> q") 'dy-insert-pair-completion)
+  (keymap-set evil-visual-state-map "<SPC> q" 'dy-insert-pair-completion)
 #+END_SRC
 * Dy capitalize first char
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1742,14 +1739,14 @@ alias em="emacsclient -c -a emacs"
     :config
     ;; https://github.com/atykhonov/google-translate/issues/52#issuecomment-727920888
     (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
-    (define-key evil-normal-state-map (kbd "<SPC> r r") 'dy-google-translate)
-    (define-key evil-normal-state-map (kbd "<SPC> r R") 'dy-google-translate-reverse)
+    (keymap-set evil-normal-state-map "<SPC> r r" 'dy-google-translate)
+    (keymap-set evil-normal-state-map "<SPC> r R" 'dy-google-translate-reverse)
 
-    (define-key evil-visual-state-map (kbd "<SPC> r r") 'dy-google-translate)
-    (define-key evil-visual-state-map (kbd "<SPC> r R") 'dy-google-translate-reverse)
+    (keymap-set evil-visual-state-map "<SPC> r r" 'dy-google-translate)
+    (keymap-set evil-visual-state-map "<SPC> r R" 'dy-google-translate-reverse)
 
-    (define-key evil-normal-state-map (kbd "<SPC> r q") 'google-translate-query-translate)
-    (define-key evil-normal-state-map (kbd "<SPC> r Q") 'google-translate-query-translate-reverse)
+    (keymap-set evil-normal-state-map "<SPC> r q" 'google-translate-query-translate)
+    (keymap-set evil-normal-state-map "<SPC> r Q" 'google-translate-query-translate-reverse)
     (setq google-translate-default-source-language "en")
     (setq google-translate-default-target-language "ru"))
 #+END_SRC
@@ -1759,11 +1756,11 @@ alias em="emacsclient -c -a emacs"
   (add-hook
    'smerge-mode-hook
    (lambda()
-     (define-key evil-normal-state-local-map (kbd "<SPC> j") 'smerge-next)
-     (define-key evil-normal-state-local-map (kbd "<SPC> k") 'smerge-prev)
-     (define-key evil-normal-state-local-map (kbd "<SPC> <SPC>") 'smerge-keep-current)
-     (define-key evil-normal-state-local-map (kbd "<SPC> h") 'smerge-keep-other)
-     (define-key evil-normal-state-local-map (kbd "<SPC> l") 'smerge-keep-mine)
+     (keymap-set evil-normal-state-local-map "<SPC> j" 'smerge-next)
+     (keymap-set evil-normal-state-local-map "<SPC> k" 'smerge-prev)
+     (keymap-set evil-normal-state-local-map "<SPC> <SPC>" 'smerge-keep-current)
+     (keymap-set evil-normal-state-local-map "<SPC> h" 'smerge-keep-other)
+     (keymap-set evil-normal-state-local-map "<SPC> l" 'smerge-keep-mine)
      ))
 #+END_SRC
 
@@ -1801,15 +1798,15 @@ alias em="emacsclient -c -a emacs"
   :config
   (require 'evil-multiedit)
   ;; Highlights all matches of the selection in the buffer.
-  (define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
+  (keymap-set evil-visual-state-map "R" 'evil-multiedit-match-all)
   
   ;; Match the word under cursor (i.e. make it an edit region). Consecutive presses will
   ;; incrementally add the next unmatched match.
-  (define-key evil-normal-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+  (keymap-set evil-normal-state-map "M-d" 'evil-multiedit-match-and-next)
   ;; Match selected region.
-  (define-key evil-visual-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+  (keymap-set evil-visual-state-map "M-d" 'evil-multiedit-match-and-next)
   ;; Insert marker at point
-  (define-key evil-insert-state-map (kbd "M-d") 'evil-multiedit-toggle-marker-here)
+  (keymap-set evil-insert-state-map "M-d" 'evil-multiedit-toggle-marker-here)
    ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
   (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match))
 
@@ -1836,7 +1833,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
       (setq dy-window-configuration (current-window-configuration))
       (delete-other-windows)))
 
-  (define-key evil-normal-state-map (kbd "<SPC> z") 'dy-window-single-toggle)
+  (keymap-set evil-normal-state-map "<SPC> z" 'dy-window-single-toggle)
 )
 
 #+END_SRC
@@ -2002,7 +1999,7 @@ If in compilation buffer there are many lines it start to be a very slow
 (use-package persp-projectile
   :ensure t
   :config
-  (define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
+  (keymap-set projectile-mode-map "s-s" 'projectile-persp-switch-project)
 )
 
 #+END_SRC
@@ -2020,8 +2017,8 @@ If in compilation buffer there are many lines it start to be a very slow
 (add-hook
  'c++-mode-hook
  (lambda()
-   (define-key evil-normal-state-map (kbd "<SPC> =") 'clang-format-buffer)
-   (define-key evil-normal-state-map (kbd "<SPC> m d") 'dy-dox-fn)
+   (keymap-set evil-normal-state-map "<SPC> =" 'clang-format-buffer)
+   (keymap-set evil-normal-state-map "<SPC> m d" 'dy-dox-fn)
    ))
 #+END_SRC
 
@@ -2039,14 +2036,14 @@ If in compilation buffer there are many lines it start to be a very slow
 ;;                (ggtags-mode 1))))
   )
 
-;; (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
-;; (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
-;; (define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
-;; (define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
-;; (define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
-;; (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
+;; (keymap-set ggtags-mode-map "C-c g s" 'ggtags-find-other-symbol)
+;; (keymap-set ggtags-mode-map "C-c g h" 'ggtags-view-tag-history)
+;; (keymap-set ggtags-mode-map "C-c g r" 'ggtags-find-reference)
+;; (keymap-set ggtags-mode-map "C-c g f" 'ggtags-find-file)
+;; (keymap-set ggtags-mode-map "C-c g c" 'ggtags-create-tags)
+;; (keymap-set ggtags-mode-map "C-c g u" 'ggtags-update-tags)
 ;; 
-;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+;; (keymap-set ggtags-mode-map "M-," 'pop-tag-mark)
 #+END_SRC
 ** Cmake
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -2177,7 +2174,7 @@ If in compilation buffer there are many lines it start to be a very slow
 (defun dy-set-fast-function (fn_name)
   "Set some function on <SPC> ` in evil normal state map."
   (interactive "aBind function name: ")
-  (define-key evil-normal-state-map (kbd "<SPC> `") fn_name)
+  (keymap-set evil-normal-state-map "<SPC> `" fn_name)
   )
 
 ;; https://protesilaos.com/codelog/2021-07-24-emacs-misc-custom-commands/
