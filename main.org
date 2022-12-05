@@ -656,11 +656,10 @@ For backward word and forwardword
     ; (column-enforce-mode only highlights regions --- it does not change how
     ; paragraph filling is done).
     (setq fill-column 79)
-    (add-hook 'completion-at-point-functions
-              #'lsp-completion-at-point
-              'append)))
-
-
+    ; (add-hook 'completion-at-point-functions
+    ;           #'lsp-completion-at-point
+    ;           'append)
+))
 
 #+END_SRC
 ** Virtualenv
@@ -957,81 +956,6 @@ For backward word and forwardword
  
 #+END_SRC
 
-** LSP
-#+BEGIN_SRC emacs-lisp :results output silent
-
-
-(use-package lsp-mode
-  :ensure t
-  :commands lsp
-
-  :hook ((c-mode c++-mode objc-mode cuda-mode) .
-       (lambda () (lsp)))
-  :config
-  ;; Disable automatic set flycheck-checker to lsp
-  (setq lsp-diagnostic-package :none)
-  (setq lsp-auto-guess-root t)
-  (setq lsp-prefer-flymake nil)
-
-  (setq lsp-enable-snippet t)
-  (setq lsp-idle-delay 0.500)
-  (setq lsp-headerline-breadcrumb-enable nil)
-  ;; (setq lsp-lens-enable nil)
-
-  ; (setq-default lsp-pyls-configuration-sources ["flake8"])
-  (setq lsp-pyls-plugins-pycodestyle-enabled nil
-        lsp-pyls-plugins-pyflakes-enabled nil
-        lsp-pyls-plugins-flake8-enabled t
-        lsp-enable-completion-at-point nil
-  )
-
-  (setq lsp-rust-server 'rust-analyzer)
-  )
-
-;; (use-package ccls
-;;     :ensure t
-;;     :hook ((c-mode c++-mode objc-mode cuda-mode) .
-;;          (lambda () (require 'ccls) (lsp))))
-
-
-;; (use-package lsp-python-ms
-;;   :ensure t
-;;   :init (setq lsp-python-ms-auto-install-server t)
-;;   :hook (python-mode . (lambda ()
-;;                           (require 'lsp-python-ms)
-;;                           (setq-local ms-python-python-lint-enabled nil)
-;;                           (lsp)
-;;         ))
-;;   )  ; or lsp-deferred
-
-
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))  ; or lsp-deferred
-
-(use-package lsp-ui 
-   :ensure t
-   :custom
-   (lsp-ui-doc-enable nil)
-   :commands lsp-ui-mode
-)
-
-; (use-package company-lsp 
-;    :ensure t
-;    :commands company-lsp
-
-;    :custom
-;    (company-lsp-enable-snippet t)
-;    (company-lsp-cache-candidates nil)
-
-;    :config
-;    (add-to-list 'company-backends 'company-lsp)
-; )
-#+END_SRC
-company-backends
-
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq python-shell-interpreter "ipython")
 (setq python-shell-interpreter-args "-i --simple-prompt")
@@ -1049,7 +973,7 @@ company-backends
 (use-package go-mode
   :ensure t
   :config
-  (add-hook 'go-mode-hook 'lsp-deferred)
+  (add-hook 'go-mode-hook 'eglot-ensure)
   )
 #+END_SRC
 
@@ -1062,6 +986,8 @@ company-backends
   (interactive)
   (pytest-one  dy-pytest-arguments)
   )
+
+(add-hook 'python-mode-hook 'eglot-ensure)
 
 (add-hook
  'python-mode-hook
@@ -1076,13 +1002,14 @@ company-backends
    (keymap-set evil-normal-state-local-map "<SPC> m i" 'dy-python-add-noqa)
    (keymap-set evil-normal-state-local-map "<SPC> m s" 'dy-py-split-string)
    (keymap-set evil-normal-state-local-map "<SPC> m f" 'flycheck-list-errors)
-   (keymap-set evil-normal-state-local-map "g d" 'lsp-find-definition)
+   ;; (keymap-set evil-normal-state-local-map "g d" 'lsp-find-definition)
    ;; (keymap-set evil-normal-state-local-map "<SPC> =" 'yapfify-region-or-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> =" 'blacken-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> m R" 'run-python)
    (keymap-set evil-visual-state-local-map "<SPC> m r" 'python-shell-send-region)
    (keymap-set evil-normal-state-local-map "<SPC> m b" 'python-shell-send-buffer)
-   (keymap-set evil-normal-state-local-map "<SPC> I" 'lsp-ui-imenu)
+
+   ;; (keymap-set evil-normal-state-local-map "<SPC> I" 'lsp-ui-imenu)
    ))
 #+END_SRC
 
@@ -1486,11 +1413,6 @@ Private:
       (cons "Authorization"
           (concat "Bearer " (auth-source-pick-first-password
               :host "jira.croc.ru"))))
-  ;; (jiralib-token "NDk0MjY2MjQwNTM1OvHdVcynoYBNk4wtVojPH9bcY8o0")
-
-  ;; (jiralib-url "https://zyrl.atlassian.net")
-  ;; (jiralib-token (cons "Cookie" "cloud.session.token=eyJraWQiOiJzZXNzaW9uLXNlcnZpY2VcL3Byb2QtMTU5Mjg1ODM5NCIsImFsZyI6IlJTMjU2In0.eyJhc3NvY2lhdGlvbnMiOltdLCJzdWIiOiI2MTU0NjM4ZTA3MWE3MjAwNzFmMzExYjgiLCJlbWFpbERvbWFpbiI6InF1YW50dW1zb2Z0LnJ1IiwiaW1wZXJzb25hdGlvbiI6W10sImNyZWF0ZWQiOjE2NTcyMTY5ODQsInJlZnJlc2hUaW1lb3V0IjoxNjYwODIxMTgzLCJ2ZXJpZmllZCI6dHJ1ZSwiaXNzIjoic2Vzc2lvbi1zZXJ2aWNlIiwic2Vzc2lvbklkIjoiMjM4MTFjZGUtM2Q1Yy00ZThhLWExYWItZmUxMjExZDRiNzg3Iiwic3RlcFVwcyI6W10sImF1ZCI6ImF0bGFzc2lhbiIsIm5iZiI6MTY2MDgyMDU4MywiZXhwIjoxNjYzNDEyNTgzLCJpYXQiOjE2NjA4MjA1ODMsImVtYWlsIjoiYWxleGFuZGVyLmthcHVzdGluQHF1YW50dW1zb2Z0LnJ1IiwianRpIjoiMjM4MTFjZGUtM2Q1Yy00ZThhLWExYWItZmUxMjExZDRiNzg3In0.SzvrFOt1iwgXe0vRNh-cSg3T-cGA_aobdRjq8yfJ0I8vXel3vSkyNp-V_EzNd8QVqU0E7Avbdk0nrI18GjZp8WEfNQx6d7MPqLTLWcXa006OGiKTczZk6N9NMsYg7ZtMoqcq1FDezL2v7t0ywv5vCo3zCKHHvIUytdNaHbNq8UuVwP5uffoyRD2eF5OLygKyp1f2uSOmgpdNjRogdbmtGPJG8qaA18vhN_qOixd_QUD2463XoF5JGza5sFp58rGb3FAZGIaoElD0pHwfkavxzQsB8Feb135jmwRVao5ooQJrJ7ygG8cEAGLc95nJ_RuFCkGSNpOaDfovjRomEIY3Sw"))
-  ;; (jiralib-url "https://jira.cindicator.net")
   )
 #+END_SRC
 
