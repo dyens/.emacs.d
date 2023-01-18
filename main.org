@@ -21,6 +21,11 @@ Set credentials
   (setq user-mail-address "dyens@mail.ru")
 #+END_SRC
 
+Disable beep
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq ring-bell-function 'ignore)
+#+END_SRC
+
 Be sure to just ask for y/n instead of yes/no.
 #+BEGIN_SRC emacs-lisp :results output silent
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -124,7 +129,6 @@ Disk space is cheap. Save lots.
      ("America/New_York" "New York")
      )))
 #+END_SRC
-
 
 * History
 This is one of the things people usually want to change right away. By
@@ -710,7 +714,13 @@ For backward word and forwardword
     (custom-set-variables '(pytest-project-root-files '(".projectile" "setup.py" ".hg" ".git")))
     )
 #+END_SRC
-
+** Pyenv mode 
+#+BEGIN_SRC emacs-lisp :results output silent
+  (use-package pyenv-mode
+    :ensure t
+    :config
+    )
+#+END_SRC
 ** DyPython
 #+BEGIN_SRC emacs-lisp :results output silent
   (require 'flycheck)
@@ -967,16 +977,6 @@ For backward word and forwardword
 ;;  )
 #+END_SRC
 
-
-** GO
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package go-mode
-  :ensure t
-  :config
-  (add-hook 'go-mode-hook 'eglot-ensure)
-  )
-#+END_SRC
-
 ** Bidnings
 #+BEGIN_SRC emacs-lisp :results output silent
 (defcustom dy-pytest-arguments "--disable-warnings"
@@ -1011,6 +1011,15 @@ For backward word and forwardword
 
    ;; (keymap-set evil-normal-state-local-map "<SPC> I" 'lsp-ui-imenu)
    ))
+#+END_SRC
+
+* GO
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package go-mode
+  :ensure t
+  :config
+  (add-hook 'go-mode-hook 'eglot-ensure)
+  )
 #+END_SRC
 
 * Ansi-color
@@ -2068,6 +2077,13 @@ If in compilation buffer there are many lines it start to be a very slow
   :ensure t
   :after kubernetes)
 #+END_SRC
+* Ghost text - Atomic chrome
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package atomic-chrome
+  :ensure t
+)
+#+END_SRC
+
 
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
