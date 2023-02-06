@@ -219,11 +219,11 @@ find them with C-x C-f (find-file) if I really need to.
 ;;   (load-theme 'ef-day t)
 ;; )
 
-(use-package gruvbox-theme
-  :ensure t
-  :config
-  (load-theme 'gruvbox-light-medium t)
-)
+;; (use-package gruvbox-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'gruvbox-light-medium t)
+;; )
 
 (defun dy-modus-theme () 
   (setq modus-themes-italic-constructs t
@@ -255,6 +255,8 @@ find them with C-x C-f (find-file) if I really need to.
 
  ;; (dy-light-theme)
 
+
+    (load-theme 'ef-cyprus t)
 
     ; (load-theme 'adwaita t)
     ; (load-theme 'gruvbox-dark-hard t)
@@ -312,6 +314,22 @@ find them with C-x C-f (find-file) if I really need to.
   :ensure t
 )
 #+END_SRC
+
+* Perspective
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package perspective
+  :ensure t
+  :config
+  (setq persp-suppress-no-prefix-key-warning t)
+  (persp-mode)
+)
+(use-package persp-projectile
+  :ensure t
+  :config
+  (keymap-set projectile-mode-map "s-s" 'projectile-persp-switch-project)
+)
+#+END_SRC
+
 * Evil mode
 #+BEGIN_SRC emacs-lisp :results output silent
 
@@ -385,6 +403,11 @@ find them with C-x C-f (find-file) if I really need to.
 
   (keymap-set evil-normal-state-map "<SPC> `" 'dy-function-not-found)
 
+  ;; (keymap-set evil-normal-state-map "<SPC> ." 'flymake-goto-next-error)
+  ;; (keymap-set evil-normal-state-map "<SPC> >" 'flymake-goto-prev-error)
+
+  (keymap-set evil-normal-state-map "<SPC> ." 'flycheck-next-error)
+  (keymap-set evil-normal-state-map "<SPC> >" 'flycheck-previous-error)
   )
 
 (use-package evil-collection
@@ -607,6 +630,12 @@ For backward word and forwardword
 #+END_SRC
 
 * Python
+** Pyright 
+Pyright stop working in last version
+TODO remove this in some future:
+#+BEGIN_SRC emacs-lisp :results output silent
+(setenv "PYRIGHT_PYTHON_FORCE_VERSION" "1.1.290")
+#+END_SRC
 ** Yapfify
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package yapfify
@@ -723,20 +752,45 @@ For backward word and forwardword
 #+END_SRC
 ** DyPython
 #+BEGIN_SRC emacs-lisp :results output silent
-  (require 'flycheck)
+(require 'flycheck)
 
-  ;; TODO if noqa exist - extend it
-  (defun dy-python-add-noqa()
-    "Add noqa for error string"
-    (interactive)
-    (save-excursion
-      (let* ((errors (flycheck-overlay-errors-at (point)))
-             (error-codes (seq-uniq (seq-map 'flycheck-error-id errors)))
-             (error-string (mapconcat 'identity error-codes ","))
-             (noqa-mes (format "  # NOQA:%s" error-string)))
-        (move-end-of-line nil)
-        (insert noqa-mes)
-        )))
+;; TODO if noqa exist - extend it
+(defun dy-python-add-noqa()
+  "Add noqa for error string"
+  (interactive)
+  (save-excursion
+    (let* ((errors (flycheck-overlay-errors-at (point)))
+           (error-codes (seq-uniq (seq-map 'flycheck-error-id errors)))
+           (error-string (mapconcat 'identity error-codes ","))
+           (noqa-mes (format "  # NOQA:%s" error-string)))
+      (move-end-of-line nil)
+      (insert noqa-mes)
+      )))
+
+(defun dy-python-add-type-ignore()
+  "Add mypy ingore" 
+  (interactive)
+  (save-excursion
+    (move-end-of-line nil)
+    (insert "  # type: ignore")
+    ))
+
+(require 'projectile)
+(defun dy-update-tags()
+  "Update etags"
+  (interactive)
+  (let* (
+	 (etag-cmd   "etags --append --regex=\"/^\[\\t\]*async\[ \\t\]+def\[ \\t\\n\]+\[^ \\t\\n(:\]+/\"")
+	 (cmds `(
+		 "rm -f TAGS"
+		 ,(format "find %s -type f -name '*.py' -print0 | xargs -0 %s" (eval dy-pyvenv-packages) etag-cmd)
+		 ,(format "find %s -type f -name '*.py' -print0 | xargs -0 %s" (eval dy-pyenv-packages) etag-cmd)
+		 ,(format "find . -type f -name '*.py' -print0 | xargs -0 %s" etag-cmd)))
+	 (cmd (mapconcat 'identity cmds " && ")))
+;; For suppress shell cmd output
+(with-temp-buffer
+  (projectile-with-default-dir (projectile-acquire-root)
+    (shell-command cmd t "*Update tags errors*")))))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -987,7 +1041,7 @@ For backward word and forwardword
   (pytest-one  dy-pytest-arguments)
   )
 
-(add-hook 'python-mode-hook 'eglot-ensure)
+;; (add-hook 'python-mode-hook 'eglot-ensure)
 
 (add-hook
  'python-mode-hook
@@ -1000,6 +1054,7 @@ For backward word and forwardword
    (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)
    (keymap-set evil-visual-state-local-map "<SPC> m a" 'dy-python-dict-kwargs-toogle)
    (keymap-set evil-normal-state-local-map "<SPC> m i" 'dy-python-add-noqa)
+   (keymap-set evil-normal-state-local-map "<SPC> m t" 'dy-python-add-type-ignore)
    (keymap-set evil-normal-state-local-map "<SPC> m s" 'dy-py-split-string)
    (keymap-set evil-normal-state-local-map "<SPC> m f" 'flycheck-list-errors)
    ;; (keymap-set evil-normal-state-local-map "g d" 'lsp-find-definition)
@@ -1028,9 +1083,7 @@ For backward word and forwardword
     :ensure t
     :config 
     (defun colorize-compilation-buffer ()
-      (toggle-read-only)
-      (ansi-color-apply-on-region compilation-filter-start (point))
-      (toggle-read-only))
+      (ansi-color-apply-on-region compilation-filter-start (point)))
     (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
     )
 #+END_SRC
@@ -1919,21 +1972,6 @@ If in compilation buffer there are many lines it start to be a very slow
   :ensure t)
 #+END_SRC
 
-* Perspective
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package perspective
-  :ensure t
-  :config
-  (setq persp-suppress-no-prefix-key-warning t)
-  (persp-mode)
-)
-(use-package persp-projectile
-  :ensure t
-  :config
-  (keymap-set projectile-mode-map "s-s" 'projectile-persp-switch-project)
-)
-
-#+END_SRC
 * C++
 ** Clang-Format
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -2087,6 +2125,12 @@ If in compilation buffer there are many lines it start to be a very slow
 
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
+
+(defun dy-erc ()
+  "Run erc. Default erc does not work."
+  (interactive)
+   (erc :server "irc.libera.chat" :full-name "Alexander Kapustin" :user "dyens")
+ )
 
 (defun dy-notify (text &optional body)
   "Desktop notify.
