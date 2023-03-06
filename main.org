@@ -418,7 +418,7 @@ find them with C-x C-f (find-file) if I really need to.
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+        completion-category-overrides '((file (styles basic partial-completion emacs22)))))
 #+END_SRC
 * Savehist
 #+BEGIN_SRC emacs-lisp :results output silent
