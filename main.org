@@ -418,7 +418,7 @@ find them with C-x C-f (find-file) if I really need to.
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles basic partial-completion emacs22)))))
+        completion-category-overrides '((file (styles partial-completion emacs22 basic)))))
 #+END_SRC
 * Savehist
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -525,16 +525,16 @@ For backward word and forwardword
 
 * Forge
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package forge
-  :after magit
-  :ensure t
-  :config
-  ;; Add qs github acc
-  (push 
-    '("github.com-qs"
-    "api.github.com"
-    "github.com"
-    forge-github-repository) forge-alist))
+;; (use-package forge
+;;   :after magit
+;;   :ensure t
+;;   :config
+;;   ;; Add qs github acc
+;;   (push 
+;;     '("github.com-qs"
+;;     "api.github.com"
+;;     "github.com"
+;;     forge-github-repository) forge-alist))
 #+END_SRC
 
 * Company-mode
@@ -1091,7 +1091,51 @@ TODO remove this in some future:
   (projectile-mode +1)
   (keymap-set evil-normal-state-map "<SPC> p" 'projectile-command-map)
   (setq projectile-use-git-grep t)
-  (setq projectile-completion-system 'default))
+  (setq projectile-completion-system 'default)
+
+  (keymap-set projectile-command-map "C" 'dy-compile-command-choice)
+
+;; (defvar dy-compilation-commands '(
+;; 	(?1 "ls" "ls" nil)
+;;       )
+;;   "List of compilation commands")
+;; (put 'dy-compilation-commands 'safe-local-variable #'listp) 
+;; 
+;; (defun dy-compile-command-choice ()
+;;   "Choice project compile command."
+;;   (interactive)
+;;   (let ((choice (read-char-choice (mapconcat (lambda (item) (format "%c: %s" (car item) (cadr item))) dy-compilation-commands "\n")
+;;                   (mapcar #'car dy-compilation-commands))))
+;;     (let (
+;; 	  (command-map (if (projectile--cache-project-commands-p) projectile-compilation-cmd-map))
+;; 	  (command (nth 2 (assoc choice dy-compilation-commands)))
+;; 	  (is-interactive (nth 3 (assoc choice dy-compilation-commands)))
+;; 	  )
+;;       (when command-map
+;;        (puthash default-directory command command-map)
+;; 	)
+;; 
+;;       (save-some-buffers (not compilation-ask-about-save)
+;;                          (lambda ()
+;;                            (projectile-project-buffer-p (current-buffer)
+;;                                                         (projectile-project-root))))
+;; 
+;;       (message command)
+;;       (projectile-run-compilation command is-interactive)
+;; 	  )
+;;     ))
+
+
+(defun dy-compile-command-choice ()
+  "Choice project compile command."
+  (interactive)
+
+  (fset 'run-command-recipe-proj run-command-recipe-proj)
+(setq run-command-recipes '(run-command-recipe-proj))
+(run-command)
+
+))
+
 #+END_SRC
 * Docker
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -2030,12 +2074,6 @@ If in compilation buffer there are many lines it start to be a very slow
 (use-package rg
   :ensure t)
 #+END_SRC
-* Code review
-#+BEGIN_SRC emacs-lisp :results output silent
-(use-package code-review
-  :ensure t
-  )
-#+END_SRC
 * Telega
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; (use-package telega
@@ -2109,6 +2147,19 @@ If in compilation buffer there are many lines it start to be a very slow
   (setq css-indent-offset 2)
 )
 #+END_SRC
+* Run command
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package run-command
+  :ensure t
+)
+
+(defun run-command-recipe-example ()
+  (list
+   ;; Run a simple command
+   (list :command-name "say-hello"
+         :command-line "echo Hello, World!")))
+(setq run-command-recipes '(run-command-recipe-example))
+#+END_SRC
 * Kubernetes
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package kubernetes
@@ -2128,6 +2179,22 @@ If in compilation buffer there are many lines it start to be a very slow
 
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
+
+(defun dy-reload-dir-locals-for-current-buffer ()
+  "reload dir locals for the current buffer"
+  (interactive)
+  (let ((enable-local-variables :all))
+    (hack-dir-local-variables-non-file-buffer)))
+
+(defun dy-reload-dir-locals-for-all-buffer-in-this-directory ()
+  "For every buffer with the same `default-directory` as the 
+current buffer's, reload dir-locals."
+  (interactive)
+  (let ((dir default-directory))
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (when (equal default-directory dir)
+          (dy-reload-dir-locals-for-current-buffer))))))
 
 (defun dy-erc ()
   "Run erc. Default erc does not work."
