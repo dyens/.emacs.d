@@ -597,6 +597,14 @@ For backward word and forwardword
 #+END_SRC
 
 * Python
+** PDB file view on debug in vterm
+#+BEGIN_SRC emacs-lisp :results output silent
+(defun dy-pdb-debug-shell-mode-hook ()
+  (add-hook
+   'comint-output-filter-functions
+   'python-pdbtrack-comint-output-filter-function t))
+(add-hook 'shell-mode-hook 'dy-pdb-debug-shell-mode-hook)
+#+END_SRC
 ** Pyright 
 Pyright stop working in last version
 TODO remove this in some future:
@@ -1339,35 +1347,33 @@ tody
 * Abbrev
 ** Settings
 #+BEGIN_SRC emacs-lisp :results output silent
-
 (defun dy-setup-my-abbrev () 
-(clear-abbrev-table global-abbrev-table)
+  (clear-abbrev-table global-abbrev-table)
 
-(define-abbrev-table 'global-abbrev-table
-  '(
+  (define-abbrev-table 'global-abbrev-table
+    '(
 
-    ;; net abbrev
-    ("afaik" "as far as i know" )
-    ))
+      ;; net abbrev
+      ("afaik" "as far as i know" )
+      ))
 
-(when (boundp 'python-mode-abbrev-table)
-  (clear-abbrev-table python-mode-abbrev-table))
+  (when (boundp 'python-mode-abbrev-table)
+    (clear-abbrev-table python-mode-abbrev-table))
 
-(define-abbrev-table 'rust-mode-abbrev-table
-  '(
-    ("print" "println!(\"{:?}\", var);")
-    ))
+  (define-abbrev-table 'rust-mode-abbrev-table
+    '(
+      ("print" "println!(\"{:?}\", var);")
+      ))
 
 
 
-(define-abbrev-table 'python-mode-abbrev-table
-  '(
-    ("ass" "assert")
-    ("fr" "from")
-    ("imp" "import")
-    ("tr" "import pdb; pdb.set_trace()")
-
-    ))
+  (define-abbrev-table 'python-mode-abbrev-table
+    '(
+      ("ass" "assert")
+      ("fr" "from")
+      ("imp" "import")
+      ("tr" "import pdb; pdb.set_trace()")
+      ))
 
   (define-abbrev-table 'c++-mode-abbrev-table
     '(
@@ -1380,107 +1386,107 @@ Private:
       ))
 
 
-;; (define-abbrev c++-mode-abbrev-table "if"
-;;   "" 'cpp-skeleton-if)
+  ;; (define-abbrev c++-mode-abbrev-table "if"
+  ;;   "" 'cpp-skeleton-if)
 
-(define-abbrev c++-mode-abbrev-table "fn"
-  "" 'cpp-skeleton-fn)
+  (define-abbrev c++-mode-abbrev-table "fn"
+    "" 'cpp-skeleton-fn)
 
-(define-abbrev c++-mode-abbrev-table "getter"
-  "" 'cpp-skeleton-get)
+  (define-abbrev c++-mode-abbrev-table "getter"
+    "" 'cpp-skeleton-get)
 
-(define-abbrev c++-mode-abbrev-table "setter"
-  "" 'cpp-skeleton-set)
+  (define-abbrev c++-mode-abbrev-table "setter"
+    "" 'cpp-skeleton-set)
 
-;;(define-abbrev c++-mode-abbrev-table "for"
-;;  "" 'cpp-skeleton-for)
+  ;;(define-abbrev c++-mode-abbrev-table "for"
+  ;;  "" 'cpp-skeleton-for)
 
-(define-abbrev c++-mode-abbrev-table "print"
-  "" 'cpp-skeleton-print)
+  (define-abbrev c++-mode-abbrev-table "print"
+    "" 'cpp-skeleton-print)
 
-(define-abbrev c++-mode-abbrev-table "cls"
-  "" 'cpp-skeleton-cls)
+  (define-abbrev c++-mode-abbrev-table "cls"
+    "" 'cpp-skeleton-cls)
 
-(define-abbrev c++-mode-abbrev-table "ns"
-  "" 'cpp-skeleton-ns)
+  (define-abbrev c++-mode-abbrev-table "ns"
+    "" 'cpp-skeleton-ns)
 
-(define-abbrev c++-mode-abbrev-table "maint"
-  "" 'cpp-skeleton-main-t)
+  (define-abbrev c++-mode-abbrev-table "maint"
+    "" 'cpp-skeleton-main-t)
 
-(setq skeleton-end-hook nil)
-;; (clear-abbrev-table c++-mode-abbrev-table)
+  (setq skeleton-end-hook nil)
+  ;; (clear-abbrev-table c++-mode-abbrev-table)
 
-(define-skeleton cpp-skeleton-if
-  "cpp-skeleton-if" nil
-"if (" _ ")"\n
--2"{"\n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-if
+    "cpp-skeleton-if" nil
+    "if (" _ ")"\n
+    -2"{"\n
+    -2"}"\n
+    )
 
-(define-skeleton cpp-skeleton-for
-  "cpp-skeleton-for" nil
-"for (" _ ")"\n
--2"{"\n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-for
+    "cpp-skeleton-for" nil
+    "for (" _ ")"\n
+    -2"{"\n
+    -2"}"\n
+    )
 
-(define-skeleton cpp-skeleton-fn
-  "cpp-skeleton-fn" nil
-"void " _ "()"\n
--1"{"\n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-fn
+    "cpp-skeleton-fn" nil
+    "void " _ "()"\n
+    -1"{"\n
+    -2"}"\n
+    )
 
-(define-skeleton cpp-skeleton-get
-  "cpp-skeleton-get" nil
-"[[nodiscard]] int get" _ "() const"\n
--2"{"\n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-get
+    "cpp-skeleton-get" nil
+    "[[nodiscard]] int get" _ "() const"\n
+    -2"{"\n
+    -2"}"\n
+    )
 
-(define-skeleton cpp-skeleton-set
-  "cpp-skeleton-set" nil
-"void set" _ "() "\n
--2"{"\n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-set
+    "cpp-skeleton-set" nil
+    "void set" _ "() "\n
+    -2"{"\n
+    -2"}"\n
+    )
 
-(define-skeleton cpp-skeleton-print
-  "cpp-skeleton-print" nil
-"std::cout << " _ " << std::endl;"\n
-)
+  (define-skeleton cpp-skeleton-print
+    "cpp-skeleton-print" nil
+    "std::cout << " _ " << std::endl;"\n
+    )
 
-(define-skeleton cpp-skeleton-cls
-  "cpp-skeleton-cls" nil
-"class " _  \n
--1"{"\n
--2"public:"\n
--2"private:"\n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-cls
+    "cpp-skeleton-cls" nil
+    "class " _  \n
+    -1"{"\n
+    -2"public:"\n
+    -2"private:"\n
+    -2"}"\n
+    )
 
-(define-skeleton cpp-skeleton-ns
-  "cpp-skeleton-ns" nil
-"namespace " _ "{"\n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-ns
+    "cpp-skeleton-ns" nil
+    "namespace " _ "{"\n
+    -2"}"\n
+    )
 
-(define-skeleton cpp-skeleton-main-t
-  "cpp-skeleton-main-t" nil
-"#include<iostream>" \n
-"#include<vector>" \n
-"#include<map>" \n
-"#include<memory>" \n
-\n
-"int main() {" \n
-> _ \n
--2"}"\n
-)
+  (define-skeleton cpp-skeleton-main-t
+    "cpp-skeleton-main-t" nil
+    "#include<iostream>" \n
+    "#include<vector>" \n
+    "#include<map>" \n
+    "#include<memory>" \n
+    \n
+    "int main() {" \n
+    > _ \n
+    -2"}"\n
+    )
 
-(set-default 'abbrev-mode t)
+  (set-default 'abbrev-mode t)
 
-(setq save-abbrevs nil)
-)
+  (setq save-abbrevs nil)
+  )
 
 ;;(dy-setup-my-abbrev )
 #+END_SRC
