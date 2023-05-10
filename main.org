@@ -224,9 +224,10 @@ find them with C-x C-f (find-file) if I really need to.
     (set-face-background 'vertical-border "gray")
     (set-face-foreground 'vertical-border (face-background 'vertical-border)))
 
- (dy-light-theme)
+ ;; (dy-light-theme)
 
 
+     (load-theme 'ef-deuteranopia-dark t)
     ; (load-theme 'ef-cyprus t)
 
     ; (load-theme 'adwaita t)
@@ -511,14 +512,28 @@ For backward word and forwardword
 	  (when (string-match "\\(VTBCLOUD-\[0-9\]+\\)-\\(.*\\)" current-branch-name)
 	    (let ((issue-number (match-string 1 current-branch-name))
 		  (default-commit-message (dy-capitalize-first-char (replace-regexp-in-string "-" " " (downcase (match-string 2 current-branch-name))))))
-	      (insert (format "%s: #comment %s\n" issue-number default-commit-message))
-(evil-previous-line 1)
-(evil-end-of-line)
-(evil-visual-state 1)
-            (evil-backward-char (- (length default-commit-message) 1)) 
+	      (insert (format "%s: %s\n" issue-number default-commit-message))
+	      (evil-previous-line 1)
+	      (evil-end-of-line)
+	      (evil-visual-state 1)
+              (evil-backward-char (- (length default-commit-message) 1))
 
 	      ))
-	)))
+	)
+
+      (if (string-match-p (regexp-quote "A2205190") current-branch-name)
+	  (when (string-match "\\(A2205190-\[0-9\]+\\)-\\(.*\\)" current-branch-name)
+	    (let ((issue-number (match-string 1 current-branch-name))
+		  (default-commit-message (dy-capitalize-first-char (replace-regexp-in-string "-" " " (downcase (match-string 2 current-branch-name))))))
+	      (insert (format "%s: %s\n" issue-number default-commit-message))
+	      (evil-previous-line 1)
+	      (evil-end-of-line)
+	      (evil-visual-state 1)
+              (evil-backward-char (- (length default-commit-message) 1))
+
+	      ))
+	)
+      ))
 
   (add-hook 'git-commit-setup-hook 'dy-git-commit-setup))
 #+END_SRC
@@ -605,7 +620,7 @@ For backward word and forwardword
    'python-pdbtrack-comint-output-filter-function t))
 (add-hook 'shell-mode-hook 'dy-pdb-debug-shell-mode-hook)
 #+END_SRC
-** Pyright 
+** Pyright
 Pyright stop working in last version
 TODO remove this in some future:
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -2082,8 +2097,8 @@ If in compilation buffer there are many lines it start to be a very slow
 #+END_SRC
 * Telega
 #+BEGIN_SRC emacs-lisp :results output silent
-;; (use-package telega
-;;   :ensure t)
+(use-package telega
+  :ensure t)
 #+END_SRC
 
 * Ace window
@@ -2176,9 +2191,9 @@ If in compilation buffer there are many lines it start to be a very slow
   :ensure t
   :after kubernetes)
 #+END_SRC
-* Ghost text - Atomic chrome
+* Terraform
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package atomic-chrome
+(use-package terraform-mode
   :ensure t
 )
 #+END_SRC
