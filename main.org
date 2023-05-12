@@ -715,7 +715,7 @@ TODO remove this in some future:
     "Activate local environment"
     (interactive)
     (unless venv-dir-name(setq venv-dir-name ".venv"))
-    (let ((activate-path (format "%s%s/bin/activate" (projectile-acquire-root) venv-dir-name)))
+    (let ((activate-path (format "%s%s" (projectile-acquire-root) venv-dir-name)))
       (pyvenv-activate activate-path)))
 
   (defun pipenvenv-old ()
