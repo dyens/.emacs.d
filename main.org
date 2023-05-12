@@ -707,25 +707,33 @@ TODO remove this in some future:
 #+END_SRC
 ** Virtualenv
 #+BEGIN_SRC emacs-lisp :results output silent
-  (use-package pyvenv
-    :ensure t
-    :config
-    (defun pipenvenv-old ()
-      (interactive)
-      (setenv "WORKON_HOME" "/home/dyens/.virtualenvs")
-        )
+(use-package pyvenv
+  :ensure t
+  :config
 
-    (defun pipenvenv ()
-      (interactive)
-      (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
-        )
-    (defun poetryenv ()
-      (interactive)
-      (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
-      )
-    ;; default env
-    (poetryenv)
+  (defun pyvenv-workon-local (&optional venv-dir-name)
+    "Activate local environment"
+    (interactive)
+    (unless venv-dir-name(setq venv-dir-name ".venv"))
+    (let ((activate-path (format "%s%s/bin/activate" (projectile-acquire-root) venv-dir-name)))
+      (pyvenv-activate activate-path)))
+
+  (defun pipenvenv-old ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.virtualenvs")
     )
+
+  (defun pipenvenv ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.local/share/virtualenvs")
+    )
+  (defun poetryenv ()
+    (interactive)
+    (setenv "WORKON_HOME" "/home/dyens/.cache/pypoetry/virtualenvs/")
+    )
+  ;; default env
+  (poetryenv)
+  )
 #+END_SRC
 
 ** Flycheck
@@ -1197,7 +1205,8 @@ TODO remove this in some future:
   (org-startup-with-inline-images "inlineimages")
   (org-startup-folded t)
   (org-directory "~/org")
-  (org-agenda-files (list "agenda.org" "~/.org-jira"))
+  ;; (org-agenda-files (list "agenda.org" "~/.org-jira"))
+  (org-agenda-files (list "agenda.org"))
   (org-log-done 'time)
   ;; Remove tab useless source block identation
   (org-src-preserve-indentation nil)
