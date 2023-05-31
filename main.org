@@ -2463,4 +2463,24 @@ Cursor should be pointed on start fn eclaration."
 (defun dy-open-in-github-rev()
     (interactive)
     (dy-open-in-github nil 'rev))
+
+(defun dy-args-to-attributes ()
+  "Add class attributes from method args."
+  (interactive)
+  (save-excursion
+    (re-search-backward "def \\([a-zA-Z0-9_]*\\)(\\([a-zA-Z0-9 \n\t_,]*\\)):")
+    (let* ((args-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
+	   (args (mapcar 's-trim  (s-split ","  args-string)))
+	   (not-self-args (cdr args)))
+      
+      (search-forward ":")
+      (mapc (lambda (arg)
+	      (if (not (= (length arg) 0 ))
+		  (progn
+		    (evil-open-below 0)
+		    (insert (format "self._%s = %s" arg arg))
+		    (evil-normal-state)
+		    ))
+	      )
+	    not-self-args))))
 #+END_SRC
