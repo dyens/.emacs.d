@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: pstack
+# key: pstack
+# --
+import traceback; traceback.print_stack()
