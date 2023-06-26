@@ -76,6 +76,11 @@ Warning level
 #+END_SRC
 For refresh packages run (M-x package-refresh-contents)
 
+* Use spaces instead of tabs
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+
 * Backup
 This is one of the things people usually want to change right away. By
 default, Emacs saves backup files in the current directory. These are
@@ -231,7 +236,7 @@ find them with C-x C-f (find-file) if I really need to.
  ;; (dy-light-theme)
 
 
-     (load-theme 'ef-deuteranopia-dark t)
+     (load-theme 'ef-deuteranopia-light t)
     ; (load-theme 'ef-cyprus t)
 
     ; (load-theme 'adwaita t)
@@ -1985,7 +1990,14 @@ If in compilation buffer there are many lines it start to be a very slow
   :config
   (evil-collection-define-key 'normal 'dired-mode-map
     "h" 'dired-single-up-directory
-    "l" 'dired-single-buffer))
+    "l" 'dired-single-buffer)
+
+(setq dired-guess-shell-alist-user
+      '(("\\.\\(png\\|jpe?g\\|tiff\\)" "feh" "xdg-open")
+        ("\\.\\(mp[34]\\|m4a\\|ogg\\|flac\\|webm\\|mkv\\)" "mplayer" "xdg-open")
+		(".*" "xdg-open"))))
+
+
 
 (use-package dired-single
   :ensure t)
@@ -2935,3 +2947,17 @@ Cursor should be pointed on start fn eclaration."
 )))
 #+END_SRC
 
+
+
+* Geiser (guile lisp)
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package geiser
+  :ensure t
+)
+
+(use-package geiser-guile
+  :ensure t
+  :config
+  (setq geiser-guile-binary "guile2.2")
+)
+#+END_SRC
