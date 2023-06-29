@@ -1104,6 +1104,11 @@ TODO remove this in some future:
   :config
   (add-hook 'go-mode-hook 'eglot-ensure)
   )
+(use-package gotest
+  :ensure t
+  :config
+  )
+
 #+END_SRC
 
 * Ansi-color
@@ -2960,4 +2965,23 @@ Cursor should be pointed on start fn eclaration."
   :config
   (setq geiser-guile-binary "guile2.2")
 )
+#+END_SRC
+
+* Dy insert random string
+
+#+BEGIN_SRC emacs-lisp :results output silent
+(defun random-alnum ()
+  (let* ((alnum "abcdefghijklmnopqrstuvwxyz0123456789")
+         (i (% (abs (random)) (length alnum))))
+    (substring alnum i (1+ i))))
+
+(defun insert-random-string (len)
+  "Insert random string.
+   Use c-U 10 M-x insert-random-string
+   "
+  (interactive "p")
+  (message (format "%d" len))
+  (dotimes (i len)
+  (insert (random-alnum)))
+  )
 #+END_SRC
