@@ -389,6 +389,8 @@ find them with C-x C-f (find-file) if I really need to.
 
   (keymap-set evil-normal-state-map "<SPC> ." 'flycheck-next-error)
   (keymap-set evil-normal-state-map "<SPC> >" 'flycheck-previous-error)
+  (keymap-set evil-normal-state-map "<SPC> ," 'flymake-goto-next-error)
+  (keymap-set evil-normal-state-map "<SPC> <" 'flymake-goto-prev-error)
   )
 
 (use-package evil-collection
