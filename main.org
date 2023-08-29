@@ -233,10 +233,10 @@ find them with C-x C-f (find-file) if I really need to.
     (set-face-background 'vertical-border "gray")
     (set-face-foreground 'vertical-border (face-background 'vertical-border)))
 
- ;; (dy-light-theme)
+ (dy-light-theme)
 
 
-     (load-theme 'ef-deuteranopia-light t)
+    ; (load-theme 'ef-deuteranopia-light t)
     ; (load-theme 'ef-cyprus t)
 
     ; (load-theme 'adwaita t)
@@ -479,6 +479,25 @@ find them with C-x C-f (find-file) if I really need to.
 
 * Consult
 #+BEGIN_SRC emacs-lisp :results output silent
+
+;; TODO: remove this
+;; This fix counsult error: void symbol without-restriction
+(defmacro without-restriction (&rest rest)
+  "Execute BODY without restrictions.
+
+The current restrictions, if any, are restored upon return.
+
+When the optional LABEL argument is present, the restrictions set
+by `with-restriction' with the same LABEL argument are lifted.
+
+\(fn [:label LABEL] BODY)"
+  (declare (indent 0) (debug t))
+  (if (eq (car rest) :label)
+      `(save-restriction (internal--labeled-widen ,(cadr rest)) ,@(cddr rest))
+    `(save-restriction (widen) ,@rest)))
+ 
+
+
 (use-package consult
 :ensure t
 :config
@@ -1249,7 +1268,7 @@ TODO remove this in some future:
      (shell . t)
      (emacs-lisp . t)
      (plantuml . t)
-     (sql . t)
+     (C . t)
      ))
   ; (use-package ob-translate
   ; :ensure t
@@ -2954,8 +2973,14 @@ Cursor should be pointed on start fn eclaration."
 )))
 #+END_SRC
 
-
-
+* Type script
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package typescript-mode
+  :ensure t
+  :config
+  (setq typescript-indent-level 2)
+)
+#+END_SRC
 * Geiser (guile lisp)
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package geiser
@@ -2968,7 +2993,6 @@ Cursor should be pointed on start fn eclaration."
   (setq geiser-guile-binary "guile2.2")
 )
 #+END_SRC
-
 * Dy insert random string
 
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -2986,4 +3010,65 @@ Cursor should be pointed on start fn eclaration."
   (dotimes (i len)
   (insert (random-alnum)))
   )
+#+END_SRC
+
+* Eat 
+#+BEGIN_SRC emacs-lisp :results output silent
+;; (add-to-list 'load-path  "/home/dyens/dev/external/emacs-eat")
+;; (require 'eat)
+#+END_SRC
+* Mode line 
+#+BEGIN_SRC emacs-lisp :results output silent
+(defvar-local dy-modeline-major-mode
+    '(:eval
+      (list
+       (propertize (format "%s " (symbol-name major-mode)) 'face 'shadow)))
+  "Mode line construct to display the major mode.")
+
+(put 'dy-modeline-major-mode 'risky-local-variable t)
+
+
+(defun dy-buffer-name ()
+  "Buffer name with lock if readonly."
+  (let ((name (buffer-name)))
+  (if buffer-read-only
+          (format "%s%s" (char-to-string #xE0A2) name)
+        name)
+  ))
+
+(defvar-local dy-modeline-buffer-name
+    '(:eval
+      (list
+       (propertize (format "%s " (dy-buffer-name)) 'face 'bold)))
+  "Mode line construct to display buffer name.")
+
+(put 'dy-modeline-buffer-name 'risky-local-variable t)
+
+
+(defun dy-vc-branch-name ()
+  "Return VC branch name."
+  (let* ((file (buffer-file-name))
+         (backend (vc-backend file)))
+  (when-let ((rev (vc-working-revision file backend))
+             (branch (or (vc-git--symbolic-ref file)
+                         (substring rev 0 7))))
+    branch)))
+
+(defvar-local dy-modeline-branch-name
+    '(:eval
+      (list
+       (propertize (format "⮑%s " (dy-vc-branch-name)) 'face 'bold)))
+  "Mode line construct to display buffer name.")
+
+(put 'dy-modeline-branch-name 'risky-local-variable t)
+
+
+
+(setq-default mode-line-format
+              '("%e"
+                dy-modeline-buffer-name
+                dy-modeline-major-mode
+                dy-modeline-branch-name
+                mode-line-misc-info mode-line-end-spaces))
+
 #+END_SRC
