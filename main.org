@@ -63,6 +63,11 @@ Warning level
 #+BEGIN_SRC emacs-lisp :results output silent
 (setq warning-minimum-level :emergency)
 #+END_SRC
+* LSP
+#+BEGIN_SRC emacs-lisp :results output silent
+;; For LSP performance
+(setq read-process-output-max (* 1024 1024))
+#+END_SRC
 * Installing use-package
 ** Setup
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -214,7 +219,7 @@ find them with C-x C-f (find-file) if I really need to.
       modus-themes-mode-line '(accented borderless)
       )
   ;; dark theme
-   (load-theme 'modus-vivendi t)
+   (load-theme 'modus-operandi t)
    )
 ;; (dy-modus-theme)
 
@@ -233,7 +238,7 @@ find them with C-x C-f (find-file) if I really need to.
     (set-face-background 'vertical-border "gray")
     (set-face-foreground 'vertical-border (face-background 'vertical-border)))
 
- (dy-light-theme)
+ ;; (dy-light-theme)
 
 
     ; (load-theme 'ef-deuteranopia-light t)
@@ -266,6 +271,8 @@ find them with C-x C-f (find-file) if I really need to.
 
 ;; Corrects (and improves) org-mode's native fontification.
     ; (doom-themes-org-config)
+
+(load-theme 'leuven t)
 #+END_SRC
 
 ** Pretty symbols
@@ -360,6 +367,8 @@ find them with C-x C-f (find-file) if I really need to.
 
   (keymap-set evil-normal-state-map "C-u" 'evil-scroll-up)
   (keymap-set evil-visual-state-map "C-u" 'evil-scroll-up)
+
+  (keymap-set evil-normal-state-map "<SPC> o" 'consult-outline)
   ;; Instead of C-u
   (keymap-set evil-normal-state-map "<SPC> u" 'universal-argument)
   (keymap-set evil-insert-state-map "C-l" 'yas-expand-from-trigger-key)
@@ -1259,6 +1268,9 @@ TODO remove this in some future:
    'org-mode-hook
    (lambda()
      (keymap-set evil-normal-state-local-map "<SPC> m f" 'dy-clear-image-cache)
+     (setq org-file-apps (append '(
+        ("drawio" . "drawio %s")
+     ) org-file-apps ))
   ))
 
   (org-babel-do-load-languages
@@ -1821,6 +1833,23 @@ alias em="emacsclient -c -a emacs"
           (rest-str   (substring string 1)))
       (concat (capitalize first-char) rest-str))))
 #+END_SRC
+* Dy prettify
+#+BEGIN_SRC emacs-lisp :results output silent
+(defun dy-json-pp ()
+ "Prettify selected json"
+ (interactive)
+ (let ((p1 (region-beginning))
+       (p2 (region-end)))
+  (save-excursion
+   (save-restriction
+    (narrow-to-region p1 p2)
+    (goto-char (point-min))
+    (while (re-search-forward "'" nil t)
+      (replace-match "\""))
+    (call-shell-region (point-min) (point-max) "jq ." t (current-buffer))
+    ))))
+#+END_SRC
+
 * Google-translate
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package popup
@@ -2527,6 +2556,23 @@ Cursor should be pointed on start fn eclaration."
 		    ))
 	      )
 	    not-self-args))))
+
+;; Usefull function for template subs
+(defun dy-template-sub ()
+  (interactive)
+  (let ((tmpl "
+if %aExists && vm2.Initialization().%b() != %a {
+	t.Fatalf(\"got Unexpected output from the %b (%%s) init field \", vm2.Initialization().%b())
+}
+  ")
+  (var (thing-at-point 'word 'no-properties))
+  (current (point))
+  )
+  (goto-char (point-max))
+  (insert (format-spec tmpl `((?a . ,var) (?b . ,(upcase-initials var)))))
+  (goto-char current)
+  ))
+
 #+END_SRC
 
 * Linux sys calls
