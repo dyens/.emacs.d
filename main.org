@@ -272,7 +272,12 @@ find them with C-x C-f (find-file) if I really need to.
 ;; Corrects (and improves) org-mode's native fontification.
     ; (doom-themes-org-config)
 
-(load-theme 'leuven t)
+(use-package ef-themes
+  :ensure t
+)
+
+;; (load-theme 'leuven t)
+(load-theme 'ef-bio t)
 #+END_SRC
 
 ** Pretty symbols
@@ -311,10 +316,8 @@ find them with C-x C-f (find-file) if I really need to.
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode)
 )
-(use-package persp-projectile
-  :ensure t
-  :config
-  (keymap-set projectile-mode-map "s-s" 'projectile-persp-switch-project)
+
+(defun project-psersp-switch-project (project-to-switch)
 )
 #+END_SRC
 
@@ -347,11 +350,9 @@ find them with C-x C-f (find-file) if I really need to.
   ;; C-o defined for jump back
   ;; C-i for jump forward
   (keymap-set evil-normal-state-map "C-i" 'evil-jump-forward)
-
   (keymap-set evil-normal-state-map "<SPC> f" 'find-file)
   (keymap-set evil-normal-state-map "<SPC> b" 'switch-to-buffer)
-  (keymap-set evil-normal-state-map "<SPC> i" 'consult-imenu)
-  (keymap-set evil-normal-state-map "<SPC> I" 'consult-imenu-multi)
+  (keymap-set evil-normal-state-map "<SPC> I" 'consult-imenu)
   (keymap-set evil-normal-state-map "<SPC> s" 'consult-ripgrep)
 
   (keymap-set evil-normal-state-map "<SPC> w" 'ace-window)
@@ -396,10 +397,8 @@ find them with C-x C-f (find-file) if I really need to.
   ;; (keymap-set evil-normal-state-map "<SPC> ." 'flymake-goto-next-error)
   ;; (keymap-set evil-normal-state-map "<SPC> >" 'flymake-goto-prev-error)
 
-  (keymap-set evil-normal-state-map "<SPC> ." 'flycheck-next-error)
-  (keymap-set evil-normal-state-map "<SPC> >" 'flycheck-previous-error)
-  (keymap-set evil-normal-state-map "<SPC> ," 'flymake-goto-next-error)
-  (keymap-set evil-normal-state-map "<SPC> <" 'flymake-goto-prev-error)
+  (keymap-set evil-normal-state-map "<SPC> ." 'flymake-goto-next-error)
+  (keymap-set evil-normal-state-map "<SPC> ," 'flymake-goto-prev-error)
   )
 
 (use-package evil-collection
@@ -562,6 +561,19 @@ For backward word and forwardword
 	      ))
 	)
 
+      (if (string-match-p (regexp-quote "PCS") current-branch-name)
+	  (when (string-match "\\(PCS-\[0-9\]+\\)-\\(.*\\)" current-branch-name)
+	    (let ((issue-number (match-string 1 current-branch-name))
+		  (default-commit-message (dy-capitalize-first-char (replace-regexp-in-string "-" " " (downcase (match-string 2 current-branch-name))))))
+	      (insert (format "%s: %s\n" issue-number default-commit-message))
+	      (evil-previous-line 1)
+	      (evil-end-of-line)
+	      (evil-visual-state 1)
+              (evil-backward-char (- (length default-commit-message) 1))
+
+	      ))
+        )
+
       (if (string-match-p (regexp-quote "A2205190") current-branch-name)
 	  (when (string-match "\\(A2205190-\[0-9\]+\\)-\\(.*\\)" current-branch-name)
 	    (let ((issue-number (match-string 1 current-branch-name))
@@ -679,59 +691,28 @@ TODO remove this in some future:
   :ensure t
   :after python)
 #+END_SRC
+** Ruff
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package ruff-format
+  :ensure t
+  :after python)
+#+END_SRC
+** Pydoc
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package pydoc
+  :ensure t
+  :after python)
+#+END_SRC
+
 ** Python mode
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package python
   :mode ("\\.py\\'" . python-mode)
-  :after (flycheck)
   :config
 
   (setq python-indent-def-block-scale 1)
   (add-hook 'python-mode-hook 'dy-python-setup)
-  ; Based on
-  ; https://stackoverflow.com/questions/31443527/how-can-i-make-flycheck-use-virtualenv.
-  ; Depends on modifying Python's sys.path in .pylintrc as in
-  ; https://stackoverflow.com/a/39207275/437583 for this to work.
-  (defun set-flychecker-executables ()
-    "Configure virtualenv for flake8 and lint."
-    (when (executable-find "flake8")
-    (flycheck-set-checker-executable (quote python-flake8)
-                                  (executable-find "flake8")))
-    (when (executable-find "mypy")
-    (flycheck-set-checker-executable (quote python-mypy)
-                                  (executable-find "mypy"))))
-
-;; TODO: work on python-ruff (split errors and warnings?)
-(flycheck-define-checker python-ruff
-  "Ruff syntax and type checker."
-  :command ("ruff"
-            "check"
-            "--quiet"
-            source)
-  :error-patterns
-  ((warning line-start
-            (file-name) ":" line ":" (optional column ":") " "
-            (id (one-or-more (any alpha)) (one-or-more digit)) " "
-            (message (one-or-more not-newline))
-            line-end))
-  :working-directory flycheck-python-find-project-root
-  :modes python-mode)
-(setq flycheck-checkers (append flycheck-checkers  '(python-ruff)))
-
-
-
   (defun dy-python-setup ()
-    ; Check with flake8, pylint, and mypy. python-mypy already runs
-    ; python-flake8, so there's no need to mention it here. However, we still
-    ; need to mention python-pylint to run after python-flake8. This is a
-    ; so-called "checker chain", as per
-    ; https://www.flycheck.org/en/latest/user/syntax-checkers.html#configuring-checker-chains.
-    (flycheck-add-next-checker 'python-flake8 'python-pylint)
-    (flycheck-add-next-checker 'python-pylint 'python-ruff)
-    (add-hook 'flycheck-before-syntax-check-hook #'set-flychecker-executables
-      'local)
-    ; Start Flycheck.
-    (flycheck-mode)
     ; Set max line length to 79 characters (from PEP8). (Although Emacs columns
     ; are 0-indexed, column-enforce-mode counts from 1, so we use 79 here and
     ; not 78.)
@@ -756,7 +737,7 @@ TODO remove this in some future:
     "Activate local environment"
     (interactive)
     (unless venv-dir-name(setq venv-dir-name ".venv"))
-    (let ((activate-path (format "%s%s" (projectile-acquire-root) venv-dir-name)))
+    (let ((activate-path (format "%s%s" (project-root (project-current)) venv-dir-name)))
       (pyvenv-activate activate-path)))
 
   (defun pipenvenv-old ()
@@ -777,13 +758,6 @@ TODO remove this in some future:
   )
 #+END_SRC
 
-** Flycheck
-#+BEGIN_SRC emacs-lisp :results output silent
-  (use-package flycheck
-    :ensure t
-    )
-#+END_SRC
-
 ** Py-isrot
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package py-isort
@@ -799,7 +773,7 @@ TODO remove this in some future:
   (use-package pytest
     :ensure t
     :config
-    (custom-set-variables '(pytest-project-root-files '(".projectile" "setup.py" ".hg" ".git")))
+    (custom-set-variables '(pytest-project-root-files '("setup.py" ".hg" ".git")))
     )
 #+END_SRC
 ** Pyenv mode 
@@ -811,16 +785,13 @@ TODO remove this in some future:
 #+END_SRC
 ** DyPython
 #+BEGIN_SRC emacs-lisp :results output silent
-(require 'flycheck)
-
 ;; TODO if noqa exist - extend it
 (defun dy-python-add-noqa()
   "Add noqa for error string"
   (interactive)
   (save-excursion
-    (let* ((errors (flycheck-overlay-errors-at (point)))
-           (error-codes (seq-uniq (seq-map 'flycheck-error-id errors)))
-           (error-string (mapconcat 'identity error-codes ","))
+    (let* (
+(error-string "")
            (noqa-mes (format "  # NOQA:%s" error-string)))
       (move-end-of-line nil)
       (insert noqa-mes)
@@ -834,22 +805,6 @@ TODO remove this in some future:
     (insert "  # type: ignore")
     ))
 
-(require 'projectile)
-(defun dy-update-tags()
-  "Update etags"
-  (interactive)
-  (let* (
-	 (etag-cmd   "etags --append --regex=\"/^\[\\t\]*async\[ \\t\]+def\[ \\t\\n\]+\[^ \\t\\n(:\]+/\"")
-	 (cmds `(
-		 "rm -f TAGS"
-		 ,(format "find %s -type f -name '*.py' -print0 | xargs -0 %s" (eval dy-pyvenv-packages) etag-cmd)
-		 ,(format "find %s -type f -name '*.py' -print0 | xargs -0 %s" (eval dy-pyenv-packages) etag-cmd)
-		 ,(format "find . -type f -name '*.py' -print0 | xargs -0 %s" etag-cmd)))
-	 (cmd (mapconcat 'identity cmds " && ")))
-;; For suppress shell cmd output
-(with-temp-buffer
-  (projectile-with-default-dir (projectile-acquire-root)
-    (shell-command cmd t "*Update tags errors*")))))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1095,19 +1050,38 @@ TODO remove this in some future:
 (defcustom dy-pytest-arguments "--disable-warnings"
   "Pytest run arguments.")
 
-(defun dy-pytest-one-without-warnings ()
+(defun dy-pytest-one()
   (interactive)
   (pytest-one  dy-pytest-arguments)
   )
+
+(defun dy-pytest-module()
+  (interactive)
+  (pytest-module  dy-pytest-arguments)
+  )
+
+(defun dy-pytest-all()
+  (interactive)
+  (pytest-all  dy-pytest-arguments)
+  )
+
+(defun dy-format-python-buffer()
+  (interactive)
+  (cond ((executable-find "ruff") (ruff-format-buffer))
+        ((executable-find "black")
+         (progn
+           (blacken-buffer)
+           (if executable-find "isort" (py-isort-buffer))))))
+
 
 ;; (add-hook 'python-mode-hook 'eglot-ensure)
 
 (add-hook
  'python-mode-hook
  (lambda()
-   (keymap-set evil-normal-state-local-map "<SPC> t" 'dy-pytest-one-without-warnings)
-   (keymap-set evil-normal-state-local-map "<SPC> T a" 'pytest-all)
-   (keymap-set evil-normal-state-local-map "<SPC> T b" 'pytest-module)
+   (keymap-set evil-normal-state-local-map "<SPC> t" 'dy-pytest-one)
+   (keymap-set evil-normal-state-local-map "<SPC> T a" 'dy-pytest-all)
+   (keymap-set evil-normal-state-local-map "<SPC> T b" 'dy-pytest-module)
    (keymap-set evil-normal-state-local-map "<SPC> T p" 'pytest-pdb-one)
    (keymap-set evil-normal-state-local-map "<SPC> i" 'py-isort-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)
@@ -1115,15 +1089,10 @@ TODO remove this in some future:
    (keymap-set evil-normal-state-local-map "<SPC> m i" 'dy-python-add-noqa)
    (keymap-set evil-normal-state-local-map "<SPC> m t" 'dy-python-add-type-ignore)
    (keymap-set evil-normal-state-local-map "<SPC> m s" 'dy-py-split-string)
-   (keymap-set evil-normal-state-local-map "<SPC> m f" 'flycheck-list-errors)
-   ;; (keymap-set evil-normal-state-local-map "g d" 'lsp-find-definition)
-   ;; (keymap-set evil-normal-state-local-map "<SPC> =" 'yapfify-region-or-buffer)
-   (keymap-set evil-normal-state-local-map "<SPC> =" 'blacken-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> =" 'dy-format-python-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> m R" 'run-python)
    (keymap-set evil-visual-state-local-map "<SPC> m r" 'python-shell-send-region)
    (keymap-set evil-normal-state-local-map "<SPC> m b" 'python-shell-send-buffer)
-
-   ;; (keymap-set evil-normal-state-local-map "<SPC> I" 'lsp-ui-imenu)
    ))
 #+END_SRC
 
@@ -1133,6 +1102,12 @@ TODO remove this in some future:
   :ensure t
   :config
   (add-hook 'go-mode-hook 'eglot-ensure)
+  (add-hook
+   'go-mode-hook
+   (lambda()
+     (keymap-set evil-normal-state-local-map "<SPC> t" 'go-test-current-test)
+     (keymap-set evil-normal-state-local-map "<SPC> =" 'eglot-format-buffer)
+))
   )
 (use-package gotest
   :ensure t
@@ -1160,60 +1135,15 @@ TODO remove this in some future:
     )
 #+END_SRC
 
-* Projectile
+* Project.el
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package projectile
-  :ensure t
+(use-package project
   :config 
-  (projectile-mode +1)
-  (keymap-set evil-normal-state-map "<SPC> p" 'projectile-command-map)
-  (setq projectile-use-git-grep t)
-  (setq projectile-completion-system 'default)
-
-  (keymap-set projectile-command-map "C" 'dy-compile-command-choice)
-
-;; (defvar dy-compilation-commands '(
-;; 	(?1 "ls" "ls" nil)
-;;       )
-;;   "List of compilation commands")
-;; (put 'dy-compilation-commands 'safe-local-variable #'listp) 
-;; 
-;; (defun dy-compile-command-choice ()
-;;   "Choice project compile command."
-;;   (interactive)
-;;   (let ((choice (read-char-choice (mapconcat (lambda (item) (format "%c: %s" (car item) (cadr item))) dy-compilation-commands "\n")
-;;                   (mapcar #'car dy-compilation-commands))))
-;;     (let (
-;; 	  (command-map (if (projectile--cache-project-commands-p) projectile-compilation-cmd-map))
-;; 	  (command (nth 2 (assoc choice dy-compilation-commands)))
-;; 	  (is-interactive (nth 3 (assoc choice dy-compilation-commands)))
-;; 	  )
-;;       (when command-map
-;;        (puthash default-directory command command-map)
-;; 	)
-;; 
-;;       (save-some-buffers (not compilation-ask-about-save)
-;;                          (lambda ()
-;;                            (projectile-project-buffer-p (current-buffer)
-;;                                                         (projectile-project-root))))
-;; 
-;;       (message command)
-;;       (projectile-run-compilation command is-interactive)
-;; 	  )
-;;     ))
-
-
-(defun dy-compile-command-choice ()
-  "Choice project compile command."
-  (interactive)
-
-  (fset 'run-command-recipe-proj run-command-recipe-proj)
-(setq run-command-recipes '(run-command-recipe-proj))
-(run-command)
-
-))
-
+  (define-key project-prefix-map (kbd "C") 'dy-run-cmd)
+  (keymap-set evil-normal-state-map "<SPC> p" project-prefix-map)
+  )
 #+END_SRC
+
 * Docker
 #+BEGIN_SRC emacs-lisp :results output silent
   (use-package dockerfile-mode
@@ -1310,8 +1240,6 @@ TODO remove this in some future:
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 #+END_SRC
-
-tody
 * Yas
 ** Settings
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1366,8 +1294,8 @@ tody
   (defun rust-test-buffer ()
     "Test buffer using `cargo test`"
     (interactive)
-    (let* ((project-root (projectile-ensure-project (projectile-project-root)))
-          (relative-file (file-relative-name buffer-file-name project-root))
+    (let* (
+          (relative-file (file-relative-name buffer-file-name (project-root (project-current))))
           (splitted-path (split-string relative-file "/"))
           (module-path-with-rs (string-join (cdr splitted-path) "::"))
           (module-path (substring module-path-with-rs 0 (- (length module-path-with-rs) 3))))
@@ -1389,8 +1317,8 @@ tody
   (defun rust-test-at-point ()
     "Test buffer using `cargo test`"
     (interactive)
-    (let* ((project-root (projectile-ensure-project (projectile-project-root)))
-          (relative-file (file-relative-name buffer-file-name project-root))
+    (let* (
+          (relative-file (file-relative-name buffer-file-name (project-root (project-current))))
           (splitted-path (split-string relative-file "/"))
           (module-path-with-rs (string-join (cdr splitted-path) "::"))
           (module-path (substring module-path-with-rs 0 (- (length module-path-with-rs) 3)))
@@ -1573,7 +1501,6 @@ Private:
 ;; (set-default 'abbrev-mode t)
 )
 #+END_SRC
-* Post Settings
 * Plantuml
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package plantuml-mode
@@ -1586,17 +1513,30 @@ Private:
   )
 #+END_SRC
 
-* Org-jira
+* Jira org
+
 #+BEGIN_SRC emacs-lisp :results output silent
+(defcustom dy-jira-host nil
+   "jira host")
+
+
 (use-package org-jira
   :ensure t
   :custom
-  (jiralib-url "https://jira.croc.ru/")
+
+  ;; (jiralib-url "https://jira.croc.ru/")
+  ;; (org-jira-working-dir "~/.org-jira")
+  ;; (dy-jira-host "jira.croc.ru")
+
+  (jiralib-url "https://jira.t1-cloud.ru/")
+  (org-jira-working-dir "~/.org-jira-vtb")
+  (dy-jira-host "jira.t1-cloud.ru")
+
   :config
   (setq jiralib-token
       (cons "Authorization"
           (concat "Bearer " (auth-source-pick-first-password
-              :host "jira.croc.ru"))))
+              :host dy-jira-host))))
   )
 #+END_SRC
 
@@ -1848,6 +1788,22 @@ alias em="emacsclient -c -a emacs"
       (replace-match "\""))
     (call-shell-region (point-min) (point-max) "jq ." t (current-buffer))
     ))))
+
+
+(defun dy-python-pp ()
+ "Prettify selected python object"
+ (interactive)
+ (let ((p1 (region-beginning))
+       (p2 (region-end)) cmd)
+  (save-excursion
+   (save-restriction
+    (narrow-to-region p1 p2)
+    (goto-char (point-min))
+    (setq cmd (format "python -c \"import pprint; pprint.pp(%s)\""  (buffer-substring-no-properties (point-min) (point-max))))
+(message cmd)
+    (call-shell-region (point-min) (point-max) cmd t (current-buffer))
+    ))))
+
 #+END_SRC
 
 * Google-translate
@@ -1885,15 +1841,6 @@ alias em="emacsclient -c -a emacs"
      (keymap-set evil-normal-state-local-map "<SPC> h" 'smerge-keep-other)
      (keymap-set evil-normal-state-local-map "<SPC> l" 'smerge-keep-mine)
      ))
-#+END_SRC
-
-* Lilypond
-#+BEGIN_SRC emacs-lisp :results output silent
-(setq load-path (append (list (expand-file-name "lilypond" init-dir)) load-path))
-(autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
-(add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
-(add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
-(add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 #+END_SRC
 
 * SLY
@@ -2014,7 +1961,7 @@ If in compilation buffer there are many lines it start to be a very slow
 ** COMMENT Notifications
 #+BEGIN_SRC emacs-lisp :results output silent
 (defcustom dy-notify-after-compilation nil "Notifcation after compilation" :type 'hook :options '(t nil) :group 'dy-settings)
-;; (custom-set-variables '(dy-notify-after-compilation t))
+(custom-set-variables '(dy-notify-after-compilation t))
 
 (setq compilation-finish-functions
       (append compilation-finish-functions
@@ -2283,6 +2230,16 @@ If in compilation buffer there are many lines it start to be a very slow
 * Dy
 #+BEGIN_SRC emacs-lisp :results output silent
 
+(defun dy-run-cmd (cmd)
+  "Run command defined in dy-project-commands"
+  (interactive (list (completing-read "CMD: " dy-project-commands)))
+  (let ((default-directory (project-root (project-current t)))
+        (compilation-buffer-name-function
+         (or project-compilation-buffer-name-function
+             compilation-buffer-name-function)))
+    (compile cmd))
+)
+
 (defun dy-reload-dir-locals-for-current-buffer ()
   "reload dir locals for the current buffer"
   (interactive)
@@ -2314,10 +2271,13 @@ current buffer's, reload dir-locals."
   (interactive)
   (unless body (setq body ""))
   (call-process "notify-send" nil nil nil
-		"-t" "0"
+		"-t" "5000"
 		"-i" "emacs"
 		text
-		body))
+		body)
+
+  (play-sound-file "/home/dyens/.emacs.d/alarm.wav")
+)
 
 (defun dy-screaming-to-camel (s)
   "Convert screaming to camel case.
@@ -2376,54 +2336,6 @@ Do not try to make a new directory or anything fancy."
 
 
 
-(defun dy-hud-choose-compile-command (command)
-  "Compilation hud project and libs."
-  (interactive
-   (list
-    (completing-read "Compilation command: "
-		     '(
-		       "cd catkin_ws && catkin_make run_tests --use-ninja"
-		       "cd catkin_ws && catkin_make run_tests_hud_data_gtest_utils_camera_object_bbox  --use-ninja"
-		       "cd catkin_ws && catkin_make bag_analyze  -DFORCE_BUILD_ANALYZER:BOOL=true"
-		       "make"
-		       "make clean"
-		       ))))
-  (projectile--run-project-cmd command projectile-compilation-cmd-map
-			       :show-prompt t
-			       :prompt-prefix "Compile command: "
-			       :save-buffers t
-			       :use-comint-mode projectile-compile-use-comint-mode))
-
-
-(defun dy-hud-cppcheck ()
-  "Start cpp check for hud."
-  (interactive)
-  (projectile-with-default-dir (projectile-acquire-root)
-    (async-shell-command
-     "cd catkin_ws && cppcheck -q --enable=all --std=c++17  --inconclusive --project=src/compile_commands.json  --suppress=\"*:/home/dyens/ros_catkin_ws/*\" --suppress=\"*:devel/include/helm_msgs/*\" --suppress=\"unusedFunction:*\" -i build"
-     "*hud-cppcheck*")))
-
-
-(defun dy-hud-tidy ()
-  "Start tidy for hud."
-  (interactive)
-  (let ((compilation-buffer-name-function (lambda (x) "*tidy checks*"))
-	(default-directory (projectile-acquire-root)))
-    (compile
-     ;; funny command
-     ;; Note: run-clang-tidy does not work - it use all files in project (include moc files)
-     "cd catkin_ws && find src -type d \\( -path src/.ccls-cache -o -path src/hud_data/include/hud_data/msgs -o -path src/hud_data/src/msgs \\) -prune -o \\( -name '*.cpp' -o -name '*.h' \\) -print \
-       | xargs -n1 -P9 clang-tidy")))
-
-
-(defun dy-hud-clazy ()
-  "Start clazy for hud."
-  (interactive)
-  (projectile-with-default-dir (projectile-acquire-root)
-    (async-shell-command
-     "cd catkin_ws && find src -type d -name .ccls-cache -prune -o -name '*.cpp' -o -name '*.h' -print | xargs /home/dyens/Qt/Tools/QtCreator/libexec/qtcreator/clang/bin/clazy-standalone"
-     "*hud-clazy*")))
-
 
 (defun dy-include-cpp-header ()
   "Include cpp header."
@@ -2435,66 +2347,6 @@ Do not try to make a new directory or anything fancy."
       (goto-char (point-max))
       (insert (format "\n#endif //%s" bname)))))
 
-
-(defun dy-hud-tidy-check-one ()
-  "Tidy check one file."
-  (interactive)
-
-
-  (projectile-with-default-dir (projectile-acquire-root)
-    (async-shell-command
-     (format "cd catkin_ws && clang-tidy %s" (buffer-file-name))
-     "*hud-tidy-one-file*")))
-
-;; cd catkin_ws && catkin_make install  -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 
-;; cd catkin_ws && clang-tidy $(find src/hud_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/hud_data/ -name "*.h" -not -path "*/msgs/*") $(find src/ros_data/ -name "*.cpp" -not -path "*/msgs/*")  $(find src/ros_data/ -name "*.h" -not -path "*/msgs/*")
-
-
-(defun dy-dox-fn ()
-  "Create doxygen docstring.
-
-Cursor should be pointed on start fn eclaration."
-  (interactive)
-  (save-excursion
-    (save-restriction
-      (let ((pstart (point))
-	    (pend)
-	    (rtype)
-	    (fname)
-	    (fargs)
-	    (docstring)
-	    )
-	(search-forward ";")
-	(setq pend (point))
-	(narrow-to-region pstart pend)
-	(goto-char 0)
-	(re-search-forward "[ \t]*\\(.+\\)[ \t]+\\(.+\\)[ \t]*\(\\(.*\\)\)")
-	(setq rtype (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
-	(setq fname (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
-	(setq fargs (dy-parse-cpp-args (buffer-substring-no-properties (match-beginning 3) (match-end 3))))
-	(setq docstring (concat
-			 "/**\n"
-			 "  * \\brief\n"
-			 "  * %s\n"
-			 "  * \\details\n"
-			 "  * %s\n"
-			 "  *\/\n"
-			 ))
-
-	
-	(goto-char 0)
-	(insert (format docstring fname fname))))))
-
-(defun dy-parse-cpp-args (args-string)
-  "Cpp args parser"
-  (let ((f (lambda (el)
-	     (string-trim
-	      (car (last (split-string el " ")))
-	      "[ \t\n\r&*]+"
-	      "[ \t\n\r]+"))))
-    (mapcar
-     f
-     (split-string args-string ","))))
 
 (defun dy-get-git-origin-url ()
   "Return current git origin url"
@@ -3058,6 +2910,40 @@ if %aExists && vm2.Initialization().%b() != %a {
   )
 #+END_SRC
 
+* Dy insert formated
+#+BEGIN_SRC emacs-lisp :results output silent
+(defcustom dy-insert-template "var=%v"
+  "Path to program ruff."
+  :group 'dy-insert
+  :type '(string))
+
+
+(defun dy-test()
+(interactive)
+(message "%s" (bounds-of-thing-at-point 'symbol))
+)
+
+(defun dy-insert-formated ()
+  (interactive)
+  (let* (p1 p2 var)
+    (if (use-region-p)
+        (progn
+          (setq p1 (region-beginning)
+                (setq p2 (region-end))
+                (setq var (buffer-substring-no-properties p1 p2))))
+      (progn
+        (setq p1 (car (bounds-of-thing-at-point 'symbol)))
+        (setq p2 (cdr (bounds-of-thing-at-point 'symbol)))
+        (setq var (buffer-substring-no-properties p1 p2))))
+
+    (save-restriction
+      (narrow-to-region p1 p2)
+      (delete-region (point-min) (point-max))
+      (insert (format-spec dy-insert-template `((?v . ,var)))))
+    (next-line)))
+     
+#+END_SRC
+
 * Eat 
 #+BEGIN_SRC emacs-lisp :results output silent
 ;; (add-to-list 'load-path  "/home/dyens/dev/external/emacs-eat")
@@ -3103,7 +2989,7 @@ if %aExists && vm2.Initialization().%b() != %a {
 (defvar-local dy-modeline-branch-name
     '(:eval
       (list
-       (propertize (format "⮑%s " (dy-vc-branch-name)) 'face 'bold)))
+       (propertize (format "⮑%s " (or (dy-vc-branch-name) "E")) 'face 'bold)))
   "Mode line construct to display buffer name.")
 
 (put 'dy-modeline-branch-name 'risky-local-variable t)
@@ -3117,4 +3003,13 @@ if %aExists && vm2.Initialization().%b() != %a {
                 dy-modeline-branch-name
                 mode-line-misc-info mode-line-end-spaces))
 
+#+END_SRC
+
+* Prefect margin (center current screen)
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package perfect-margin
+  :ensure t
+  :config
+  (perfect-margin-mode 1)
+)
 #+END_SRC
