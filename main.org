@@ -49,7 +49,7 @@ Base settings
 
 Display line numbers
 #+BEGIN_SRC emacs-lisp :results output silent
-(customize-set-variable 'display-line-numbers-type 'visual)
+(customize-set-variable 'display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
 #+END_SRC
 
@@ -695,7 +695,14 @@ TODO remove this in some future:
 #+BEGIN_SRC emacs-lisp :results output silent
 (use-package ruff-format
   :ensure t
-  :after python)
+  :after python
+  :config
+    (reformatter-define ruff-sort
+      :program ruff-format-command
+      :args (list "check" "--select" "I" "--stdin-filename" (or (buffer-file-name) input-file))
+      :lighter "RuffSort"
+      :group 'ruff-format)
+)
 #+END_SRC
 ** Pydoc
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1055,6 +1062,11 @@ TODO remove this in some future:
   (pytest-one  dy-pytest-arguments)
   )
 
+(defun dy-pytest-update-snapshot-one()
+  (interactive)
+  (let ((dy-pytest-arguments "--snapshot-update"))
+    (pytest-one  dy-pytest-arguments)))
+
 (defun dy-pytest-module()
   (interactive)
   (pytest-module  dy-pytest-arguments)
@@ -1067,7 +1079,7 @@ TODO remove this in some future:
 
 (defun dy-format-python-buffer()
   (interactive)
-  (cond ((executable-find "ruff") (ruff-format-buffer))
+  (cond ((executable-find "ruff") (ruff-format-buffer) (ruff-sort-buffer))
         ((executable-find "black")
          (progn
            (blacken-buffer)
@@ -2888,7 +2900,12 @@ if %aExists && vm2.Initialization().%b() != %a {
 (use-package geiser-guile
   :ensure t
   :config
-  (setq geiser-guile-binary "guile2.2")
+  (setq geiser-guile-binary "guile3.0")
+  (when (executable-find "guix")
+  (add-to-list 'geiser-guile-load-path
+              (expand-file-name "~/.config/guix/current/share/guile/site/3.0")
+              (expand-file-name "~/.guix-profile/share/guile/3.0/")
+  ))
 )
 #+END_SRC
 * Dy insert random string
