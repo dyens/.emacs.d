@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: pstack
-# key: pstack
+# name: assert
+# key: as
 # --
-import traceback; traceback.print_stack()
+assert
