@@ -1223,6 +1223,7 @@ TODO remove this in some future:
      (emacs-lisp . t)
      (plantuml . t)
      (C . t)
+     (mermaid . t)
      ))
   ; (use-package ob-translate
   ; :ensure t
@@ -1251,7 +1252,25 @@ TODO remove this in some future:
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+(defcustom dy-pomodoro-timer nil
+  "Pomodoro timer for agenda tasks")
+
+(defun dy-clock-in ()
+  "Clock in hook."
+  (setq dy-pomodoro-timer
+        (run-with-timer (* 60 20) (+ (* 60 20) 5) (lambda () (org-notify "Нужно отдохнуть 5 мин" "/home/dyens/.emacs.d/alarm.wav"))))
+  )
+
+(defun dy-clock-out ()
+  "Clock out hook."
+  (cancel-timer dy-pomodoro-timer)
+  )
+
+(add-hook 'org-clock-in-hook 'dy-clock-in)
+(add-hook 'org-clock-out-hook 'dy-clock-out)
 #+END_SRC
+
 * Yas
 ** Settings
 #+BEGIN_SRC emacs-lisp :results output silent
@@ -1276,7 +1295,8 @@ TODO remove this in some future:
   ;; (company-tooltip-align-annotations t "Company annotations")
   :mode ("\\rs\\'" . rust-mode)
   :config
-  (add-hook 'rust-mode-hook #'lsp)
+  (add-hook 'rust-mode-hook 'eglot-ensure)
+  ;; (add-hook 'rust-mode-hook #'lsp)
   ;; (keymap-set rust-mode-map "TAB" #'company-indent-or-complete-common)
 )
 #+END_SRC
@@ -2194,7 +2214,7 @@ If in compilation buffer there are many lines it start to be a very slow
   (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
   (add-hook 'ielm-mode-hook #'paredit-mode)
   (add-hook 'lisp-mode-hook #'paredit-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
+  ;; (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
   ;; (add-hook 'c++-mode-hook #'paredit-mode)
   ;; (add-hook 'c-mode-hook #'paredit-mode)
   ;; (add-hook 'python-mode-hook #'paredit-mode)
@@ -3030,3 +3050,21 @@ if %aExists && vm2.Initialization().%b() != %a {
   (perfect-margin-mode 1)
 )
 #+END_SRC
+
+* Org modern
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package org-modern
+  :ensure t
+  :config
+)
+#+END_SRC
+
+* Org Mermaid
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package ob-mermaid
+  :ensure t
+  :config
+  (setq ob-mermaid-cli-path "/home/dyens/.nvm/versions/node/v18.7.0/bin/mmdc")
+)
+#+END_SRC
+
