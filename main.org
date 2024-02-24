@@ -86,6 +86,11 @@ For refresh packages run (M-x package-refresh-contents)
 (setq-default indent-tabs-mode nil)
 #+END_SRC
 
+* Global keys
+#+BEGIN_SRC emacs-lisp :results output silent
+(keymap-global-set "C-x C-p" 'eval-print-last-sexp)
+#+END_SRC
+
 * Backup
 This is one of the things people usually want to change right away. By
 default, Emacs saves backup files in the current directory. These are
@@ -277,7 +282,7 @@ find them with C-x C-f (find-file) if I really need to.
 )
 
 ;; (load-theme 'leuven t)
-(load-theme 'ef-bio t)
+(load-theme 'ef-maris-light t)
 #+END_SRC
 
 ** Pretty symbols
@@ -1054,7 +1059,7 @@ TODO remove this in some future:
 
 ** Bidnings
 #+BEGIN_SRC emacs-lisp :results output silent
-(defcustom dy-pytest-arguments "--disable-warnings"
+(defcustom dy-pytest-arguments "--disable-warnings -x --ff"
   "Pytest run arguments.")
 
 (defun dy-pytest-one()
@@ -1066,6 +1071,11 @@ TODO remove this in some future:
   (interactive)
   (let ((dy-pytest-arguments "--snapshot-update"))
     (pytest-one  dy-pytest-arguments)))
+
+(defun dy-pytest-update-snapshot-all()
+  (interactive)
+  (let ((dy-pytest-arguments "--snapshot-update"))
+    (pytest-all  dy-pytest-arguments)))
 
 (defun dy-pytest-module()
   (interactive)
@@ -3066,5 +3076,36 @@ if %aExists && vm2.Initialization().%b() != %a {
   :config
   (setq ob-mermaid-cli-path "/home/dyens/.nvm/versions/node/v18.7.0/bin/mmdc")
 )
+#+END_SRC
+
+* Spacious padding
+
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package spacious-padding
+:ensure t
+:config
+;; These is the default value, but I keep it here for visiibility.
+(setq spacious-padding-widths
+      '( :internal-border-width 10
+         :header-line-width 4
+         :mode-line-width 6
+         :tab-width 4
+         :right-divider-width 10
+         :scroll-bar-width 8))
+
+(spacious-padding-mode 1)
+
+;; Set a key binding if you need to toggle spacious padding.
+(define-key global-map (kbd "<f8>") #'spacious-padding-mode)
+)
+#+END_SRC
+
+* Lilypond
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq load-path (append (list (expand-file-name "lilypond" init-dir)) load-path))
+(autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
+(add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
+(add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
+(add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 #+END_SRC
 
