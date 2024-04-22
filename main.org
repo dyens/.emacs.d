@@ -6,6 +6,11 @@
 #+TAGS: emacs
 #+CATEGORIES: editing
 
+* COMMENT This is code is commented so should not be executed in intialization
+#+BEGIN_SRC emacs-lisp :results output silent
+(setq dy-aaa "123")
+#+END_SRC
+
 * Introduction
 
 Deffered compilation
@@ -89,6 +94,20 @@ For refresh packages run (M-x package-refresh-contents)
 * Global keys
 #+BEGIN_SRC emacs-lisp :results output silent
 (keymap-global-set "C-x C-p" 'eval-print-last-sexp)
+#+END_SRC
+
+* Display fill column indicator
+#+BEGIN_SRC emacs-lisp :results output silent
+(global-display-fill-column-indicator-mode)
+(setq fill-column 80)
+#+END_SRC
+* Displaying buffers
+#+BEGIN_SRC emacs-lisp :results output silent
+(add-to-list 'display-buffer-alist
+             (cons "\\`\\*compilation\\*\\'"
+                   (cons 'display-buffer-reuse-window
+                         '((reusable-frames . visible)
+                           (inhibit-switch-frame . nil)))))
 #+END_SRC
 
 * Backup
@@ -354,6 +373,7 @@ find them with C-x C-f (find-file) if I really need to.
 
   ;; C-o defined for jump back
   ;; C-i for jump forward
+
   (keymap-set evil-normal-state-map "C-i" 'evil-jump-forward)
   (keymap-set evil-normal-state-map "<SPC> f" 'find-file)
   (keymap-set evil-normal-state-map "<SPC> b" 'switch-to-buffer)
@@ -399,11 +419,24 @@ find them with C-x C-f (find-file) if I really need to.
 
   (keymap-set evil-normal-state-map "<SPC> `" 'dy-function-not-found)
 
-  ;; (keymap-set evil-normal-state-map "<SPC> ." 'flymake-goto-next-error)
-  ;; (keymap-set evil-normal-state-map "<SPC> >" 'flymake-goto-prev-error)
+  (defun dy-goto-next-error ()
+    "Go to next error not depends from fly-* mode."
+    (interactive)
+    (cond
+     ((and (symbolp flymake-mode) (symbol-value flymake-mode)) (flymake-goto-next-error))
+     ((and (symbolp flycheck-mode) (symbol-value flycheck-mode)) (flycheck-next-error))
+     (t (progn (message "no fly backend") nil))))
 
-  (keymap-set evil-normal-state-map "<SPC> ." 'flymake-goto-next-error)
-  (keymap-set evil-normal-state-map "<SPC> ," 'flymake-goto-prev-error)
+  (defun dy-goto-prev-error ()
+    "Go to prev error not depends from fly-* mode."
+    (interactive)
+    (cond
+     ((and (symbolp flymake-mode) (symbol-value flymake-mode)) (flymake-goto-prev-error))
+     ((and (symbolp flycheck-mode) (symbol-value flycheck-mode)) (flycheck-previous-error))
+     (t (progn (message "no fly backend") nil))))
+
+  (keymap-set evil-normal-state-map "<SPC> ." 'dy-goto-next-error)
+  (keymap-set evil-normal-state-map "<SPC> ," 'dy-goto-prev-error)
   )
 
 (use-package evil-collection
@@ -1105,6 +1138,7 @@ TODO remove this in some future:
    (keymap-set evil-normal-state-local-map "<SPC> T a" 'dy-pytest-all)
    (keymap-set evil-normal-state-local-map "<SPC> T b" 'dy-pytest-module)
    (keymap-set evil-normal-state-local-map "<SPC> T p" 'pytest-pdb-one)
+   (keymap-set evil-normal-state-local-map "<SPC> T T" 'pytest-again)
    (keymap-set evil-normal-state-local-map "<SPC> i" 'py-isort-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)
    (keymap-set evil-visual-state-local-map "<SPC> m a" 'dy-python-dict-kwargs-toogle)
@@ -1380,7 +1414,7 @@ TODO remove this in some future:
    (keymap-set evil-normal-state-local-map "<SPC> m C" 'rust-compile)
    (keymap-set evil-normal-state-local-map "<SPC> m r" 'rust-run)
    (keymap-set evil-normal-state-local-map "<SPC> T a" 'rust-test)
-   (keymap-set evil-normal-state-local-map "g d" 'racer-find-definition)
+   ;; (keymap-set evil-normal-state-local-map "g d" 'racer-find-definition)
    (keymap-set evil-normal-state-local-map "<SPC> T b" 'rust-test-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> =" 'lsp-format-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> t" 'rust-test-at-point)
@@ -2000,7 +2034,7 @@ If in compilation buffer there are many lines it start to be a very slow
 (setq compilation-scroll-output 'first-error)
 #+END_SRC
 
-** COMMENT Notifications
+** Notifications
 #+BEGIN_SRC emacs-lisp :results output silent
 (defcustom dy-notify-after-compilation nil "Notifcation after compilation" :type 'hook :options '(t nil) :group 'dy-settings)
 (custom-set-variables '(dy-notify-after-compilation t))
@@ -2180,10 +2214,44 @@ If in compilation buffer there are many lines it start to be a very slow
 
 * Dap mode
 #+BEGIN_SRC emacs-lisp :results output silent
-(use-package dap-mode
+;; (use-package dap-mode
+;;   :ensure t
+;;   :config
+;;     )
+#+END_SRC
+
+* Dape
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package dape
   :ensure t
   :config
-    )
+(add-to-list 'dape-configs
+ `(debugpy-remote-attach-port
+   modes (python-mode python-ts-mode)
+   host (lambda () (read-string "Host: " "127.0.0.1"))
+   port (lambda () (read-number "Port:" 5678))
+   :request "attach"
+   :type "python"
+   :pathMappings [(:localRoot (lambda ()
+                                (read-directory-name "Local source directory: "
+                                                     (funcall dape-cwd-fn)))
+                   :remoteRoot (lambda ()
+                                 (read-string "Remote source directory: ")))]
+   :justMyCode nil
+   :showReturnValue t))
+
+;; (setq dape-configs (cdr dape-configs))
+
+;; (add-to-list 'dape-configs
+;;              `(debugpy
+;;                modes (python-ts-mode python-mode)
+;;                command "python"
+;;                command-args ("-m" "debugpy.adapter")
+;;                :type "executable"
+;;                :request "launch"
+;;                :cwd dape-cwd-fn
+;;                :program dape-find-file-buffer-default))
+;;     )
 #+END_SRC
 
 * Lispy
@@ -3028,7 +3096,8 @@ if %aExists && vm2.Initialization().%b() != %a {
   "Return VC branch name."
   (let* ((file (buffer-file-name))
          (backend (vc-backend file)))
-  (when-let ((rev (vc-working-revision file backend))
+  (when-let ((backend backend) ; backend should not be nil
+             (rev (vc-working-revision file backend))
              (branch (or (vc-git--symbolic-ref file)
                          (substring rev 0 7))))
     branch)))
@@ -3093,7 +3162,7 @@ if %aExists && vm2.Initialization().%b() != %a {
          :right-divider-width 10
          :scroll-bar-width 8))
 
-(spacious-padding-mode 1)
+(spacious-padding-mode 0)
 
 ;; Set a key binding if you need to toggle spacious padding.
 (define-key global-map (kbd "<f8>") #'spacious-padding-mode)
@@ -3109,3 +3178,28 @@ if %aExists && vm2.Initialization().%b() != %a {
 (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 #+END_SRC
 
+* Elpy
+#+BEGIN_SRC emacs-lisp :results output silent
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable)
+  :config
+  (when (load "flycheck" t t)
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode))
+)
+#+END_SRC
+* Transparency
+#+BEGIN_SRC emacs-lisp :results output silent
+  (add-to-list 'load-path "/home/dyens/dev/external/transparency.el")
+  (use-package transparency
+    :ensure nil ; To ensure that it doesn't try to fetch it with `package'
+    :commands (transparency-mode)
+    :custom
+    (global-transparency-alpha/default 75)
+    (global-transparency-alpha--previous/default 90)
+
+    :config
+    (transparency-mode +1))
+#+END_SRC
