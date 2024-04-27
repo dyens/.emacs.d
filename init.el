@@ -1,38 +1,82 @@
-;; Make startup faster
-(defvar file-name-handler-alist-old file-name-handler-alist)
-(setq package-enable-at-startup nil
-      file-name-handler-alist nil
-      message-log-max 16384
-      gc-cons-threshold 402653184
-      gc-cons-percentage 0.6
-      auto-window-vscroll nil
-      package--init-file-ensured t)
+;; Startup
+(load "~/.emacs.d/config/startup.el")
 
-(add-hook 'after-init-hook
-          `(lambda ()
-             (setq file-name-handler-alist file-name-handler-alist-old
-                   gc-cons-threshold 800000
-                   gc-cons-percentage 0.1)) t)
-
-
-;(package-initialize) 
-
-(require 'org)
-(require 'ob-tangle)
-
-
-(setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
-
-(org-babel-load-file (expand-file-name "main.org" init-dir))
+;; Config
+(load "~/.emacs.d/config/config.el")
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(gruvbox-theme zoom zenburn-theme yasnippet winum which-key use-package restclient racer pyvenv pytest py-isort plantuml-mode magit-todos lsp-ui lsp-ivy forge flycheck eyebrowse expand-region evil-magit evil-collection dockerfile-mode docker-tramp docker-compose-mode dap-mode counsel-projectile company-lsp color-theme-sanityinc-tomorrow apropospriate-theme))
- '(pytest-project-root-files '(".projectile" "setup.py" ".hg" ".git"))
- '(zoom-size 'size-callback))
+ '(dy-notify-after-compilation t)
+ '(pytest-project-root-files '("setup.py" ".hg" ".git"))
+ '(safe-local-variable-values
+   '((run-command-recipe-proj lambda nil
+                              (list
+                               (list :command-name "build tensorflow"
+                                     :command-line
+                                     "make docker-build -C jupyter3.11 TAG=latest")
+                               (list :command-name "build js"
+                                     :command-line
+                                     "make docker-build -C tensorflow-gpu3.10 TAG=0.0.12")
+                               (list :command-name "push js"
+                                     :command-line
+                                     "docker push gitlab-registry-dev.t1.cloud/cloud-solution/ai-cloud/images/ai-jupyter-3.11:latest")
+                               (list :command-name "run tensorflow"
+                                     :command-line
+                                     "docker run --rm -it --gpus all storage.devcroc.cloud:5000/ai-tensorflow-gpu-3.10:0.0.12 /bin/bash")))
+     (eval progn
+           (setenv "DOCKER_CONFIG_JSON"
+                   "eyJhdXRocyI6eyJnaXRsYWItcmVnaXN0cnktZGV2LnQxLmNsb3VkIjp7InVzZXJuYW1lIjoiYWkiLCJwYXNzd29yZCI6ImdscGF0LWJzTHpQR291TVhLQnBEcWJXUTd1In19fQ==")
+           (setenv "INGRESS_HOST" "t1.aicloud.vtb.devcroc.cloud")
+           (setenv "TLS_SECRET_NAME"
+                   "t1.aicloud.vtb.devcroc.cloud-tls")
+           (setq dy-project-commands '("echo hello")))
+     (eval progn
+           (setenv "DOCKER_CONFIG_JSON"
+                   "eyJhdXRocyI6eyJnaXRsYWItcmVnaXN0cnktZGV2LnQxLmNsb3VkIjp7InVzZXJuYW1lIjoiYWkiLCJwYXNzd29yZCI6ImdscGF0LWJzTHpQR291TVhLQnBEcWJXUTd1In19fQ==")
+           (setenv "INGRESS_HOST" "xxx")
+           (setq dy-project-commands '("echo hello")))
+     (eval progn
+           (setenv "NOVA_GITLAB_URL"
+                   "https://git.int.nova-platform.io")
+           (setenv "NOVA_GITLAB_TOKEN" "glpat-NcDHWA7ifbzjwgLz8imt")
+           (setenv "NOVA_GITLAB_TOKEN" "glpat-YVnNTrA4sxreqAS8fmGA")
+           (setenv "NOVA_STORAGE_ACCESS_KEY"
+                   "nova-public:csi@croc.container.platform")
+           (setenv "NOVA_STORAGE_SECRET_KEY" "QvFkBwrYTBqSEowYj8HkEA")
+           (setq dy-project-commands
+                 '("poetry run python -m nova_deps starts-from  1.0.3"
+                   "poetry run python -m nova_deps version develop"
+                   "poetry run python -m nova_deps puppetfile develop"
+                   "poetry run python -m nova_deps universe-update 2.0.0-rc.2 --universe-project-id=88"
+                   "poetry run python -m nova_deps universe-update 2.0.0-rc.13")))
+     (eval progn (setenv "RUSER" "ai")
+           (setenv "RPASS" "glpat-bsLzPGouMXKBpDqbWQ7u")
+           (setenv "RNAME"
+                   "gitlab-registry-dev.t1.cloud/cloud-solution/ai-cloud/images/ai-pyk-3.11:latest")
+           (setq dy-project-commands
+                 '("/usr/bin/time -v go run cmd/ich.go -t 5m -u kapustin -p \"DvvKEDtMtyVEs7XNmA-z\"  git-registry.service.t1-cloud.ru/cloud-solution/ai-cloud/images/ai-pyk-3.11:latest"
+                   "go run cmd/ich/ich.go -t 5m -u $RUSER -p $RPASS -f output.json gitlab-registry-dev.t1.cloud/cloud-solution/ai-cloud/images/ai-pyk-3.11:latest"
+                   "go run cmd/ich/ich.go -t 5m -u $RUSER -p $RPASS -f output.json gitlab-registry-dev.t1.cloud/cloud-solution/ai-cloud/images/ai-pyk-tf-3.10:latest"
+                   "go run cmd/gif/gif.go  gitlab-registry-dev.t1.cloud/cloud-solution/ai-cloud/images/ai-pyk-3.11:latest"
+                   "go run cmd/gif/gif.go  gitlab-registry-dev.t1.cloud/cloud-solution/ai-cloud/images/ai-pyk-3.11:latest gitlab-registry-dev.t1.cloud/cloud-solution/ai-cloud/images/ai-pyk-tf-3.10:latest"
+                   "docker build . -t ich:local"
+                   "docker run --rm  ich:local -t 5m -u kapustin -p DvvKEDtMtyVEs7XNmA-z git-registry.service.t1-cloud.ru/cloud-solution/ai-cloud/images/ai-pyk-3.11:latest"
+                   "dlv debug cmd/ich/ich.go  -- -t 5m -u kapustin -p DvvKEDtMtyVEs7XNmA-z git-registry.service.t1-cloud.ru/cloud-solution/ai-cloud/images/ai-pyk-3.11:latest")))
+     (eval progn
+           (setenv "DOCKER_CONFIG_JSON"
+                   "eyJhdXRocyI6eyJnaXRsYWItcmVnaXN0cnktZGV2LnQxLmNsb3VkIjp7InVzZXJuYW1lIjoiYWkiLCJwYXNzd29yZCI6ImdscGF0LWJzTHpQR291TVhLQnBEcWJXUTd1In19fQ==")
+           (setq dy-project-commands '("echo hello")))
+     (run-command-recipe-proj lambda nil
+                              (list
+                               (list :command-name "make docker-build"
+                                     :command-line
+                                     "make docker-build CONTROLLER_IMG=aaa CONTROLLER_IMG_TAG=latest GITLAB_TOKEN=2xLenrza1sqp5rM7Dt1J")))
+     (dy-pytest-arguments . "--kernel-stress -x --ff")))
+ '(zoneinfo-style-world-list
+   '(("Etc/UTC" "ITC") ("Europe/Moscow" "Moscow")
+     ("Asia/Irkutsk" "Irkutsk") ("America/New_York" "New York"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
