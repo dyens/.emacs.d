@@ -39,7 +39,9 @@
      (plantuml . t)
      (C . t)
      (mermaid . t)
+     (mypy . t)
      ))
+  (add-to-list 'org-src-lang-modes (cons "mypy" 'python))
   ; (use-package ob-translate
   ; :ensure t
   ; :config
@@ -108,3 +110,4 @@
   :ensure t
   :config
   (setq ob-mermaid-cli-path "/home/dyens/.nvm/versions/node/v18.7.0/bin/mmdc"))
+

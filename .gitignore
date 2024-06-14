@@ -32,5 +32,7 @@ eln-cache/
 straight/
 url/
 request/
-
-
+copilot.el/
+elpy/
+multisession/
+org-roam.db

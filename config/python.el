@@ -31,7 +31,7 @@
   :config
     (reformatter-define ruff-sort
       :program ruff-format-command
-      :args (list "check" "--select" "I" "--stdin-filename" (or (buffer-file-name) input-file))
+      :args (list "check" "--fix" "--select" "I" "--stdin-filename" (or (buffer-file-name) input-file))
       :lighter "RuffSort"
       :group 'ruff-format))
 

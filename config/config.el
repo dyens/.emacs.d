@@ -19,6 +19,9 @@
 ;; Python
 (load "~/.emacs.d/config/python.el")
 
+;; Org-mypy
+(load "~/.emacs.d/config/org-mypy.el")
+
 ;; Org
 (load "~/.emacs.d/config/org.el")
 
@@ -36,3 +39,6 @@
 
 ;; Cpp
 (load "~/.emacs.d/config/cpp.el")
+
+;; Go
+(load "~/.emacs.d/config/go.el")
