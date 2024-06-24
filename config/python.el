@@ -375,7 +375,7 @@
         ((executable-find "black")
          (progn
            (blacken-buffer)
-           (if executable-find "isort" (py-isort-buffer))))))
+           (if (executable-find "isort") (py-isort-buffer))))))
 
 ;; Bidnings
 (add-hook

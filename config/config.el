@@ -42,3 +42,6 @@
 
 ;; Go
 (load "~/.emacs.d/config/go.el")
+
+;; Straight
+(load "~/.emacs.d/config/straight.el")
