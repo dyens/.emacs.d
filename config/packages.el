@@ -5,13 +5,14 @@
 ;; Perspective
 (use-package perspective
   :ensure t
+  :after evil
   :config
+  (keymap-set evil-normal-state-map "<SPC> l" 'perspective-map)
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode))
 
 ;;; Super word mode
 (superword-mode t)
-
 
 ; Evil mode
 (setq evil-want-C-i-jump nil)
@@ -21,37 +22,28 @@
     ;; make evil-search-word look for symbol rather than word boundaries
     (setq-default evil-symbol-word-search t))
 
+
 (use-package evil
   :ensure t
   :init
-  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
-  ;; Put a cursor to a new window
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  ;; Fix org tab key
-  (setq evil-want-C-i-jump nil)
+  :custom
+  (evil-vsplit-window-right t)
+  (evil-split-window-below t)
+  (evil-want-C-i-jump nil)
   :config 
+  ;; Put a cursor to a new window
+  ;; Fix org tab key
   (evil-mode 1)
   ;; With new evil changes and new emacs evil use different undo systemes
   (evil-set-undo-system 'undo-redo)
-  (keymap-set evil-normal-state-map "<f5>" #'modus-themes-toggle)
 
   ;; C-o defined for jump back
   ;; C-i for jump forward
-
   (keymap-set evil-normal-state-map "C-i" 'evil-jump-forward)
   (keymap-set evil-normal-state-map "<SPC> f" 'find-file)
   (keymap-set evil-normal-state-map "<SPC> b" 'switch-to-buffer)
-  (keymap-set evil-normal-state-map "<SPC> I" 'consult-imenu)
-  (keymap-set evil-normal-state-map "<SPC> s" 'consult-ripgrep)
-
-  (keymap-set evil-normal-state-map "<SPC> w" 'ace-window)
-
-  (keymap-set evil-normal-state-map "<SPC> g" 'magit-status)
-  (keymap-set evil-normal-state-map "<SPC> a a" 'org-agenda)
-  (keymap-set evil-normal-state-map "<SPC> a c" 'org-capture)
-
   (keymap-set evil-normal-state-map "<SPC> c" 'compile)
 
   (keymap-set evil-normal-state-map "<SPC> #" 'comment-line)
@@ -59,13 +51,8 @@
 
   (keymap-set evil-normal-state-map "C-u" 'evil-scroll-up)
   (keymap-set evil-visual-state-map "C-u" 'evil-scroll-up)
-
-  (keymap-set evil-normal-state-map "<SPC> o" 'consult-outline)
   ;; Instead of C-u
   (keymap-set evil-normal-state-map "<SPC> u" 'universal-argument)
-  (keymap-set evil-insert-state-map "C-l" 'yas-expand-from-trigger-key)
-
-  (keymap-set evil-normal-state-map "<SPC> l" 'perspective-map)
 
   ;; Github jump
   (keymap-set evil-normal-state-map "<SPC> m b" 'dy-open-in-github-branch)
@@ -130,38 +117,35 @@
 
 (use-package evil-string-inflection
   :after evil
-  :ensure t
-)
+  :ensure t)
 
 (use-package evil-escape
   :after evil
   :ensure t
+  :custom
+  (evil-escape-key-sequence "fd")
   :config
-  (setq-default evil-escape-key-sequence "fd")
   (evil-escape-mode 1))
 
 (use-package evil-multiedit
   :ensure t
+  :after evil
+  :bind
+  ((:map evil-visual-state-map
+         ("R" . evil-multiedit-match-all)
+         ("M-d" . evil-multiedit-match-and-next))
+   (:map evil-normal-state-map
+         ("M-d" . evil-multiedit-match-and-next))
+   (:map evil-insert-state-map
+         ("M-d" . evil-multiedit-toggle-marker-here)))
   :config
-  (require 'evil-multiedit)
-  ;; Highlights all matches of the selection in the buffer.
-  (keymap-set evil-visual-state-map "R" 'evil-multiedit-match-all)
-  
-  ;; Match the word under cursor (i.e. make it an edit region). Consecutive presses will
-  ;; incrementally add the next unmatched match.
-  (keymap-set evil-normal-state-map "M-d" 'evil-multiedit-match-and-next)
-  ;; Match selected region.
-  (keymap-set evil-visual-state-map "M-d" 'evil-multiedit-match-and-next)
-  ;; Insert marker at point
-  (keymap-set evil-insert-state-map "M-d" 'evil-multiedit-toggle-marker-here)
-   ;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
   (evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match))
 
 ;; Vertico
 (use-package vertico
-:ensure t
-:init
-(vertico-mode))
+  :ensure t
+  :config
+  (vertico-mode))
 
 ;; Orderless
 (use-package orderless
@@ -176,58 +160,53 @@
 
 ;; Savehist
 (use-package savehist
-  :init
+  :config
   (savehist-mode))
-
-(use-package emacs
-  :init
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; Alternatively try `consult-completing-read-multiple'.
-  (defun crm-indicator (args)
-    (cons (concat "[CRM] " (car args)) (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-  (setq enable-recursive-minibuffers t))
 
 
 ;; Marginalia
 (use-package marginalia
   :ensure t
   ;; Either bind `marginalia-cycle` globally or only in the minibuffer
-  :bind (("M-A" . marginalia-cycle)
-         :map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
-  :init
-  (marginalia-mode))
+  :hook
+  (after-init . marginalia-mode)
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle)))
 
 ;; Consult
 (use-package consult
-:ensure t
-:config
-(setq consult-preview-key nil)
-(setq consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --with-filename --line-number --search-zip --hidden"))
+  :ensure t
+  :after evil
+  :custom
+  (consult-preview-key nil)
+  (consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --with-filename --line-number --search-zip --hidden")
+  :bind
+  ((:map evil-normal-state-map
+         ("<SPC> I" . consult-imenu)
+         ("<SPC> s" . consult-ripgrep)
+         ("<SPC> o" . consult-outline))))
 
 ;; Embark
 (use-package embark
-:ensure t
-:bind
-(("C-." . embark-act)
- ("C-h B" . embark-bindings)))
+  :ensure t
+  :bind
+  (("C-." . embark-act)
+   ("C-h B" . embark-bindings)))
 
 (use-package embark-consult
-:after embark
-:ensure t)
+  :after embark
+  :ensure t)
 
 ;; Magit
 (use-package magit
   :ensure t
   :commands magit-status
+  :custom
+  (magit-display-buffer-function 'magit-display-buffer-traditional)
+  :bind
+  ((:map evil-normal-state-map
+         ("<SPC> g" . magit-status)))
   :config
-  (setq magit-display-buffer-function 'magit-display-buffer-traditional)
   ;; (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
   (defun dy-git-commit-setup ()
     (let ((current-branch-name (upcase (magit-get-current-branch))))
@@ -273,51 +252,31 @@
 ;; Corfu (replace company mode)
 (use-package corfu
   :ensure t
-  ;; Optional customizations
   :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
-  ;; (corfu-separator ?\s)          ;; Orderless field separator
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect-first nil)    ;; Disable candidate preselection
-  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-echo-documentation nil) ;; Disable documentation in the echo area
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
-
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
-  ;; Recommended: Enable Corfu globally.
-  ;; This is recommended since Dabbrev can be used globally (M-/).
-  ;; See also `corfu-excluded-modes'.
-  :init
+  (corfu-auto t)
+  :config
   (global-corfu-mode))
 
-(use-package emacs
-  :init
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3)
-  (setq tab-always-indent 'complete))
+
+(use-package minibuffer
+  :ensure nil
+  :custom
+  (completion-cycle-threshold 3))
 
 ;; GO
 (use-package go-mode
   :ensure t
-  :config
-  (add-hook 'go-mode-hook 'eglot-ensure)
-  (add-hook
-   'go-mode-hook
-   (lambda()
+  :after evil
+  :hook
+  ((go-mode . eglot-ensure)
+   (go-mode . (lambda()
      (keymap-set evil-normal-state-local-map "<SPC> t" 'go-test-current-test)
-     (keymap-set evil-normal-state-local-map "<SPC> =" 'eglot-format-buffer))))
+     (keymap-set evil-normal-state-local-map "<SPC> =" 'eglot-format-buffer)))))
 
 (use-package gotest
   :ensure t
+  :after go-mode
   :config)
-
 
 ;; Ansi-color
 (use-package ansi-color
@@ -329,11 +288,12 @@
 
 ;; Restclient
 (use-package restclient
-:ensure t
-:mode ("\\.http\\'" . restclient-mode))
+  :ensure t
+  :mode ("\\.http\\'" . restclient-mode))
 
 ;; project.el
 (use-package project
+  :after evil
   :config 
   (define-key project-prefix-map (kbd "C") 'dy-run-cmd)
   (keymap-set evil-normal-state-map "<SPC> p" project-prefix-map))
@@ -357,6 +317,9 @@
 ;; Yasnippet
 (use-package yasnippet
   :ensure t
+  :bind
+  ((:map evil-normal-state-map
+         ("C-l" . yas-expand-from-trigger-key)))
   :custom
   (yas-snippet-dirs  '("~/.emacs.d/snippets") "Set yasnippet dir")
   :config
@@ -375,33 +338,40 @@
 ;; Expand-region
 (use-package expand-region
   :ensure t
-  :config
-  (keymap-set evil-normal-state-map "<SPC> e" 'er/expand-region))
+  :bind
+  ((:map evil-normal-state-map
+         ("<SPC> e" . er/expand-region))))
 
 ;; Aspell
-(setq ispell-program-name "aspell")
+(use-package ispell
+  :ensure nil
+  :custom
+  (ispell-program-name "aspell"))
 
 ;; Google translate
 (use-package popup
-    :ensure t
- )
+    :ensure t)
+
 (use-package google-translate
     :ensure t
+    :after popup
     :custom
     (google-translate-backend-method 'curl)
+    (google-translate-default-source-language "en")
+    (google-translate-default-target-language "ru")
+    :commands (google-translate-read-args google-translate-at-point google-translate-transate)
+    :bind
+    ((:map evil-normal-state-map
+           ("<SPC> r r" . dy-google-translate)
+           ("<SPC> r R" . dy-google-translate-reverse)
+           ("<SPC> r q" . google-translate-query-translate)
+           ("<SPC> r Q" . google-translate-query-translate-reverse))
+     (:map evil-visual-state-map
+           ("<SPC> r r" . dy-google-translate)
+           ("<SPC> r R" . dy-google-translate-reverse)))
     :config
     ;; https://github.com/atykhonov/google-translate/issues/52#issuecomment-727920888
-    (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
-    (keymap-set evil-normal-state-map "<SPC> r r" 'dy-google-translate)
-    (keymap-set evil-normal-state-map "<SPC> r R" 'dy-google-translate-reverse)
-
-    (keymap-set evil-visual-state-map "<SPC> r r" 'dy-google-translate)
-    (keymap-set evil-visual-state-map "<SPC> r R" 'dy-google-translate-reverse)
-
-    (keymap-set evil-normal-state-map "<SPC> r q" 'google-translate-query-translate)
-    (keymap-set evil-normal-state-map "<SPC> r Q" 'google-translate-query-translate-reverse)
-    (setq google-translate-default-source-language "en")
-    (setq google-translate-default-target-language "ru"))
+    (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
 
 
 
@@ -431,6 +401,8 @@
 
 ;; Window monocle
 (use-package emacs
+  :custom
+  (tab-always-indent 'complete)
   :config
   (defvar dy-window-configuration nil
     "Current window configuration.
@@ -448,7 +420,19 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
       (setq dy-window-configuration (current-window-configuration))
       (delete-other-windows)))
 
-  (keymap-set evil-normal-state-map "<SPC> z" 'dy-window-single-toggle))
+  (keymap-set evil-normal-state-map "<SPC> z" 'dy-window-single-toggle)
+
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; Alternatively try `consult-completing-read-multiple'.
+  (defun crm-indicator (args)
+    (cons (concat "[CRM] " (car args)) (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+  (setq enable-recursive-minibuffers t))
 
 ;; Lua
 (use-package lua-mode
@@ -540,7 +524,12 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 
 ;; Ace window
 (use-package ace-window
-  :ensure t)
+  :ensure t
+  :after evil
+  :bind
+  ((:map evil-normal-state-map
+         ("<SPC> w" . ace-window))))
+
 
 ;; Dape
 (use-package dape

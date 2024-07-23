@@ -61,9 +61,25 @@
 	 )
 )
 
+(use-package org-agenda
+  :ensure nil
+  :after evil
+  :commands (org-agenda)
+  :bind
+  ((:map evil-normal-state-map
+         ("<SPC> a a" . org-agenda))))
+
+(use-package org-capture
+  :ensure nil
+  :after evil
+  :commands (org-capture)
+  :bind
+  ((:map evil-normal-state-map
+         ("<SPC> a c" . org-capture))))
+ 
+
 (use-package org-mime
-  :ensure t
- )
+  :ensure t)
  
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
