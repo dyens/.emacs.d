@@ -60,8 +60,7 @@ current buffer's, reload dir-locals."
 (defun dy-erc ()
   "Run erc. Default erc does not work."
   (interactive)
-   (erc :server "irc.libera.chat" :full-name "Alexander Kapustin" :user "dyens")
- )
+   (erc :server "irc.libera.chat" :full-name "Alexander Kapustin" :user "dyens"))
 
 (defun dy-notify (text &optional body)
   "Desktop notify.
@@ -77,8 +76,7 @@ current buffer's, reload dir-locals."
 		text
 		body)
 
-  (play-sound-file "/home/dyens/.emacs.d/alarm.wav")
-)
+  (play-sound-file "/home/dyens/.emacs.d/alarm.wav"))
 
 (defun dy-screaming-to-camel (s)
   "Convert screaming to camel case.
@@ -678,6 +676,5 @@ if %aExists && vm2.Initialization().%b() != %a {
   (interactive "p")
   (message (format "%d" len))
   (dotimes (i len)
-  (insert (random-alnum)))
-  )
+  (insert (random-alnum))))
 

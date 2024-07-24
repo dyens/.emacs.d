@@ -263,21 +263,6 @@
   :custom
   (completion-cycle-threshold 3))
 
-;; GO
-(use-package go-mode
-  :ensure t
-  :after evil
-  :hook
-  ((go-mode . eglot-ensure)
-   (go-mode . (lambda()
-     (keymap-set evil-normal-state-local-map "<SPC> t" 'go-test-current-test)
-     (keymap-set evil-normal-state-local-map "<SPC> =" 'eglot-format-buffer)))))
-
-(use-package gotest
-  :ensure t
-  :after go-mode
-  :config)
-
 ;; Ansi-color
 (use-package ansi-color
   :ensure t
@@ -376,14 +361,16 @@
 
 
 ;; Smerge
-(add-hook
-'smerge-mode-hook
-(lambda()
+(use-package smerge-mode
+  :ensure nil
+  :after evil
+  :hook
+  ((smerge-mode . (lambda()
     (keymap-set evil-normal-state-local-map "<SPC> j" 'smerge-next)
     (keymap-set evil-normal-state-local-map "<SPC> k" 'smerge-prev)
     (keymap-set evil-normal-state-local-map "<SPC> <SPC>" 'smerge-keep-current)
     (keymap-set evil-normal-state-local-map "<SPC> h" 'smerge-keep-other)
-    (keymap-set evil-normal-state-local-map "<SPC> l" 'smerge-keep-mine)))
+    (keymap-set evil-normal-state-local-map "<SPC> l" 'smerge-keep-mine)))))
 
 ;; SLY
 (use-package sly
@@ -392,14 +379,14 @@
 ;; Tree sitter
 (use-package tree-sitter
   :ensure t
+  :hook
+  ((tree-sitter-after-on . tree-sitter-hl-mode))
   :config
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+  (global-tree-sitter-mode))
 
 (use-package tree-sitter-langs
   :ensure t)
 
-;; Window monocle
 (use-package emacs
   :custom
   (tab-always-indent 'complete)
@@ -452,59 +439,54 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
     "h" 'dired-single-up-directory
     "l" 'dired-single-buffer)
 
-(setq dired-guess-shell-alist-user
-      '(("\\.\\(png\\|jpe?g\\|tiff\\)" "feh" "xdg-open")
-        ("\\.\\(mp[34]\\|m4a\\|ogg\\|flac\\|webm\\|mkv\\)" "mplayer" "xdg-open")
-		(".*" "xdg-open"))))
-
+  (setq dired-guess-shell-alist-user
+        '(("\\.\\(png\\|jpe?g\\|tiff\\)" "feh" "xdg-open")
+          ("\\.\\(mp[34]\\|m4a\\|ogg\\|flac\\|webm\\|mkv\\)" "mplayer" "xdg-open")
+	  (".*" "xdg-open"))))
 
 
 (use-package dired-single
-  :ensure t)
+  :ensure t
+  :after dired
+  )
 
 (use-package dired-open
   :ensure t
-  :config
-  ;; Doesn't work as expected!
-  ;(add-to-list 'dired-open-functions #'dired-open-xdg t)
-  (setq dired-open-extensions '(("png" . "feh")
-                                ("mp4" . "mplayer"))))
-
-
+  :after dired
+  :custom
+  (dired-open-extensions '(("png" . "feh")
+                           ("mp4" . "mplayer"))))
 
 
 ;; Eshell
-;; From SystemCrafters
-;; https://github.com/daviwil/emacs-from-scratch/blob/bbfbc77b3afab0c14149e07d0ab08d275d4ba575/Emacs.org#terminals
-(defun dy-configure-eshell ()
-  ;; Save command history when commands are entered
-  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-
-  ;; Truncate buffer for performance
-  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-
-  ;; Bind some useful keys for evil-mode
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
-  (evil-normalize-keymaps)
-
-  (setq eshell-history-size         10000
-        eshell-buffer-maximum-lines 10000
-        eshell-hist-ignoredups t
-        eshell-scroll-to-bottom-on-input t))
-
 (use-package eshell-git-prompt
- :ensure t)
+  :ensure t
+  :after eshell
+  :custom
+  (eshell-git-prompt-use-theme 'powerline))
 
 (use-package eshell
-  :hook (eshell-first-time-mode . dy-configure-eshell)
   :config
+  ;; From SystemCrafters
+  ;; https://github.com/daviwil/emacs-from-scratch/blob/bbfbc77b3afab0c14149e07d0ab08d275d4ba575/Emacs.org#terminals
+  (defun dy-configure-eshell ()
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+    ;; Bind some useful keys for evil-mode
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+    (evil-normalize-keymaps)
+
+    (setq eshell-history-size         10000
+            eshell-buffer-maximum-lines 10000
+            eshell-hist-ignoredups t
+            eshell-scroll-to-bottom-on-input t))
 
   (with-eval-after-load 'esh-opt
     (setq eshell-destroy-buffer-when-process-dies t)
-    (setq eshell-visual-commands '("htop" "zsh" "vi")))
-
-  (eshell-git-prompt-use-theme 'powerline))
+    (setq eshell-visual-commands '("htop" "zsh" "vi"))))
 
 
 ;; Vterm
@@ -554,7 +536,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (use-package nov
   :ensure t
   :config
-   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 
 ;; PDF
 (use-package pdf-tools
@@ -565,51 +547,48 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 ;; Vue
 (use-package vue-mode
   :ensure t
-  :config
-  (setq js-indent-level 2)
-  (setq css-indent-offset 2)
-)
+  :custom
+  (js-indent-level 2)
+  (css-indent-offset 2))
+
 
 ;; Run command
 (use-package run-command
   :ensure t
+  :custom
+  (run-command-recipes '(run-command-recipe-example))
   :config
-    (defun run-command-recipe-example ()
+  (defun run-command-recipe-example ()
     (list
     ;; Run a simple command
     (list :command-name "say-hello"
-            :command-line "echo Hello, World!")))
-    (setq run-command-recipes '(run-command-recipe-example)))
+            :command-line "echo Hello, World!"))))
 
 
 ;; Terraform
 (use-package terraform-mode
-  :ensure t
-)
+  :ensure t)
 
 
 ;; Type script
 (use-package typescript-mode
   :ensure t
-  :config
-  (setq typescript-indent-level 2)
-)
+  :custom
+  (typescript-indent-level 2))
 
 ;; Geiser (guile lisp)
 (use-package geiser
-  :ensure t
-)
+  :ensure t)
 
 (use-package geiser-guile
   :ensure t
+  :custom
+  (geiser-guile-binary "guile3.0")
   :config
-  (setq geiser-guile-binary "guile3.0")
   (when (executable-find "guix")
-  (add-to-list 'geiser-guile-load-path
-              (expand-file-name "~/.config/guix/current/share/guile/site/3.0")
-              (expand-file-name "~/.guix-profile/share/guile/3.0/")
-  ))
-)
+    (add-to-list 'geiser-guile-load-path
+                (expand-file-name "~/.config/guix/current/share/guile/site/3.0")
+                (expand-file-name "~/.guix-profile/share/guile/3.0/"))))
 
 
 ;; Prefect margin (center current screen)
@@ -618,10 +597,14 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   :config
   (perfect-margin-mode 1))
 
-;; Lilypond
-(setq load-path (append (list (expand-file-name "lilypond" init-dir)) load-path))
-(autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
-(add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
-(add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
-(add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 
+;; Lilypond
+(use-package lilypond-mode
+  :ensure nil
+  :load-path (lambda () (expand-file-name "lilypond" init-dir))
+  :defer t
+  :hook
+  (LilyPond-mode . (lambda () (turn-on-font-lock)))
+  :mode
+  (("\\.ly$" . LilyPond-mode)
+   ("\\.ily$" . LilyPond-mode)))

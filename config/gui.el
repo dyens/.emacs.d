@@ -23,17 +23,17 @@
 (use-package ef-themes
   :ensure t
 )
-(load-theme 'ef-maris-light t)
+;; (load-theme 'ef-maris-light t)
+(load-theme 'ef-dream t)
 
 ;; Pretty symbols
 (global-prettify-symbols-mode 1)
 
 ;; Font
 (set-face-attribute 'default nil
-                    :family "Iosevka SS04"
-                    :height 110
-                    :weight 'medium
-                    :width 'normal)
+                    :family "Iosevka Fixed SS04"
+                    :height 113
+                    :weight 'bold)
 
 ;; Display line numbers
 (customize-set-variable 'display-line-numbers-type 'relative)
@@ -55,7 +55,6 @@
 
 ;; Paren mode
 (show-paren-mode)
-
 
 ;; Mode line 
 (defvar-local dy-modeline-major-mode
