@@ -68,6 +68,9 @@
   ;; insert pair
   (keymap-set evil-visual-state-map "<SPC> q" 'dy-insert-pair-completion)
 
+  ;; AVY navication
+  (keymap-set evil-normal-state-map "<SPC> j" 'evil-avy-goto-char-timer)
+
   (defun dy-function-not-found ()
     "Function is not find"
     (interactive)
