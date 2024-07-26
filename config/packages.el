@@ -42,6 +42,9 @@
   ;; C-o defined for jump back
   ;; C-i for jump forward
   (keymap-set evil-normal-state-map "C-i" 'evil-jump-forward)
+  (keymap-set evil-normal-state-map "C-;" 'iedit-mode)
+  (keymap-set evil-insert-state-map "C-;" 'iedit-mode)
+
   (keymap-set evil-normal-state-map "<SPC> f" 'find-file)
   (keymap-set evil-normal-state-map "<SPC> b" 'switch-to-buffer)
   (keymap-set evil-normal-state-map "<SPC> c" 'compile)
