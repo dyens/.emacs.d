@@ -14,7 +14,7 @@
    (keymap-set evil-normal-state-local-map "<SPC> m r" 'rust-run)
    (keymap-set evil-normal-state-local-map "<SPC> T a" 'rust-test)
    (keymap-set evil-normal-state-local-map "<SPC> T b" 'rust-test-buffer)
-   (keymap-set evil-normal-state-local-map "<SPC> =" 'lsp-format-buffer)
+   (keymap-set evil-normal-state-local-map "<SPC> =" 'eglot-format-buffer)
    (keymap-set evil-normal-state-local-map "<SPC> t" 'rust-test-at-point))))
   :config
   ;; For keybindings.

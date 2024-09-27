@@ -36,3 +36,4 @@ copilot.el/
 elpy/
 multisession/
 org-roam.db
+custom-set-vars.el

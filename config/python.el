@@ -62,11 +62,15 @@
 
   ;; Custom functions
   ;; TODO if noqa exist - extend it
+
   (defun dy-python-add-noqa()
     "Add noqa for error string"
     (interactive)
     (save-excursion
-      (let* ((error-string "")
+      (let* (
+             (messages (delq nil (seq-map  #'flycheck-error-id
+                                           (flycheck-overlay-errors-at (point)))))
+             (error-string (string-join (mapcar 'string-trim messages) ","))
              (noqa-mes (format "  # NOQA:%s" error-string)))
         (move-end-of-line nil)
         (insert noqa-mes))))

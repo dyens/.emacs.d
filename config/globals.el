@@ -1,5 +1,9 @@
 (setq init-dir "~/.emacs.d")
 
+;; Set custom set variables path
+(setq custom-file "~/.emacs.d/custom-set-vars.el")
+
+
 ;; Deffered compilation
 ;; https://masteringemacs.org/article/speed-up-emacs-libjansson-native-elisp-compilation
 (setq comp-deferred-compilation t)
