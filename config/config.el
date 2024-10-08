@@ -22,6 +22,9 @@
 ;; Org-mypy
 (load "~/.emacs.d/config/org-mypy.el")
 
+;; Org-k8s
+(load "~/.emacs.d/config/org-k8s.el")
+
 ;; Org
 (load "~/.emacs.d/config/org.el")
 

@@ -40,7 +40,9 @@
      (plantuml . t)
      (C . t)
      (mermaid . t)
-     (mypy . t)))
+     (mypy . t)
+     (k8s . t)
+     (k8s . t)))
 
   (defcustom dy-pomodoro-timer nil
     "Pomodoro timer for agenda tasks")
@@ -53,8 +55,11 @@
   (defun dy-clock-out ()
     "Clock out hook."
     (cancel-timer dy-pomodoro-timer))
-  
-  (add-to-list 'org-src-lang-modes (cons "mypy" 'python)))
+
+  (add-to-list 'org-src-lang-modes (cons "mypy" 'python))
+  (add-to-list 'org-src-lang-modes (cons "k8s" 'yaml))
+  (add-to-list 'org-src-lang-modes (cons "dk8s" 'yaml))
+)
 
 (use-package org-agenda
   :ensure nil
