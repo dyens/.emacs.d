@@ -74,6 +74,9 @@
   ;; AVY navication
   (keymap-set evil-normal-state-map "<SPC> j" 'evil-avy-goto-char-timer)
 
+  ;; kubed
+  (keymap-set evil-normal-state-map "<SPC> k" 'kubed-prefix-map)
+
   (defun dy-function-not-found ()
     "Function is not find"
     (interactive)
@@ -285,6 +288,8 @@
 ;; project.el
 (use-package project
   :after evil
+  :custom
+  (project-vc-merge-submodules nil)
   :config 
   (define-key project-prefix-map (kbd "C") 'dy-run-cmd)
   (keymap-set evil-normal-state-map "<SPC> p" project-prefix-map))
@@ -481,7 +486,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
     ;; Truncate buffer for performance
     (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
     ;; Bind some useful keys for evil-mode
-    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
     (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
     (evil-normalize-keymaps)
 
@@ -492,14 +497,17 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 
   (with-eval-after-load 'esh-opt
     (setq eshell-destroy-buffer-when-process-dies t)
-    (setq eshell-visual-commands '("htop" "zsh" "vi"))))
+    (setq eshell-visual-commands '("htop" "zsh" "vi")))
+
+  (dy-configure-eshell))
 
 
 ;; Vterm
 (use-package vterm
   :ensure t
   :custom
-  (vterm-shell "zsh"))
+  (vterm-shell "zsh")
+  (vterm-timer-delay 0.01))
 
 ;; Multi-Vterm
 (use-package multi-vterm
@@ -614,3 +622,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   :mode
   (("\\.ly$" . LilyPond-mode)
    ("\\.ily$" . LilyPond-mode)))
+
+;; kubed
+(use-package kubed
+  :ensure t)

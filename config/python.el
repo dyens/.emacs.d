@@ -1,4 +1,6 @@
 ;; PDB file view on debug in vterm
+
+;;;#autoload
 (defun dy-pdb-debug-shell-mode-hook ()
   (add-hook
    'comint-output-filter-functions
@@ -32,6 +34,23 @@
   :ensure t
   :after python)
 
+;; Flymake ruff
+(use-package flymake-ruff
+  :ensure t
+  :hook ((python-mode . flymake-ruff-load)
+         (eglot-managed-mode . flymake-ruff-load))
+  :config
+  ;;;#autoload
+  (defun my-filter-eglot-diagnostics (diags)
+      "Drop Pyright 'variable not accessed' notes from DIAGS."
+      (list (seq-remove (lambda (d)
+                          (and (eq (flymake-diagnostic-type d) 'eglot-note)
+                              (s-starts-with? "Pyright:" (flymake-diagnostic-text d))
+                              (s-ends-with? "is not accessed" (flymake-diagnostic-text d))))
+                      (car diags))))
+  
+  (advice-add 'eglot--report-to-flymake :filter-args #'my-filter-eglot-diagnostics))
+
 ;; Python mode
 (use-package python
   :ensure nil
@@ -44,6 +63,7 @@
   (python-shell-enable-font-lock nil)
   :hook
   ((python-mode . dy-python-setup)
+   (python-mode . eglot-ensure)
    (python-mode . (lambda()
     (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)
     (keymap-set evil-visual-state-local-map "<SPC> m a" 'dy-python-dict-kwargs-toogle)
@@ -308,7 +328,7 @@
   (defun pyvenv-workon-local (&optional venv-dir-name)
     "Activate local environment"
     (interactive)
-    (unless venv-dir-name(setq venv-dir-name ".venv"))
+    (unless venv-dir-name (setq venv-dir-name ".venv"))
     (let ((activate-path (format "%s%s" (project-root (project-current)) venv-dir-name)))
       (pyvenv-activate activate-path)))
 
@@ -380,11 +400,11 @@
 (use-package pyenv-mode
   :ensure t)
 
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable)
-  :config
-  (when (load "flycheck" t t)
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode)))
+;; (use-package elpy
+;;   :ensure t
+;;   :init
+;;   (elpy-enable)
+;;   :config
+;;   (when (load "flycheck" t t)
+;;     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+;;     (add-hook 'elpy-mode-hook 'flycheck-mode)))

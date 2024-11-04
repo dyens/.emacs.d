@@ -52,6 +52,9 @@
 ;; GUI
 (load "~/.emacs.d/config/gui.el")
 
+;; eglot
+(load "~/.emacs.d/config/eglot.el")
+
 ;; Server
 ;; (load "~/.emacs.d/config/server.el")
 
