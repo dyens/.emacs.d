@@ -24,7 +24,8 @@
   :ensure t
 )
 ;; (load-theme 'ef-maris-light t)
-(load-theme 'ef-dream t)
+;; (load-theme 'ef-dream t)
+(load-theme 'ef-reverie t)
 
 ;; Pretty symbols
 (global-prettify-symbols-mode 1)

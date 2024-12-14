@@ -121,3 +121,8 @@
   :custom
   (ob-mermaid-cli-path "/home/dyens/.nvm/versions/node/v18.7.0/bin/mmdc"))
 
+
+;; org-krita
+(when (not (require 'org-krita nil 'noerror))
+  (message "Install org-krita")
+  (package-vc-install "https://github.com/lepisma/org-krita"))

@@ -63,7 +63,8 @@
   (python-shell-enable-font-lock nil)
   :hook
   ((python-mode . dy-python-setup)
-   (python-mode . eglot-ensure)
+   ;; (python-mode . eglot-ensure)
+   (python-mode . (lambda ()(ggtags-mode 1)))
    (python-mode . (lambda()
     (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)
     (keymap-set evil-visual-state-local-map "<SPC> m a" 'dy-python-dict-kwargs-toogle)
