@@ -58,6 +58,7 @@
   (keymap-set evil-normal-state-map "<SPC> u" 'universal-argument)
 
   ;; Github jump
+  (require 'dy-git)
   (keymap-set evil-normal-state-map "<SPC> m b" 'dy-open-in-github-branch)
   (keymap-set evil-normal-state-map "<SPC> m B" 'dy-open-in-github-rev)
 
@@ -65,24 +66,29 @@
   (keymap-set evil-visual-state-map "<SPC> m B" 'dy-open-in-github-rev)
 
   ;; fast function
-  (keymap-set evil-normal-state-map "<SPC> ~" 'dy-set-fast-function)
-  (keymap-set evil-visual-state-map "<SPC> ~" 'dy-set-fast-function)
+  (defun dy--function-not-found ()
+    "Function is not find"
+    (interactive)
+  (error "Fast function is not defined: use dy--set-fast-function"))
+
+  (defun dy--set-fast-function (fn_name)
+    "Set some function on <SPC> ` in evil normal state map."
+    (interactive "aBind function name: ")
+    (keymap-set evil-normal-state-map "<SPC> `" fn_name))
+
+  (keymap-set evil-normal-state-map "<SPC> `" 'dy--function-not-found)
+  (keymap-set evil-normal-state-map "<SPC> ~" 'dy--set-fast-function)
+  (keymap-set evil-visual-state-map "<SPC> ~" 'dy--set-fast-function)
 
   ;; insert pair
+  (require 'dy-insert-pair)
   (keymap-set evil-visual-state-map "<SPC> q" 'dy-insert-pair-completion)
 
-  ;; AVY navication
+  ;; AVY navigation
   (keymap-set evil-normal-state-map "<SPC> j" 'evil-avy-goto-char-timer)
 
   ;; kubed
   (keymap-set evil-normal-state-map "<SPC> k" 'kubed-prefix-map)
-
-  (defun dy-function-not-found ()
-    "Function is not find"
-    (interactive)
-  (error "Fast function is not defined: use dy-set-fast-function"))
-
-  (keymap-set evil-normal-state-map "<SPC> `" 'dy-function-not-found)
 
   (defun dy-goto-next-error ()
     "Go to next error not depends from fly-* mode."
@@ -217,6 +223,7 @@
          ("<SPC> g" . magit-status)))
   :config
   ;; (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
+  (require 'dy-string)
   (defun dy-git-commit-setup ()
     (let ((current-branch-name (upcase (magit-get-current-branch))))
       (if (string-match-p (regexp-quote "WEBDEV") current-branch-name)
@@ -291,7 +298,7 @@
   :custom
   (project-vc-merge-submodules nil)
   :config 
-  (define-key project-prefix-map (kbd "C") 'dy-run-cmd)
+
   (keymap-set evil-normal-state-map "<SPC> p" project-prefix-map))
 
 ;; Docker
@@ -366,6 +373,7 @@
            ("<SPC> r r" . dy-google-translate)
            ("<SPC> r R" . dy-google-translate-reverse)))
     :config
+    (require 'dy-translate)
     ;; https://github.com/atykhonov/google-translate/issues/52#issuecomment-727920888
     (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
 
@@ -626,3 +634,5 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 ;; kubed
 (use-package kubed
   :ensure t)
+
+(provide 'dy-packages)

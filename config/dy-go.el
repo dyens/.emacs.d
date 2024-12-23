@@ -15,3 +15,4 @@
   :after go-mode
   :config)
 
+(provide 'dy-go)

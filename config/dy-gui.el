@@ -23,9 +23,10 @@
 (use-package ef-themes
   :ensure t
 )
-;; (load-theme 'ef-maris-light t)
+
+(load-theme 'ef-maris-light t)
 ;; (load-theme 'ef-dream t)
-(load-theme 'ef-reverie t)
+;; (load-theme 'ef-reverie t)
 
 ;; Pretty symbols
 (global-prettify-symbols-mode 1)
@@ -46,10 +47,10 @@
 
 
 ;; Disable bars
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(display-time-mode -1)
+;; (menu-bar-mode -1)
+;; (tool-bar-mode -1)
+;; (scroll-bar-mode -1)
+;; (display-time-mode -1)
 
 ;; Fix gaps in DWM
 (setq frame-resize-pixelwise t)
@@ -109,3 +110,5 @@
                 dy-modeline-major-mode
                 dy-modeline-branch-name
                 mode-line-misc-info mode-line-end-spaces))
+
+(provide 'dy-gui)

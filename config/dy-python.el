@@ -409,3 +409,5 @@
 ;;   (when (load "flycheck" t t)
 ;;     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
 ;;     (add-hook 'elpy-mode-hook 'flycheck-mode)))
+
+(provide 'dy-python)

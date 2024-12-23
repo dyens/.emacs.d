@@ -54,3 +54,5 @@
 ;; rustic
 (use-package rustic
   :ensure t)
+
+(provide 'dy-rust)

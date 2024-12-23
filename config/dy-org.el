@@ -126,3 +126,5 @@
 (when (not (require 'org-krita nil 'noerror))
   (message "Install org-krita")
   (package-vc-install "https://github.com/lepisma/org-krita"))
+
+(provide 'dy-org)

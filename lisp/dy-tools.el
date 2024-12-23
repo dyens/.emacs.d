@@ -1,99 +1,7 @@
-;; From https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
-(defconst dy-insert-pair-alist
-'(("' Single quote" . (39 39))           ; ' '
-    ("\" Double quotes" . (34 34))         ; " "
-    ("` Elisp quote" . (96 39))            ; ` '
-    ("‘ Single apostrophe" . (8216 8217))  ; ‘ ’
-    ("“ Double apostrophes" . (8220 8221)) ; “ ”
-    ("( Parentheses" . (40 41))            ; ( )
-    ("{ Curly brackets" . (123 125))       ; { }
-    ("[ Square brackets" . (91 93))        ; [ ]
-    ("< Angled brackets" . (60 62))        ; < >
-    ("« tree brakets" . (171 187)))        ; « »
-"Alist of pairs for use with.")
-
-;; From https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
-(defun dy-insert-pair-completion (&optional arg)
-"Insert pair from."
-(interactive "P")
-(let* ((data dy-insert-pair-alist)
-        (chars (mapcar #'car data))
-        (choice (completing-read "Select character: " chars nil t))
-        (left (cadr (assoc choice data)))
-        (right (caddr (assoc choice data))))
-    (insert-pair arg left right)))
-
-(defun dy-capitalize-first-char (&optional string)
-  "Capitalize only the first character of the input STRING."
-  (when (and string (> (length string) 0))
-    (let ((first-char (substring string nil 1))
-          (rest-str   (substring string 1)))
-      (concat (capitalize first-char) rest-str))))
-
-
-(defun dy-run-cmd (cmd)
-  "Run command defined in dy-project-commands"
-  (interactive (list (completing-read "CMD: " dy-project-commands)))
-  (let ((default-directory (project-root (project-current t)))
-        (compilation-buffer-name-function
-         (or project-compilation-buffer-name-function
-             compilation-buffer-name-function)))
-    (compile cmd))
-)
-
-(defun dy-reload-dir-locals-for-current-buffer ()
-  "reload dir locals for the current buffer"
-  (interactive)
-  (let ((enable-local-variables :all))
-    (hack-dir-local-variables-non-file-buffer)))
-
-(defun dy-reload-dir-locals-for-all-buffer-in-this-directory ()
-  "For every buffer with the same `default-directory` as the 
-current buffer's, reload dir-locals."
-  (interactive)
-  (let ((dir default-directory))
-    (dolist (buffer (buffer-list))
-      (with-current-buffer buffer
-        (when (equal default-directory dir)
-          (dy-reload-dir-locals-for-current-buffer))))))
-
-(defun dy-erc ()
-  "Run erc. Default erc does not work."
-  (interactive)
-   (erc :server "irc.libera.chat" :full-name "Alexander Kapustin" :user "dyens"))
-
-(defun dy-notify (text &optional body)
-  "Desktop notify.
-
-  After next building emacs (build with bus) use:
-      (notifications-notify :text \"test\")
-  "
-  (interactive)
-  (unless body (setq body ""))
-  (call-process "notify-send" nil nil nil
-		"-t" "5000"
-		"-i" "emacs"
-		text
-		body)
-
-  (play-sound-file "/home/dyens/.emacs.d/alarm.wav"))
-
-(defun dy-screaming-to-camel (s)
-  "Convert screaming to camel case.
-  Example:
-      HELLO_WORLD -> HelloWorld
-  " 
-  (mapconcat 'capitalize (split-string s "_") ""))
-
-(defun dy-set-fast-function (fn_name)
-  "Set some function on <SPC> ` in evil normal state map."
-  (interactive "aBind function name: ")
-  (keymap-set evil-normal-state-map "<SPC> `" fn_name)
-  )
-
 ;; https://protesilaos.com/codelog/2021-07-24-emacs-misc-custom-commands/
 ;; A variant of this is present in the crux.el package by Bozhidar
 ;; Batsov.
+;;;###autoload
 (defun dy-rename-file-and-buffer (name)
   "Apply NAME to current file and rename its buffer.
 Do not try to make a new directory or anything fancy."
@@ -105,34 +13,8 @@ Do not try to make a new directory or anything fancy."
       (rename-file file name))
     (set-visited-file-name name t t)))
 
-(defun dy-google-translate ()
-  (interactive)
-  (let* ((langs (google-translate-read-args nil nil))
-         (source-language (car langs))
-         (target-language (cadr langs)))
-    (if (use-region-p)
-	(google-translate-translate
-	 source-language target-language
-	 (buffer-substring-no-properties (region-beginning) (region-end)))
-      (google-translate-at-point))))
 
-
-(defun dy-google-translate-reverse ()
-  (interactive)
-  (let* ((langs (google-translate-read-args nil nil))
-         (source-language (cadr langs))
-         (target-language (car langs))
-	 (p1 (region-beginning))
-	 (p2 (region-end)))
-    (if (use-region-p)
-	(google-translate-translate
-	 source-language target-language
-	 (buffer-substring-no-properties p1 p2))
-      (google-translate-at-point-reverse))))
-
-
-
-
+;;;###autoload
 (defun dy-include-cpp-header ()
   "Include cpp header."
   (interactive)
@@ -144,93 +26,13 @@ Do not try to make a new directory or anything fancy."
       (insert (format "\n#endif //%s" bname)))))
 
 
-(defun dy-get-git-origin-url ()
-  "Return current git origin url"
-  (let ((url (magit-git-output "config" "--get" "remote.origin.url")))
-    (cond
-     ((string-match "git@\\(.*\\):\\(.*\\)\.git" url) (format "https://%s/%s" (match-string 1 url) (match-string 2 url)))
-     ((string-match "\\(.*\\)\.git" url) (match-string 1 url) )
-     (t (error "Can not detect origin"))
-     )))
-
-
-(defun dy-open-in-github (github-url  &optional mode)
-  "Open source file in github."
-  (interactive)
-  (let (
-	(github-url (if (null github-url) (dy-get-git-origin-url) (github-url)))
-	(github-path
-	 (cond
-	  ((eq mode nil) (magit-get-current-branch))
-	  ((eq mode 'dev) "dev")
-	  ((eq mode 'branch) (magit-get-current-branch))
-	  ((eq mode 'rev) (magit-rev-abbrev "HEAD"))))
-
-	(project-file (magit-file-relative-name ( buffer-file-name)) )
-	(highlight
-	 (if (use-region-p)
-             (let ((l1 (line-number-at-pos (region-beginning)))
-                   (l2 (line-number-at-pos (- (region-end) 1))))
-               (format "#L%d-L%d" l1 l2))
-           ""))
-	(url))
-    (setq url (format "%s/blob/%s/%s%s" github-url github-path project-file highlight))
-    (shell-command (concat "firefox " url))))
-
-(defun dy-open-in-github-branch()
-    (interactive)
-    (dy-open-in-github nil 'branch))
-
-(defun dy-open-in-github-rev()
-    (interactive)
-    (dy-open-in-github nil 'rev))
-
-(defun dy-args-to-attributes ()
-  "Add class attributes from method args."
-  (interactive)
-  (save-excursion
-    (re-search-backward "def \\([a-zA-Z0-9_]*\\)(\\([a-zA-Z0-9 \n\t_,]*\\)):")
-    (let* ((args-string (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
-	   (args (mapcar 's-trim  (s-split ","  args-string)))
-	   (not-self-args (cdr args)))
-      
-      (search-forward ":")
-      (mapc (lambda (arg)
-	      (if (not (= (length arg) 0 ))
-		  (progn
-		    (evil-open-below 0)
-		    (insert (format "self._%s = %s" arg arg))
-		    (evil-normal-state)
-		    ))
-	      )
-	    not-self-args))))
-
-;; Usefull function for template subs
-(defun dy-template-sub ()
-  (interactive)
-  (let ((tmpl "
-if %aExists && vm2.Initialization().%b() != %a {
-	t.Fatalf(\"got Unexpected output from the %b (%%s) init field \", vm2.Initialization().%b())
-}
-  ")
-  (var (thing-at-point 'word 'no-properties))
-  (current (point))
-  )
-  (goto-char (point-max))
-  (insert (format-spec tmpl `((?a . ,var) (?b . ,(upcase-initials var)))))
-  (goto-char current)
-  ))
-
-
-
 ;; sudo tail -n 0 -f /var/log/messages > audit.txt
 ;; :v/SECC/d - filter only seccomp messages
 ;; sed -e 's/.*syscall=\(.*\) compat.*/\1/g' audit.txt | sort | uniq > audit_keys.txt
 ;; 
 ;; sed -e '/syscall/!d'   -e 's/.*syscall=\(.*\) compat.*/\1/g' dev1 | sort |uniq
 ;; scp ai.json root@ai-dev1:/var/lib/kubelet/seccomp/ai.json
-
-
+;;;###autoload
 (defun dy-add-syscal-names ()
   "Add syscall names for numbers
     from 
@@ -247,16 +49,13 @@ if %aExists && vm2.Initialization().%b() != %a {
 	 (start (region-beginning))
 	 (end (region-end))
 	 (syscalls-string (buffer-substring start end))
-	 (syscalls (read (format "(%s)" syscalls-string)))
-	 )
+	 (syscalls (read (format "(%s)" syscalls-string))))
     (delete-region start end)
     (mapc
      (lambda (x)
        (insert (format "%s %s" x (gethash x linux-sys-calls) ) )
-       (newline)
-       )
-     syscalls
-     )))
+       (newline))
+     syscalls)))
 
 
 
@@ -663,76 +462,5 @@ if %aExists && vm2.Initialization().%b() != %a {
 		     547 "compat_sys_pwritev64v2"
 )))
 
+(provide 'dy-tools)
 
-(defun random-alnum ()
-  (let* ((alnum "abcdefghijklmnopqrstuvwxyz0123456789")
-         (i (% (abs (random)) (length alnum))))
-    (substring alnum i (1+ i))))
-
-(defun insert-random-string (len)
-  "Insert random string.
-   Use c-U 10 M-x insert-random-string
-   "
-  (interactive "p")
-  (message (format "%d" len))
-  (dotimes (i len)
-  (insert (random-alnum))))
-
-;; Make http requests in emacs
-
-(defvar token-oauth nil
-  "Oauth2 token")
-
-(defun dy-request ()
-  "Make url retrieve."
-  (let ((buf (url-retrieve-synchronously url))
-        content)
-    (setq content (get-buffer-string  buf))
-    (with-current-buffer (get-buffer-create "*HTTP-RESULT*")
-      (erase-buffer)
-      (insert (decode-coding-string content 'utf-8)))))
-   
-
-
-(defun dy-set-ift1-token ()
-  "ift1 oauth2 token"
-  (interactive)
-  (setq token-oauth
-    (oauth2-auth
-            "https://ift1-auth.apps.cloud.k8s.test.01.vmw.t1.loc/auth/realms/Portal/protocol/openid-connect/auth"
-            "https://ift1-auth.apps.cloud.k8s.test.01.vmw.t1.loc/auth/realms/Portal/protocol/openid-connect/token"
-            "portal-front"
-            ""
-            "openid"
-            ""
-            "https://ift1-portal-front.apps.cloud.k8s.test.01.vmw.t1.loc")))
- 
-
-
-(defun dy-set-dev-token ()
-  "dev oauth2 token"
-  (interactive)
-  (setq token-oauth
-    (oauth2-auth
-            "https://d2-auth.apps.cloud.k8s.dev.01.vmw.t1.loc/auth/realms/Portal/protocol/openid-connect/auth"
-            "https://d2-auth.apps.cloud.k8s.dev.01.vmw.t1.loc/auth/realms/Portal/protocol/openid-connect/token"
-            "portal-front"
-            ""
-            "openid"
-            ""
-            "https://d2-portal-front.apps.cloud.k8s.dev.01.vmw.t1.loc")))
- 
-
-(defun dy-oauth-request-example()
-(let ((url "https://d2-api.apps.cloud.k8s.dev.01.vmw.t1.loc/ai-api/api/v1/projects/proj-123/order-service/orders")
-      (url-request-method "GET")
-      (url-request-extra-headers
-        '(("Content-Type" . "application/json")))
-       (url-request-data
-        (encode-coding-string
-         (json-encode
-          '(:messages [(:role "user"
-                        :content "qual é o melhor editor, vim ou emacs?")]))
-         'utf-8)))
-  (dy-oauth-request))
-)

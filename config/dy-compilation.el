@@ -12,6 +12,7 @@
   (defcustom dy-notify-after-compilation nil "Notifcation after compilation" :type 'hook :options '(t nil) :group 'dy-settings)
   (custom-set-variables '(dy-notify-after-compilation t))
 
+  (require 'dy-notify)
   (defun dy-local-notify-compilation-finish (buffer status)
     "Notify compilation finish."
     (if dy-notify-after-compilation
@@ -20,3 +21,5 @@
   (setq compilation-finish-functions
         (append compilation-finish-functions
             '(dy-local-notify-compilation-finish))))
+
+(provide 'dy-compilation)

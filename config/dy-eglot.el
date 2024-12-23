@@ -5,3 +5,5 @@
          :ensure nil
          :autoload eglot-booster-mode
          :init (eglot-booster-mode 1))
+
+(provide 'dy-eglot)

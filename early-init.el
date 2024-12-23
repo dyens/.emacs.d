@@ -15,3 +15,10 @@
                    gc-cons-threshold 800000
                    gc-cons-percentage 0.1)) t)
 
+
+;; Disable bars
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(display-time-mode -1)
+

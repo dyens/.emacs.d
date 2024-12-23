@@ -92,8 +92,4 @@
                          '((reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
 
-;; ggtags
-(use-package ggtags
-  :ensure nil
-  :custom
-  (ggtags-extra-args '("--accept-dotfiles")))
+(provide 'dy-globals)
