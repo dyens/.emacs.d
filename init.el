@@ -22,3 +22,4 @@
 (require 'dy-packages)
 (require 'dy-python)
 (require 'dy-tools)
+(require 'dy-macros)

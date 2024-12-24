@@ -88,7 +88,7 @@
   "Return VC branch name."
   (let* ((file (buffer-file-name))
          (backend (vc-backend file)))
-  (when-let ((backend backend) ; backend should not be nil
+  (when-let* ((backend backend) ; backend should not be nil
              (rev (vc-working-revision file backend))
              (branch (or (vc-git--symbolic-ref file)
                          (substring rev 0 7))))
