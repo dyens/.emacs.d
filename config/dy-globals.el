@@ -92,4 +92,14 @@
                          '((reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
 
+;; Transparent
+(set-frame-parameter nil 'alpha-background 100)
+(add-to-list 'default-frame-alist '(alpha-background . 100))
+
+;; GGtags
+(use-package ggtags
+  :ensure t
+  :config
+  (setq ggtags-sort-by-nearness t))
+
 (provide 'dy-globals)

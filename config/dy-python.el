@@ -61,6 +61,7 @@
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "-i --simple-prompt")
   (python-shell-enable-font-lock nil)
+  (compilation-scroll-output t)
   :hook
   ((python-mode . dy-python-setup)
    ;; (python-mode . eglot-ensure)

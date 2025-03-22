@@ -14,25 +14,29 @@
 ;;; Super word mode
 (superword-mode t)
 
+
 ; Evil mode
-(setq evil-want-C-i-jump nil)
-;; for work with abc_abc words
-(with-eval-after-load 'evil
-    (defalias #'forward-evil-word #'forward-evil-symbol)
-    ;; make evil-search-word look for symbol rather than word boundaries
-    (setq-default evil-symbol-word-search t))
-
-
 (use-package evil
   :ensure t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
+  (setq evil-want-C-i-jump nil)
+  ;; use f t cross lines
+  (setq evil-cross-lines t)
   :custom
   (evil-vsplit-window-right t)
   (evil-split-window-below t)
   (evil-want-C-i-jump nil)
   :config 
+  ;; for work with abc_abc words
+  (with-eval-after-load 'evil
+      (defalias #'forward-evil-word #'forward-evil-symbol)
+      ;; make evil-search-word look for symbol rather than word boundaries
+      (setq-default evil-symbol-word-search t))
+
+
+
   ;; Put a cursor to a new window
   ;; Fix org tab key
   (evil-mode 1)
@@ -304,7 +308,9 @@
 ;; Docker
 (use-package dockerfile-mode
   :ensure t
-  :mode ("\\Dockerfile\\'" . dockerfile-mode))
+  :mode ("\\Dockerfile\\'" . dockerfile-mode)
+  :config
+  (add-hook 'dockerfile-mode-hook 'flymake-mode))
 
 ;; Which-key
 (use-package which-key
@@ -513,8 +519,14 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 ;; Vterm
 (use-package vterm
   :ensure t
+  :hook
+  (vterm-mode . (lambda () (display-fill-column-indicator-mode -1)))
   :custom
-  (vterm-shell "zsh")
+  ;; https://github.com/akermu/emacs-libvterm/issues/179#issuecomment-1045331359
+  ;; Require screen and in .screenrc:
+  ;; termcapinfo xterm* ti@:te@
+  (vterm-shell "screen")
+  ;; (vterm-shell "zsh")
   (vterm-timer-delay 0.01))
 
 ;; Multi-Vterm
@@ -617,7 +629,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (use-package perfect-margin
   :ensure t
   :config
-  (perfect-margin-mode 1))
+  (perfect-margin-mode nil))
 
 
 ;; Lilypond
@@ -634,5 +646,26 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 ;; kubed
 (use-package kubed
   :ensure t)
+
+;; elfeed
+(use-package elfeed
+  :ensure t
+  :custom
+  (elfeed-db-directory
+   (expand-file-name "elfeed" user-emacs-directory))
+  (elfeed-show-entry-switch 'display-buffer)
+  (elfeed-feeds '(
+                  ("https://www.reddit.com/r/linux.rss" reddit linux)
+                  ("https://habr.com/ru/rss/flows/develop/articles/?fl=ru" harbor)
+                  ("https://www.linux.org.ru/section-rss.jsp?section=1" linux lor)
+                  ("https://www.linux.org.ru/section-rss.jsp?section=3" linux lor)
+                  )))
+
+;; hadolint flymake (dockerfile checks)
+(use-package flymake-hadolint
+  :ensure t
+  :custom
+  (add-hook 'dockerfile-mode-hook #'flymake-hadolint-setup)
+  )
 
 (provide 'dy-packages)
