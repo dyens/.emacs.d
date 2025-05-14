@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;;   ;; First sudo dnf install maildir-utils
 ;;   ;; Setup mbrsync
 ;;   ;; Then init mu

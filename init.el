@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Use package
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -25,6 +26,7 @@
 (require 'dy-macros)
 (require 'dy-kaas)
 (require 'dy-ellama)
+(require 'dy-direnv)
 
 
 

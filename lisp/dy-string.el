@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (defun dy-capitalize-first-char (&optional string)
   "Capitalize only the first character of the input STRING."
   (when (and string (> (length string) 0))

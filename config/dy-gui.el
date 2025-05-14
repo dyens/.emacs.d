@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Themes
 (defun dy-modus-theme () 
   (setq modus-themes-italic-constructs t

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; https://protesilaos.com/codelog/2021-07-24-emacs-misc-custom-commands/
 ;; A variant of this is present in the crux.el package by Bozhidar
 ;; Batsov.

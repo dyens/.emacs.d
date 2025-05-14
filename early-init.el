@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Make startup faster
 (defvar file-name-handler-alist-old file-name-handler-alist)
 

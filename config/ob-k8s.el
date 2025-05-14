@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Org k8s
 (require 'ob)
 (require 'ob-eval)

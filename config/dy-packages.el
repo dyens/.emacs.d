@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; String-inflection
 (use-package string-inflection
   :ensure t)
@@ -28,6 +29,9 @@
   (evil-vsplit-window-right t)
   (evil-split-window-below t)
   (evil-want-C-i-jump nil)
+  :hook
+  ((js-json-mode . (lambda ()
+    (keymap-set evil-normal-state-local-map "<SPC> =" 'json-pretty-print-buffer))))
   :config 
   ;; for work with abc_abc words
   (with-eval-after-load 'evil
@@ -269,6 +273,22 @@
   (add-hook 'git-commit-setup-hook 'dy-git-commit-setup))
 
 
+;; Forge
+(use-package forge
+  :after magit
+  :ensure t
+  :hook
+  ((forge-pullreq-mode . (lambda () (keymap-set forge-pullreq-mode-map "g x" 'browse-url))))
+  ;; (keymap-unset  forge-common-map "g x" )
+  :config
+  ;; Add qs github acc
+  (push 
+    '("gitlab-dev.t1.cloud"
+      "gitlab-dev.t1.cloud/api/v4"
+      "gitlab-dev.t1.cloud"
+    forge-gitlab-repository) forge-alist))
+
+
 ;; Corfu (replace company mode)
 (use-package corfu
   :ensure t
@@ -402,15 +422,22 @@
   :ensure t)
 
 ;; Tree sitter
-(use-package tree-sitter
-  :ensure t
-  :hook
-  ((tree-sitter-after-on . tree-sitter-hl-mode))
-  :config
-  (global-tree-sitter-mode))
 
-(use-package tree-sitter-langs
-  :ensure t)
+(setq major-mode-remap-alist
+    '((python-mode . python-ts-mode)))
+
+;; (use-package tree-sitter
+;;   :ensure t
+;;   :hook
+;;   ((tree-sitter-after-on . tree-sitter-hl-mode))
+;;   :config
+;;   (global-tree-sitter-mode)
+;;   (setq major-mode-remap-alist
+;;         '((python-mode . python-ts-mode)))
+;;   )
+;; 
+;; (use-package tree-sitter-langs
+;;   :ensure t)
 
 (use-package emacs
   :custom

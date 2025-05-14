@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (setq init-dir "~/.emacs.d")
 
 ;; Set custom set variables path

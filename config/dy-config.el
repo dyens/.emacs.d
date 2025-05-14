@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; ;; Globals
 ;; (load "~/.emacs.d/config/globals.el")
 

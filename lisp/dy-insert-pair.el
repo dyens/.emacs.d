@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; From https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
 (defconst dy-insert-pair-alist
 '(("' Single quote" . (39 39))           ; ' '

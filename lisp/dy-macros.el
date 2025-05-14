@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; F3(c-x () start macros
 ;; F4(c-x )) end macros
 ;; F4(c-x e) execute macros

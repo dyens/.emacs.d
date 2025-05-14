@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; GO
 (use-package go-mode
   :ensure t

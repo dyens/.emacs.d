@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Clang-Format
 ;; clang-format --style=google --dump-config > .clang-format 
 (use-package clang-format

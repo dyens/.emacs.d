@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;;;###autoload
 (defun dy-google-translate ()
   (interactive)

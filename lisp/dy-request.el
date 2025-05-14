@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (defun dy-request ()
   "Make url retrieve."
   (let ((buf (url-retrieve-synchronously url))

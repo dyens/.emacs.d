@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (defun kaas-create-config (file proxy-url)
   (find-file file)
   (delete-region (point-min) (point-max))

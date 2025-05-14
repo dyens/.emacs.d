@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Org mypy
 (require 'ob)
 (require 'ob-eval)

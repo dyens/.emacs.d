@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (defun dy-get-git-origin-url ()
   "Return current git origin url"
   (let ((url (magit-git-output "config" "--get" "remote.origin.url")))

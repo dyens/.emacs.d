@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; PDB file view on debug in vterm
 
 ;;;#autoload
@@ -63,10 +64,10 @@
   (python-shell-enable-font-lock nil)
   (compilation-scroll-output t)
   :hook
-  ((python-mode . dy-python-setup)
-   ;; (python-mode . eglot-ensure)
-   (python-mode . (lambda ()(ggtags-mode 1)))
-   (python-mode . (lambda()
+  ((python-ts-mode . dy-python-setup)
+   (python-ts-mode . eglot-ensure)
+   ;; (python-mode . (lambda ()(ggtags-mode 1)))
+   (python-ts-mode . (lambda()
     (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)
     (keymap-set evil-visual-state-local-map "<SPC> m a" 'dy-python-dict-kwargs-toogle)
     (keymap-set evil-normal-state-local-map "<SPC> m i" 'dy-python-add-noqa)
@@ -362,18 +363,27 @@
   :ensure t
   :after python
   :hook
-  ((python-mode . (lambda()
+  ((python-ts-mode . (lambda()
    (keymap-set evil-normal-state-local-map "<SPC> t" 'dy-pytest-one)
    (keymap-set evil-normal-state-local-map "<SPC> T a" 'dy-pytest-all)
    (keymap-set evil-normal-state-local-map "<SPC> T b" 'dy-pytest-module)
    (keymap-set evil-normal-state-local-map "<SPC> T p" 'pytest-pdb-one)
-   (keymap-set evil-normal-state-local-map "<SPC> T T" 'pytest-again))))
+   (keymap-set evil-normal-state-local-map "<SPC> T T" 'pytest-again)
+   (keymap-set evil-normal-state-local-map "K" 'toggle-eldoc-doc-buffer))))
   :custom
   (pytest-project-root-files '("setup.py" ".hg" ".git"))
   :config
   ;; Custom variables
   (defcustom dy-pytest-arguments "--disable-warnings -x --ff"
     "Pytest run arguments.")
+
+  (defun toggle-eldoc-doc-buffer ()
+  "Toggle the *eldoc* documentation buffer."
+  (interactive)
+  (let ((win (get-buffer-window "*eldoc*")))
+      (if win
+          (delete-window win)
+        (eldoc-doc-buffer t))))
 
   (defun dy-pytest-one()
     (interactive)

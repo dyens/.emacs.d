@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (defun dy-notify (text &optional body)
   "Desktop notify.
 
