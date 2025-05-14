@@ -37,3 +37,10 @@ elpy/
 multisession/
 org-roam.db
 custom-set-vars.el
+elfeed/
+ellama-sessions/
+history
+notes
+ielm-history.eld
+oauth2.plstore
+tree-sitter/
