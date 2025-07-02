@@ -66,6 +66,7 @@
   :hook
   ((python-ts-mode . dy-python-setup)
    (python-ts-mode . eglot-ensure)
+   (python-ts-mode . flyspell-prog-mode)
    ;; (python-mode . (lambda ()(ggtags-mode 1)))
    (python-ts-mode . (lambda()
     (keymap-set evil-normal-state-local-map "<SPC> m d" 'dy-python-create-docstring)

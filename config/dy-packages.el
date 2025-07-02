@@ -677,6 +677,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 ;; elfeed
 (use-package elfeed
   :ensure t
+  :config
   :custom
   (elfeed-db-directory
    (expand-file-name "elfeed" user-emacs-directory))

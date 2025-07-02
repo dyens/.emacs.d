@@ -27,6 +27,7 @@
 (require 'dy-kaas)
 (require 'dy-ellama)
 (require 'dy-direnv)
+(require 'dy-transient)
 
 
 
