@@ -34,11 +34,12 @@
 ;;   (goto-line 5)
 ;;   (insert (format "    proxy-url: %s\n" proxy-url)))
 ;; 
-;; (defun kaas-user-config ()
-;;   (interactive)
-;;   (let* ((user-kube-secret (s-trim (shell-command-to-string "kubectl get secrets | grep cluster.x-k8s.io/secret | grep kubeconfig | awk  '{print $1}'" )))
-;;          (kube-config (shell-command-to-string (format "kubectl get secrets %s  -o jsonpath='{.data.value}' | base64 -d" user-kube-secret))))
-;;     (f-write-text kube-config 'utf-8 "/home/dyens/k8s/kaasuser")))
+(defun kaas-user-config ()
+  (interactive)
+  (error "deprecated")
+  (let* ((user-kube-secret (s-trim (shell-command-to-string "kubectl get secrets | grep cluster.x-k8s.io/secret | grep kubeconfig | awk  '{print $1}'" )))
+         (kube-config (shell-command-to-string (format "kubectl get secrets %s  -o jsonpath='{.data.value}' | base64 -d" user-kube-secret))))
+    (f-write-text kube-config 'utf-8 "/home/dyens/k8s/kaasuser")))
 ;; 
 ;; 
 ;; 
@@ -117,8 +118,18 @@
          (auth-secret (car (auth-source-search  :host (get-hostname-from-url url))))
          (user (plist-get auth-secret :user))
          (get-password (plist-get auth-secret :secret))
-         (password (funcall get-password)))
-    (kill-new 
-     (format "vault login -address %s -method=userpass username=%s password=%s" url user password))))
+         (password (funcall get-password))
+         (cmd (format "vault login -address %s -method=userpass username=%s password=%s" url user password)))
+    (kill-new  cmd)
+    cmd))
+
+(defun get-kaas-item-id (url)
+  (interactive)
+  (kill-new
+   (s-trim (shell-command-to-string (format "cd /home/dyens/dev/croc/t1 && uv run python get_kaas_id.py \"%s\"" url)))))
+
+
+;; (get-kaas-item-id "https://d3-portal-front.portal.cloud-d3.k8s.dev.01.vmw.t1.loc/managed_kaas/f1aecbe9-9cbd-48aa-ab03-12d1f915e91b?page=0&perPage=10&context=proj-d3nfsadqc11w1np&type=project&org=org-pssadbjc")
+
 
 (provide 'dy-kaas)

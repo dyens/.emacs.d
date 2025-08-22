@@ -54,6 +54,8 @@
 
 ;; rustic
 (use-package rustic
-  :ensure t)
+  :ensure t
+  :config
+  (setq rustic-lsp-client 'eglot))
 
 (provide 'dy-rust)

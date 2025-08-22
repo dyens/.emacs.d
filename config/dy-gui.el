@@ -25,7 +25,7 @@
   :ensure t
 )
 
-(load-theme 'ef-maris-light t)
+(load-theme 'ef-symbiosis t)
 ;; (load-theme 'ef-dream t)
 ;; (load-theme 'ef-reverie t)
 

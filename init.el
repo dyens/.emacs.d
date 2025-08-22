@@ -28,6 +28,8 @@
 (require 'dy-ellama)
 (require 'dy-direnv)
 (require 'dy-transient)
+(require 'dy-rust)
+(require 'dy-http)
 
 
 

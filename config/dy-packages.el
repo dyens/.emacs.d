@@ -322,7 +322,10 @@
   :custom
   (project-vc-merge-submodules nil)
   :config 
+  (defun dy-project-compilation-buffer-name-function (name-of-mode)
+    (format "*compilation: %s" (project-name (project-current))))
 
+  (setq project-compilation-buffer-name-function #'dy-project-compilation-buffer-name-function)
   (keymap-set evil-normal-state-map "<SPC> p" project-prefix-map))
 
 ;; Docker
@@ -688,12 +691,13 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
                   ("https://www.linux.org.ru/section-rss.jsp?section=1" linux lor)
                   ("https://www.linux.org.ru/section-rss.jsp?section=3" linux lor)
                   )))
-
 ;; hadolint flymake (dockerfile checks)
+
 (use-package flymake-hadolint
   :ensure t
   :custom
   (add-hook 'dockerfile-mode-hook #'flymake-hadolint-setup)
-  )
+ )
+
 
 (provide 'dy-packages)
