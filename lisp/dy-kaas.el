@@ -125,11 +125,11 @@
 
 (defun get-kaas-item-id (url)
   (interactive)
-  (kill-new
-   (s-trim (shell-command-to-string (format "cd /home/dyens/dev/croc/t1 && uv run python get_kaas_id.py \"%s\"" url)))))
+  (with-environment-variables (("VIRTUAL_ENV" "/home/dyens/dev/croc/t1/.venv"))
+    (let ((item-id (s-trim (shell-command-to-string (format "cd /home/dyens/dev/croc/t1 && uv run python get_kaas_id.py \"%s\"" url)))))
+    (kill-new item-id)
+    item-id)))
 
-
-;; (get-kaas-item-id "https://d3-portal-front.portal.cloud-d3.k8s.dev.01.vmw.t1.loc/managed_kaas/f1aecbe9-9cbd-48aa-ab03-12d1f915e91b?page=0&perPage=10&context=proj-d3nfsadqc11w1np&type=project&org=org-pssadbjc")
-
+;; (get-and-save-kubeconfig 'd3 (get-kaas-item-id "https://d3-portal-front.portal.cloud-d3.k8s.dev.01.vmw.t1.loc/managed_kaas/d36c7e6a-8b8c-4c4b-970e-61fbc77e8acc?page=0&perPage=25&context=proj-dn9anix1w0txl9v&type=project&org=org-ltole97t&tab=information"))
 
 (provide 'dy-kaas)

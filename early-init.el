@@ -1,5 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 ;; Make startup faster
+
+(setq url-gateway-method 'socks)
+(setq socks-server '("Default server" "127.0.0.1" 10808 5))
+
 (defvar file-name-handler-alist-old file-name-handler-alist)
 
 (setq package-enable-at-startup nil

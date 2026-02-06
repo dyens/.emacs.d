@@ -42,15 +42,16 @@
          (eglot-managed-mode . flymake-ruff-load))
   :config
   ;;;#autoload
-  (defun my-filter-eglot-diagnostics (diags)
-      "Drop Pyright 'variable not accessed' notes from DIAGS."
-      (list (seq-remove (lambda (d)
-                          (and (eq (flymake-diagnostic-type d) 'eglot-note)
-                              (s-starts-with? "Pyright:" (flymake-diagnostic-text d))
-                              (s-ends-with? "is not accessed" (flymake-diagnostic-text d))))
-                      (car diags))))
+  ;; (defun my-filter-eglot-diagnostics (diags)
+  ;;     "Drop Pyright 'variable not accessed' notes from DIAGS."
+  ;;     (list (seq-remove (lambda (d)
+  ;;                         (and (eq (flymake-diagnostic-type d) 'eglot-note)
+  ;;                             (s-starts-with? "Pyright:" (flymake-diagnostic-text d))
+  ;;                             (s-ends-with? "is not accessed" (flymake-diagnostic-text d))))
+  ;;                     (car diags))))
   
-  (advice-add 'eglot--report-to-flymake :filter-args #'my-filter-eglot-diagnostics))
+  ;; (advice-add 'eglot--report-to-flymake :filter-args #'my-filter-eglot-diagnostics)
+  )
 
 ;; Python mode
 (use-package python
@@ -375,7 +376,7 @@
   (pytest-project-root-files '("setup.py" ".hg" ".git"))
   :config
   ;; Custom variables
-  (defcustom dy-pytest-arguments "--disable-warnings -x --ff"
+  (defcustom dy-pytest-arguments "--disable-warnings -x --ff --color=yes"
     "Pytest run arguments.")
 
   (defun toggle-eldoc-doc-buffer ()

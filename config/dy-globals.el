@@ -24,7 +24,7 @@
 
 ;; Scrolling
 (setq mouse-wheel-scroll-amount '(1)    ; scroll gentle
-      mouse-wheel-progressive-speed nil ; don't accelerate
+      mouse-wheel-progressive-speed t   ; accelerate !!
       scroll-conservatively 101         ; don't jump to the middle of screen
       hscroll-margin 1                  ; don't you scroll that early!
       hscroll-step 1                    ; but scroll just a bit
@@ -102,5 +102,12 @@
   :ensure t
   :config
   (setq ggtags-sort-by-nearness t))
+
+
+(setq display-buffer-base-action
+      '((display-buffer-reuse-window
+         display-buffer-reuse-mode-window
+         display-buffer-same-window
+         display-buffer-in-previous-window)))
 
 (provide 'dy-globals)

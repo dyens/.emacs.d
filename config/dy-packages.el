@@ -488,22 +488,14 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   :custom (
     (dired-listing-switches "-agho --group-directories-first")
     (dired-dwim-target t)
+    (dired-kill-when-opening-new-dired-buffer t)
   )
   :config
-  (evil-collection-define-key 'normal 'dired-mode-map
-    "h" 'dired-single-up-directory
-    "l" 'dired-single-buffer)
-
   (setq dired-guess-shell-alist-user
         '(("\\.\\(png\\|jpe?g\\|tiff\\)" "feh" "xdg-open")
           ("\\.\\(mp[34]\\|m4a\\|ogg\\|flac\\|webm\\|mkv\\)" "mplayer" "xdg-open")
 	  (".*" "xdg-open"))))
 
-
-(use-package dired-single
-  :ensure t
-  :after dired
-  )
 
 (use-package dired-open
   :ensure t
@@ -551,6 +543,10 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   :ensure t
   :hook
   (vterm-mode . (lambda () (display-fill-column-indicator-mode -1)))
+  (vterm-mode . (lambda () 
+    (define-key evil-visual-state-map "\M-d" nil)
+    (define-key evil-normal-state-map "\M-d" nil)
+    (define-key evil-insert-state-map "\M-d" nil)))
   :custom
   ;; https://github.com/akermu/emacs-libvterm/issues/179#issuecomment-1045331359
   ;; Require screen and in .screenrc:
@@ -691,13 +687,20 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
                   ("https://www.linux.org.ru/section-rss.jsp?section=1" linux lor)
                   ("https://www.linux.org.ru/section-rss.jsp?section=3" linux lor)
                   )))
-;; hadolint flymake (dockerfile checks)
 
+;; hadolint flymake (dockerfile checks)
 (use-package flymake-hadolint
   :ensure t
   :custom
-  (add-hook 'dockerfile-mode-hook #'flymake-hadolint-setup)
- )
+  (add-hook 'dockerfile-mode-hook #'flymake-hadolint-setup))
+
+;; htmlize for blog
+;; fix vpn !
+(use-package htmlize
+  :ensure t)
+
+(use-package tmr
+  :ensure t)
 
 
 (provide 'dy-packages)

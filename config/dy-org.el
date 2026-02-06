@@ -40,7 +40,7 @@
      (emacs-lisp . t)
      (plantuml . t)
      (C . t)
-     (mermaid . t)
+;;     (mermaid . t)
      (mypy . t)
      (k8s . t)
      (k8s . t)))
@@ -79,9 +79,9 @@
    '(("t" "Tasks" entry (file+headline "~/org/agenda.org" "Tasks")
       "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))\n" )
      ("m" "Meetings" entry (file+headline "~/org/agenda.org" "Meetings")
-      "* Meeting: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))\n%?" )
+      "* Meeting: %(org-insert-time-stamp (org-read-date nil t \"\"))\n%?" )
      ("c" "Captures" entry (file+headline "~/org/agenda.org" "Captures")
-      "* Capture %?\n%(org-insert-time-stamp (org-read-date nil t \"+1d\"))\n%c" )))
+      "* Capture %?\n%(org-insert-time-stamp (org-read-date nil t \"\"))\n%c" )))
   :bind
   ((:map evil-normal-state-map
          ("<SPC> a c" . org-capture))))
@@ -117,15 +117,31 @@
 
 
 ;; Org mermaid
-(use-package ob-mermaid
-  :ensure t
-  :custom
-  (ob-mermaid-cli-path "/home/dyens/.nvm/versions/node/v18.7.0/bin/mmdc"))
+;; (use-package ob-mermaid
+;;   :ensure t
+;;   :custom
+;;   (ob-mermaid-cli-path "/home/dyens/.nvm/versions/node/v18.7.0/bin/mmdc"))
 
 
 ;; org-krita
 (when (not (require 'org-krita nil 'noerror))
   (message "Install org-krita")
   (package-vc-install "https://github.com/lepisma/org-krita"))
+
+(use-package denote
+  :ensure t
+  :hook (dired-mode . denote-dired-mode)
+  :bind
+  (("C-c b n" . denote)
+   ("C-c b r" . denote-rename-file)
+   ("C-c b l" . denote-link)
+   ("C-c b b" . denote-backlinks)
+   ("C-c b d" . denote-dired)
+   ("C-c b g" . denote-grep))
+  :config
+  (setq denote-directory (expand-file-name "~/dev/blog/pages"))
+  (setq denote-known-keywords '("blog" "linux" "emacs" "python" "guile"))
+  (denote-rename-buffer-mode 1))
+
 
 (provide 'dy-org)

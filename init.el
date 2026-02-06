@@ -30,6 +30,7 @@
 (require 'dy-transient)
 (require 'dy-rust)
 (require 'dy-http)
+(require 'dy-lilypond)
 
 
 

@@ -1,4 +1,12 @@
 ;; -*- lexical-binding: t; -*-
+
+(defun dy-authinfo-get-secret (host)
+  "Get secret from ~/.authinfo by host"
+  (let ((authinfo (auth-source-search :host host)))
+    (when (equal (length authinfo) 0) (error "Key not found"))
+    (funcall (plist-get (car authinfo) :secret))))
+
+
 ;; https://protesilaos.com/codelog/2021-07-24-emacs-misc-custom-commands/
 ;; A variant of this is present in the crux.el package by Bozhidar
 ;; Batsov.

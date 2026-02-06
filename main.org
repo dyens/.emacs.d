@@ -2076,10 +2076,6 @@ If in compilation buffer there are many lines it start to be a very slow
 		(".*" "xdg-open"))))
 
 
-
-(use-package dired-single
-  :ensure t)
-
 (use-package dired-open
   :ensure t
   :config
