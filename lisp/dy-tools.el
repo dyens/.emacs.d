@@ -1,8 +1,10 @@
 ;; -*- lexical-binding: t; -*-
 
-(defun dy-authinfo-get-secret (host)
+(require 'cl-lib)
+
+(cl-defun dy-authinfo-get-secret (host &key user)
   "Get secret from ~/.authinfo by host"
-  (let ((authinfo (auth-source-search :host host)))
+  (let ((authinfo (auth-source-search :host host :user user)))
     (when (equal (length authinfo) 0) (error "Key not found"))
     (funcall (plist-get (car authinfo) :secret))))
 
@@ -470,6 +472,12 @@ Do not try to make a new directory or anything fancy."
 		     546 "compat_sys_preadv64v2"
 		     547 "compat_sys_pwritev64v2"
 )))
+
+(defun dy-youtube-search(search-text)
+  "Search in youtube"
+  (interactive "s")
+  (browse-url (format "https://www.youtube.com/results?search_query=%s&sp=CAISAhAB" search-text)))
+
 
 (provide 'dy-tools)
 

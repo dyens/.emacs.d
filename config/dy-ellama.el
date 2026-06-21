@@ -34,7 +34,7 @@
   (gptel-default-mode 'org-mode)
   :config
   (require 'gptel-integrations)
-  (setq gptel-model 'gpt-5-mini
+  (setq gptel-model 'gpt-4.1-mini
         gptel-log-level 'debug
         gptel-max-tokens 1000
         gptel-backend (gptel-make-openai "dy-openai"
@@ -68,9 +68,8 @@
                  :description "shell command string"))
    :category "shell"
    :confirm t)
+
   )
-
-
  
 ;; (setq copilot-token "T09SPC1GLSFsZkB0N1BSbjxKWSphWjxPaVBHTU1fTWN5Yn5QXVZ1ZVY=:676b92e05ce15b53284bcbe4")
 
@@ -81,7 +80,21 @@
 ;;   :curl-args '("-k")
 ;;   )
 
-(use-package eca :ensure t)
+(use-package eca
+  :ensure t
+  :custom
+  (eca-extra-args '("--verbose" "--log-level" "debug")))
+
+
+(use-package agent-shell
+    :ensure t
+    :custom
+    (agent-shell-use-viewport t) 
+    :ensure-system-package
+    (
+     ;; (claude . "brew install claude-code")
+     (claude-agent-acp . "npm install -g @zed-industries/claude-agent-acp")))
+
 
 
 

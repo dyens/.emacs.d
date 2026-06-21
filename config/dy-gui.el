@@ -27,16 +27,22 @@
 
 ;; (load-theme 'ef-symbiosis t)
 ;; (load-theme 'ef-dream t)
-(load-theme 'ef-reverie t)
+;; (load-theme 'ef-reverie t)
+(load-theme 'ef-eagle t)
 
 ;; Pretty symbols
 (global-prettify-symbols-mode 1)
 
 ;; Font
+;; (set-face-attribute 'default nil
+;;                     :family "Iosevka Fixed SS04"
+;;                     :height 130
+;;                     :weight 'bold)
+
 (set-face-attribute 'default nil
-                    :family "Iosevka Fixed SS04"
-                    :height 113
-                    :weight 'bold)
+                    :family "Aporetic Serif Mono"
+                    :height 130)
+
 
 ;; Display line numbers
 (customize-set-variable 'display-line-numbers-type 'relative)
@@ -105,11 +111,12 @@
 
 
 
-(setq-default mode-line-format
-              '("%e"
-                dy-modeline-buffer-name
-                dy-modeline-major-mode
-                dy-modeline-branch-name
-                mode-line-misc-info mode-line-end-spaces))
+
+;; (setq-default mode-line-format
+;;               '("%e"
+;;                 dy-modeline-buffer-name
+;;                 dy-modeline-major-mode
+;;                 dy-modeline-branch-name
+;;                 mode-line-misc-info mode-line-end-spaces))
 
 (provide 'dy-gui)

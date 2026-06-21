@@ -45,3 +45,4 @@ ielm-history.eld
 oauth2.plstore
 tree-sitter/
 .aider*
+/.agent-shell/

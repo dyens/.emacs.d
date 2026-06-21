@@ -15,9 +15,9 @@
 
 (setq kaas-kubeconfig-paths
       '(
-        d3 "/home/dyens/k8s/d3kaas"
-        d32 "/home/dyens/k8s/d32kaas"
-        prod "/home/dyens/k8s/prodkaas"))
+        d3 "/home/dyens/k8s/d3kaas-tmp"
+        d32 "/home/dyens/k8s/d32kaas-tmp"
+        prod "/home/dyens/k8s/prodkaas-tmp"))
 
 
 ;; DEPREACTEDD!
@@ -130,6 +130,11 @@
     (kill-new item-id)
     item-id)))
 
-;; (get-and-save-kubeconfig 'd3 (get-kaas-item-id "https://d3-portal-front.portal.cloud-d3.k8s.dev.01.vmw.t1.loc/managed_kaas/d36c7e6a-8b8c-4c4b-970e-61fbc77e8acc?page=0&perPage=25&context=proj-dn9anix1w0txl9v&type=project&org=org-ltole97t&tab=information"))
+;; (get-and-save-kubeconfig 'd3 (get-kaas-item-id "https://d3-portal-front.portal.cloud-d3.k8s.dev.01.vmw.t1.loc/managed_kaas/6172348a-4a3d-4999-9e50-0405347fc69e?context=proj-ve01zkymzx4ayue&type=project&org=org-ltole97t&page=0&perPage=25"))
+
+
+;; (get-kaas-item-id "https://d3-portal-front.portal.cloud-d3.k8s.dev.01.vmw.t1.loc/managed_kaas/c8261ca2-5a31-4bb7-be2a-146de2a6e1a3?context=proj-vn8p8ujoyj5mw0i&type=project&org=org-ltole97t&page=0&perPage=25")
+
+
 
 (provide 'dy-kaas)

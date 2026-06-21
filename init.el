@@ -1,7 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 ;; Use package
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+;; (setq package-archives (cdr package-archives))
+;; One more mirror: https://melpa.mirrorservice.org/
+(add-to-list 'package-archives '("tuna-melpa-mirror" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -36,3 +40,5 @@
 
 ;; TODO:
 ;; Create binding for C-6 (evil-switch-to-windows-last-buffer)
+(put 'scroll-left 'disabled nil)
+(put 'narrow-to-region 'disabled nil)

@@ -2365,7 +2365,8 @@ current buffer's, reload dir-locals."
 (defun dy-erc ()
   "Run erc. Default erc does not work."
   (interactive)
-   (erc :server "irc.libera.chat" :full-name "Alexander Kapustin" :user "dyens")
+   (erc :server "irc.libera.chat" :full-name "Alexander Kapustin" :user "dyens" :port 6697 )
+   (setq erc-debug-protocol t)
  )
 
 (defun dy-notify (text &optional body)

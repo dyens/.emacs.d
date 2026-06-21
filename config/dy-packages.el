@@ -560,6 +560,9 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   :after vterm
   :ensure t)
 
+(use-package ghostel
+  :ensure t)
+
 ;; RG
 (use-package rg
   :ensure t)
@@ -702,5 +705,72 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (use-package tmr
   :ensure t)
 
+
+;; erc
+
+(use-package erc
+  :custom
+  (erc-nick "dyens")
+  (erc-user-full-name "Alexander Kapustin")
+  (erc-port 6697)
+  (erc-server "irc.libera.chat")
+
+  ;; Protect me from accidentally sending excess lines.
+  (erc-inhibit-multiline-input t)
+  (erc-send-whitespace-lines t)
+  (erc-ask-about-multiline-input t)
+  ;; Scroll all windows to prompt when submitting input.
+  (erc-scrolltobottom-all t)
+
+  ;; Wait a bit longer between automatic reconnect attempts.
+  (erc-server-reconnect-timeout 30)
+
+  ;; Show new buffers in the current window instead of a split.
+  (erc-interactive-display 'buffer)
+
+  ;; Insert a newline when I hit <RET> at the prompt, and prefer
+  ;; something more deliberate for actually sending messages.
+  :bind (:map erc-mode-map
+              ("RET" . nil)
+              ("C-c C-c" . #'erc-send-current-line))
+  :config
+  (setopt erc-modules
+          (seq-union '(sasl nicks bufbar nickbar scrolltobottom)
+                     erc-modules)))
+
+
+(use-package erc-sasl
+  ;; Since my account name is the same as my nick, free me from having
+  ;; to hit C-u before M-x erc to trigger a username prompt.
+  :custom (erc-sasl-user :nick))
+
+(use-package erc-join
+  ;; Join #emacs and #erc whenever I connect to Libera.Chat.
+  :custom (erc-autojoin-channels-alist '((Libera.Chat "#emacs" "#guile" "#linux"))))
+
+(use-package erc-fill
+  :custom
+  ;; Prefer one message per line without continuation indicators.
+  (erc-fill-function #'erc-fill-wrap)
+  (erc-fill-static-center 18)
+
+  :bind (:map erc-fill-wrap-mode-map ("C-c =" . #'erc-fill-wrap-nudge)))
+
+(use-package erc-match
+  ;; Use the same face for my own nick wherever it appears.
+  :custom-face
+  (erc-current-nick-face ((t ( :weight unspecified
+                               :foreground unspecified
+                               :inherit erc-my-nick-face)))))
+
+(use-package erc-track
+  ;; Prevent JOINs and PARTs from lighting up the mode-line.
+  :config (setopt erc-track-faces-priority-list
+                  (remq 'erc-notice-face erc-track-faces-priority-list))
+
+  :custom (erc-track-priority-faces-only 'all))
+
+(use-package erc-goodies)
+(use-package erc-speedbar)
 
 (provide 'dy-packages)
